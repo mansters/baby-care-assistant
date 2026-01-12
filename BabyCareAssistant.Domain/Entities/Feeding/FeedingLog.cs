@@ -1,4 +1,4 @@
-namespace BabyCareAssistant.API.Models.Feeding;
+namespace BabyCareAssistant.Domain.Entities.Feeding;
 
 public class FeedingLog
 {
@@ -7,4 +7,7 @@ public class FeedingLog
     public int DurationMinutes { get; set; }
     public string Type { get; set; }
     public int AmountMl { get; set; }
+    
+    public Guid BabyId { get; set; }
+    public Baby? Baby { get; set; }
 }

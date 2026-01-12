@@ -1,4 +1,7 @@
+using System.Text.Json.Serialization;
 using BabyCareAssistant.API.Services;
+using BabyCareAssistant.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFeedingService, FeedingService>();
+
+builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // This prevents the "Baby -> Log -> Baby -> Log" crash
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 var app = builder.Build();
 
