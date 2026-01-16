@@ -1,3 +1,4 @@
+using BabyCareAssistant.API.Dtos;
 using BabyCareAssistant.API.Services;
 using BabyCareAssistant.Domain.Entities.Feeding;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,20 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     
     
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<FeedingLogDto>>> GetAllAsync()
     {
-        var logs = await feedingService.GetAllAsync(); // 2. Await the service
-        return Ok(logs);
+        var logs = await feedingService.GetAllAsync(); 
+
+        var dtos = logs.Select(log => new FeedingLogDto(
+            log.Id,
+            log.BabyId,
+            log.FeedingTime,
+            log.DurationMinutes,
+            log.Type,
+            log.AmountMl
+        ));
+
+        return Ok(dtos);
     }
     
     [HttpGet("{id:guid}", Name = "GetFeedingLogById")]
@@ -22,7 +33,6 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     {
         var log = await feedingService.GetAsync(id);
         
-        // FIX: Handle Nulls
         if (log == null)
         {
             return NotFound(); // Returns 404
@@ -32,10 +42,33 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(FeedingLog log)
+    public async Task<IActionResult> Create(CreateFeedingLogDto request)
     {
-        await feedingService.AddAsync(log);
-        return CreatedAtRoute("GetFeedingLogById", new { id = log.Id }, log);
+        // 1. Manual Mapping (Later we use AutoMapper)
+        var entity = new FeedingLog
+        {
+            Id = Guid.NewGuid(),
+            BabyId = request.BabyId,
+            FeedingTime = request.FeedingTime,
+            DurationMinutes = request.DurationMinutes,
+            Type = request.Type,
+            AmountMl = request.AmountMl
+        };
+
+        // 2. Pass Entity to Service
+        await feedingService.AddAsync(entity);
+
+        // 3. Return the READ Dto, not the Entity
+        var responseDto = new FeedingLogDto(
+            entity.Id,
+            entity.BabyId,
+            entity.FeedingTime,
+            entity.DurationMinutes,
+            entity.Type,
+            entity.AmountMl
+        );
+
+        return CreatedAtRoute("GetFeedingLogById", new { id = entity.Id }, responseDto);
     }
 
     [HttpPut("{id:guid}")]
