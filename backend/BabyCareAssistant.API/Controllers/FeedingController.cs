@@ -42,7 +42,7 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateFeedingLogDto request)
+    public async Task<IActionResult> CreateAsync(CreateFeedingLogDto request)
     {
         // 1. Manual Mapping (Later we use AutoMapper)
         var entity = new FeedingLog
@@ -72,16 +72,22 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, FeedingLog log)
+    public async Task<IActionResult> UpdateAsync(Guid id, UpdateFeedingLogDto log)
     {
-        if (id != log.Id) return BadRequest();
+        var existingLog = await feedingService.GetAsync(id);
+        if (existingLog == null) return NotFound();
         
-        await feedingService.UpdateAsync(log);
+        existingLog.FeedingTime = log.FeedingTime;
+        existingLog.DurationMinutes = log.DurationMinutes;
+        existingLog.Type = log.Type;
+        existingLog.AmountMl = log.AmountMl;
+        
+        await feedingService.UpdateAsync(existingLog);
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
         await feedingService.DeleteAsync(id);
         return NoContent();
