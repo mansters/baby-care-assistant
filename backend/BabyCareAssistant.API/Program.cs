@@ -5,6 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // Allow Next.js
+                .AllowAnyHeader()                     // Allow Content-Type: application/json
+                .AllowAnyMethod();                    // Allow POST, PUT, DELETE, OPTIONS
+        });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -34,7 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
 
 app.MapControllers();

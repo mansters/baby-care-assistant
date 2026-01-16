@@ -1,28 +1,21 @@
 import * as React from 'react';
 import { getFeedingLogs } from '@/lib/api-client';
-import {
-  Container,
-  Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip
-} from '@mui/material';
+import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import { format } from 'date-fns';
+import FeedingLogDialog from './components/FeedingLogDialog';
+import ChildCareIcon from '@mui/icons-material/ChildCare';
 
 export default async function Dashboard() {
   const logs = await getFeedingLogs();
 
   return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          🍼 BabyCare Dashboard
+      <Container maxWidth="md" sx={{ mt: 4, mb: 10 }}> {/* mb:10 adds space for the FAB */}
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <ChildCareIcon fontSize="large" color="primary" />
+          BabyCare Dashboard
         </Typography>
 
+        {/* The Table Section */}
         <TableContainer component={Paper} elevation={3}>
           <Table>
             <TableHead sx={{ bgcolor: '#f5f5f5' }}>
@@ -36,24 +29,18 @@ export default async function Dashboard() {
             <TableBody>
               {logs.map((log) => (
                   <TableRow key={log.id}>
+                    <TableCell>{format(new Date(log.feedingTime), 'yyyy-MM-dd HH:mm')}</TableCell>
                     <TableCell>
-                      {format(new Date(log.feedingTime), 'yyyy-MM-dd HH:mm')}
+                      <Chip
+                          label={log.type}
+                          color={log.type === 'Breast' ? 'primary' : 'secondary'}
+                          size="small"
+                      />
                     </TableCell>
-
-                    <TableCell>
-                      <Chip label={log.type} color="primary" size="small" />
-                    </TableCell>
-
-                    <TableCell>
-                      {log.durationMinutes > 0 ? `${log.durationMinutes} mins` : '-'}
-                    </TableCell>
-
-                    <TableCell>
-                      {log.amountMl > 0 ? `${log.amountMl} ml` : '-'}
-                    </TableCell>
+                    <TableCell>{log.durationMinutes > 0 ? `${log.durationMinutes} min` : '-'}</TableCell>
+                    <TableCell>{log.amountMl > 0 ? `${log.amountMl} ml` : '-'}</TableCell>
                   </TableRow>
               ))}
-
               {logs.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} align="center">No logs found. Start tracking!</TableCell>
@@ -62,6 +49,10 @@ export default async function Dashboard() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* The "Invisible" Logic for the Button */}
+        <FeedingLogDialog />
+
       </Container>
   );
 }
