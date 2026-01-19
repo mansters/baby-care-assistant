@@ -7,14 +7,14 @@ export enum FeedingType {
 export interface FeedingLog {
     id: string;
     babyId: string;
-    feedingTime: string;    // DateTime becomes string in JSON
+    feedingTime: string;    
     durationMinutes: number;
     type: FeedingType;
     amountMl: number;
 }
 
 export interface CreateFeedingLogRequest {
-    babyId: string; // We'll hardcode this for now
+    babyId: string; 
     feedingTime: string;
     durationMinutes: number;
     type: string;

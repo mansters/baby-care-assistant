@@ -38,7 +38,7 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
             return NotFound();
         }
 
-        // Map Entity -> DTO
+        
         var dto = new FeedingLogDto(
             log.Id,
             log.BabyId,
@@ -54,7 +54,7 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync(CreateFeedingLogDto request)
     {
-        // 1. Manual Mapping (Later we use AutoMapper)
+        
         var entity = new FeedingLog
         {
             Id = Guid.NewGuid(),
@@ -65,10 +65,10 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
             AmountMl = request.AmountMl
         };
 
-        // 2. Pass Entity to Service
+        
         await feedingService.AddAsync(entity);
 
-        // 3. Return the READ Dto, not the Entity
+        
         var responseDto = new FeedingLogDto(
             entity.Id,
             entity.BabyId,

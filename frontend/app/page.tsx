@@ -9,13 +9,13 @@ export default async function Dashboard() {
   const logs = await getFeedingLogs();
 
   return (
-      <Container maxWidth="md" sx={{ mt: 4, mb: 10 }}> {/* mb:10 adds space for the FAB */}
+      <Container maxWidth="md" sx={{ mt: 4, mb: 10 }}> {}
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 2 }}>
           <ChildCareIcon fontSize="large" color="primary" />
           BabyCare Dashboard
         </Typography>
 
-        {/* The Table Section */}
+        {}
         <TableContainer component={Paper} elevation={3}>
           <Table>
             <TableHead sx={{ bgcolor: '#f5f5f5' }}>
@@ -50,7 +50,7 @@ export default async function Dashboard() {
           </Table>
         </TableContainer>
 
-        {/* The "Invisible" Logic for the Button */}
+        {}
         <FeedingLogDialog />
 
       </Container>

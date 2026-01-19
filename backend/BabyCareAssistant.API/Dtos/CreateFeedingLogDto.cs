@@ -7,6 +7,6 @@ public record CreateFeedingLogDto(
     [Required] Guid BabyId,
     [Required] DateTime FeedingTime,
     [Range(1, 1000)] int? DurationMinutes,
-    [Required] FeedingType? Type, // "Breast" or "Bottle"
+    [Required] FeedingType? Type, 
     [Range(0, 500)] int AmountMl
 );

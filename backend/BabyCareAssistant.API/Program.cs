@@ -10,16 +10,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // Allow Next.js
-                .AllowAnyHeader()                     // Allow Content-Type: application/json
-                .AllowAnyMethod();                    // Allow POST, PUT, DELETE, OPTIONS
+            policy.WithOrigins("http://localhost:3000") 
+                .AllowAnyHeader()                     
+                .AllowAnyMethod();                    
         });
 });
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,13 +29,12 @@ builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // This prevents the "Baby -> Log -> Baby -> Log" crash
+        
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -20,7 +20,6 @@ const theme = createTheme({
     },
 });
 
-// 2. The Cache Logic (Don't worry about understanding this deep magic yet)
 export default function ThemeRegistry({ children }: React.PropsWithChildren) {
     const [{ cache, flush }] = React.useState(() => {
         const cache = createCache({ key: 'mui' });
@@ -65,7 +64,7 @@ export default function ThemeRegistry({ children }: React.PropsWithChildren) {
     return (
         <CacheProvider value={cache}>
             <ThemeProvider theme={theme}>
-                {/* CssBaseline resets browser styles to a clean slate */}
+                {}
                 <CssBaseline />
                 {children}
             </ThemeProvider>

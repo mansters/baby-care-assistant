@@ -6,12 +6,12 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
-    IconButton, // 👈 Import this
+    IconButton, 
     useMediaQuery,
     useTheme
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close'; // 👈 Import the Close Icon
+import CloseIcon from '@mui/icons-material/Close'; 
 import FeedingForm from './FeedingForm';
 
 export default function FeedingLogDialog() {
@@ -46,7 +46,7 @@ export default function FeedingLogDialog() {
                 fullWidth
                 maxWidth="sm"
             >
-                {/* Header with Title and Close Button */}
+                {}
                 <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>Log New Feed</span>
                     <IconButton

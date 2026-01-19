@@ -15,10 +15,9 @@ import {useRouter} from "next/navigation";
 import {createFeedingLog, FeedingType} from "@/lib/api-client";
 
 interface FeedingFormProps {
-    onSuccess?: () => void; // Optional callback
+    onSuccess?: () => void; 
 }
 
-// 1. Define the Validation Schema (Zod)
 const feedingSchema = z.object({
     type: z.enum(['Bottle', 'Breast', 'Solids']),
     amountMl: z.number().min(0, 'Amount must be positive').optional(),
@@ -26,7 +25,6 @@ const feedingSchema = z.object({
     feedingTime: z.string().nonempty('Time is required'),
 });
 
-// Infer the TypeScript type from the schema
 type FeedingFormData = z.infer<typeof feedingSchema>;
 
 export default function FeedingForm({ onSuccess }: FeedingFormProps) {
@@ -41,7 +39,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
     } = useForm<FeedingFormData>({
         resolver: zodResolver(feedingSchema),
         defaultValues: {
-            type: 'Bottle', // Ensure this matches your select options exactly
+            type: 'Bottle', 
             amountMl: 0,
             durationMinutes: 15,
             feedingTime: new Date().toISOString().slice(0, 16)
@@ -50,11 +48,11 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
 
     const onSubmit = async (data: FeedingFormData) => {
         try {
-            // 1. Prepare the payload
-            // For now, use the GUID you seeded in the database.
+            
+            
             const payload = {
-                babyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // <--- REPLACE WITH YOUR REAL DB BABY ID
-                feedingTime: new Date(data.feedingTime).toISOString(), // Ensure ISO format
+                babyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', 
+                feedingTime: new Date(data.feedingTime).toISOString(), 
                 type: data.type,
                 durationMinutes: data.durationMinutes,
                 amountMl: data.amountMl || 0,
@@ -78,13 +76,13 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
             onSubmit={handleSubmit(onSubmit)}
             sx={{
                 display: 'flex',
-                flexDirection: 'column', // Stack them vertically for better mobile flow
-                gap: 3,                  // consistent spacing
-                mt: 1                    // tiny top margin
+                flexDirection: 'column', 
+                gap: 3,                  
+                mt: 1                    
             }}
         >
 
-            {/* Type Selection */}
+            {}
             <Controller
                 name="type"
                 control={control}
@@ -104,7 +102,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 )}
             />
 
-            {/* Row for Numbers: Amount & Duration */}
+            {}
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                     label="Amount (ml)"
@@ -125,7 +123,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 />
             </Box>
 
-            {/* Time */}
+            {}
             <TextField
                 type="datetime-local"
                 label="Time"
@@ -141,9 +139,9 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
             <Button
                 type="submit"
                 variant="contained"
-                size="large" // Bigger button is easier to tap
+                size="large" 
                 disabled={isSubmitting}
-                fullWidth    // Full width button looks better in modals
+                fullWidth    
                 sx={{ py: 1.5, fontWeight: 'bold' }}
             >
                 {isSubmitting ? 'Saving...' : 'Log Feed'}
