@@ -17,7 +17,7 @@ namespace BabyCareAssistant.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -27,6 +27,9 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
@@ -39,9 +42,47 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.ToTable("Babies");
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.ExcretionLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BabyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BabyId");
+
+                    b.ToTable("ExcretionLogs", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ExcretionLogs_Type", "\"Type\" IN ('Wet', 'Dirty', 'Mixed')");
+                        });
                 });
 
             modelBuilder.Entity("BabyCareAssistant.Domain.Entities.Feeding.FeedingLog", b =>
@@ -56,7 +97,10 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                     b.Property<Guid>("BabyId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("DurationMinutes")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("DurationMinutes")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("FeedingTime")
@@ -66,11 +110,124 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BabyId");
 
-                    b.ToTable("FeedingLogs");
+                    b.ToTable("FeedingLogs", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FeedingLogs_Type", "\"Type\" IN ('Bottle', 'Breast', 'Solids')");
+                        });
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.GrowthLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BabyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateMeasured")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("HeadCircumferenceCm")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("HeightCm")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("WeightKg")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BabyId");
+
+                    b.ToTable("GrowthLogs", (string)null);
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.VaccinationRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AdministeredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("BabyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("VaccineCatalogId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BabyId");
+
+                    b.HasIndex("VaccineCatalogId");
+
+                    b.ToTable("VaccinationRecords", (string)null);
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.VaccineCatalog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("DueAtMonths")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("numeric(6,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VaccineCatalog", (string)null);
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.ExcretionLog", b =>
+                {
+                    b.HasOne("BabyCareAssistant.Domain.Entities.Baby", "Baby")
+                        .WithMany("ExcretionLogs")
+                        .HasForeignKey("BabyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Baby");
                 });
 
             modelBuilder.Entity("BabyCareAssistant.Domain.Entities.Feeding.FeedingLog", b =>
@@ -84,9 +241,50 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                     b.Navigation("Baby");
                 });
 
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.GrowthLog", b =>
+                {
+                    b.HasOne("BabyCareAssistant.Domain.Entities.Baby", "Baby")
+                        .WithMany("GrowthLogs")
+                        .HasForeignKey("BabyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Baby");
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.VaccinationRecord", b =>
+                {
+                    b.HasOne("BabyCareAssistant.Domain.Entities.Baby", "Baby")
+                        .WithMany("VaccinationRecords")
+                        .HasForeignKey("BabyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BabyCareAssistant.Domain.Entities.VaccineCatalog", "VaccineCatalog")
+                        .WithMany("Records")
+                        .HasForeignKey("VaccineCatalogId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Baby");
+
+                    b.Navigation("VaccineCatalog");
+                });
+
             modelBuilder.Entity("BabyCareAssistant.Domain.Entities.Baby", b =>
                 {
+                    b.Navigation("ExcretionLogs");
+
                     b.Navigation("FeedingLogs");
+
+                    b.Navigation("GrowthLogs");
+
+                    b.Navigation("VaccinationRecords");
+                });
+
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.VaccineCatalog", b =>
+                {
+                    b.Navigation("Records");
                 });
 #pragma warning restore 612, 618
         }

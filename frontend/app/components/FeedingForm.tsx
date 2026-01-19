@@ -12,7 +12,7 @@ import {
     Typography
 } from '@mui/material';
 import {useRouter} from "next/navigation";
-import {createFeedingLog} from "@/lib/api-client";
+import {createFeedingLog, FeedingType} from "@/lib/api-client";
 
 interface FeedingFormProps {
     onSuccess?: () => void; // Optional callback
@@ -95,11 +95,11 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                         label="Type"
                         error={!!errors.type}
                         helperText={errors.type?.message}
-                        fullWidth // 👈 Let it fill the width of the dialog
+                        fullWidth
                     >
-                        <MenuItem value="Bottle">Bottle</MenuItem>
-                        <MenuItem value="Breast">Breast</MenuItem>
-                        <MenuItem value="Solids">Solids</MenuItem>
+                        <MenuItem value={FeedingType.Bottle}>Bottle</MenuItem>
+                        <MenuItem value={FeedingType.Breast}>Breast</MenuItem>
+                        <MenuItem value={FeedingType.Solids}>Solids</MenuItem>
                     </TextField>
                 )}
             />

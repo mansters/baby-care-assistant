@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.API.Dtos;
 
 public record UpdateFeedingLogDto(
-    DateTime FeedingTime,
-    int DurationMinutes,
-    string Type,
-    int AmountMl
+    [Required] DateTime FeedingTime,
+    [Range(1, 1000)] int? DurationMinutes,
+    [Required] FeedingType? Type,
+    [Range(0, 500)] int AmountMl
 );

@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.API.Dtos;
 
 public record CreateFeedingLogDto(
     [Required] Guid BabyId,
     [Required] DateTime FeedingTime,
-    [Range(1, 1000)] int DurationMinutes,
-    [Required] string Type, // "Breast" or "Bottle"
+    [Range(1, 1000)] int? DurationMinutes,
+    [Required] FeedingType? Type, // "Breast" or "Bottle"
     [Range(0, 500)] int AmountMl
 );

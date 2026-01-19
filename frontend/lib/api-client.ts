@@ -1,9 +1,15 @@
+export enum FeedingType {
+    Bottle,
+    Breast,
+    Solids
+}
+
 export interface FeedingLog {
     id: string;
     babyId: string;
     feedingTime: string;    // DateTime becomes string in JSON
     durationMinutes: number;
-    type: string;
+    type: FeedingType;
     amountMl: number;
 }
 

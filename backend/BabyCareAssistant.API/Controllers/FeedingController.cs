@@ -32,13 +32,23 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
     public async Task<IActionResult> GetAsync(Guid id)
     {
         var log = await feedingService.GetAsync(id);
-        
+    
         if (log == null)
         {
-            return NotFound(); // Returns 404
+            return NotFound();
         }
-        
-        return Ok(log);
+
+        // Map Entity -> DTO
+        var dto = new FeedingLogDto(
+            log.Id,
+            log.BabyId,
+            log.FeedingTime,
+            log.DurationMinutes,
+            log.Type,
+            log.AmountMl
+        );
+    
+        return Ok(dto);
     }
 
     [HttpPost]
@@ -51,7 +61,7 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
             BabyId = request.BabyId,
             FeedingTime = request.FeedingTime,
             DurationMinutes = request.DurationMinutes,
-            Type = request.Type,
+            Type = request.Type!.Value,
             AmountMl = request.AmountMl
         };
 
@@ -79,7 +89,7 @@ public class FeedingController(IFeedingService feedingService) : ControllerBase
         
         existingLog.FeedingTime = log.FeedingTime;
         existingLog.DurationMinutes = log.DurationMinutes;
-        existingLog.Type = log.Type;
+        existingLog.Type = log.Type!.Value;
         existingLog.AmountMl = log.AmountMl;
         
         await feedingService.UpdateAsync(existingLog);
