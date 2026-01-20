@@ -1,6 +1,5 @@
 using System.Reflection;
 using BabyCareAssistant.Domain.Entities;
-using BabyCareAssistant.Domain.Entities.Feeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace BabyCareAssistant.Infrastructure.Persistence;

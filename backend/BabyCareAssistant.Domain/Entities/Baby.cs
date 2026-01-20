@@ -1,5 +1,4 @@
 
-using BabyCareAssistant.Domain.Entities.Feeding;
 
 namespace BabyCareAssistant.Domain.Entities
 {
