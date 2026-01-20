@@ -1,6 +1,6 @@
 using BabyCareAssistant.Domain.Enums;
 
-namespace BabyCareAssistant.Domain.Entities.Feeding;
+namespace BabyCareAssistant.Domain.Entities;
 
 public class FeedingLog: BaseEntity
 {

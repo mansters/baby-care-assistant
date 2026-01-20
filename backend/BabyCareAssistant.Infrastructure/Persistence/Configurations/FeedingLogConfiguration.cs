@@ -1,4 +1,4 @@
-using BabyCareAssistant.Domain.Entities.Feeding;
+using BabyCareAssistant.Domain.Entities;
 using BabyCareAssistant.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
