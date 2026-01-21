@@ -1,5 +1,5 @@
 using AutoMapper;
-using BabyCareAssistant.API.Dtos;
+using BabyCareAssistant.API.Dtos.FeedingLog;
 using BabyCareAssistant.Domain.Entities;
 
 namespace BabyCareAssistant.API.Mappings;
