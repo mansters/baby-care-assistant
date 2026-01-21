@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using BabyCareAssistant.API.Mappings;
 using BabyCareAssistant.API.Repositories;
 using BabyCareAssistant.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFeedingRepository, FeedingRepository>();
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 
 builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
