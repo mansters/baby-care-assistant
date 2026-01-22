@@ -1,6 +1,6 @@
 using BabyCareAssistant.Domain.Enums;
 
-namespace BabyCareAssistant.API.Dtos.FeedingLog;
+namespace BabyCareAssistant.Application.Dtos.FeedingLog;
 
 public record FeedingLogDto(
     Guid Id,

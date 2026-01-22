@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
-using BabyCareAssistant.API.Mappings;
-using BabyCareAssistant.API.Repositories;
+using BabyCareAssistant.Application.Interfaces;
+using BabyCareAssistant.Application.Mappings;
 using BabyCareAssistant.Infrastructure.Persistence;
+using BabyCareAssistant.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

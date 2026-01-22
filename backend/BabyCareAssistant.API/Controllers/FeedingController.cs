@@ -1,6 +1,6 @@
 using AutoMapper;
-using BabyCareAssistant.API.Dtos.FeedingLog;
-using BabyCareAssistant.API.Repositories;
+using BabyCareAssistant.Application.Dtos.FeedingLog;
+using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,8 +1,9 @@
+using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
 using BabyCareAssistant.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BabyCareAssistant.API.Repositories;
+namespace BabyCareAssistant.Infrastructure.Repositories;
 
 public class FeedingRepository(BabyCareAssistantDbContext context) : IFeedingRepository
 {

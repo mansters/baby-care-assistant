@@ -1,6 +1,6 @@
 using BabyCareAssistant.Domain.Entities;
 
-namespace BabyCareAssistant.API.Repositories;
+namespace BabyCareAssistant.Application.Interfaces;
 
 public interface IFeedingRepository
 {

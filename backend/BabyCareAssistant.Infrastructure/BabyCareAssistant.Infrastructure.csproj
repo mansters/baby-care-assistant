@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\BabyCareAssistant.Application\BabyCareAssistant.Application.csproj" />
     <ProjectReference Include="..\BabyCareAssistant.Domain\BabyCareAssistant.Domain.csproj" />
   </ItemGroup>
 

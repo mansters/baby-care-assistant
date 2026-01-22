@@ -24,8 +24,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BabyCareAssistant.Application\BabyCareAssistant.Application.csproj" />
       <ProjectReference Include="..\BabyCareAssistant.Infrastructure\BabyCareAssistant.Infrastructure.csproj" />
       <ProjectReference Include="..\BabyCareAssistant.Domain\BabyCareAssistant.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Repositories\" />
     </ItemGroup>
 
 </Project>
