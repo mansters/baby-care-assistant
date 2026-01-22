@@ -35,6 +35,7 @@ public class BabyRepository(BabyCareAssistantDbContext dbContext): IBabyReposito
         
         existingBaby.FirstName = baby.FirstName;
         existingBaby.LastName = baby.LastName;
+        existingBaby.PreferredName = baby.PreferredName;
         existingBaby.DateOfBirth = baby.DateOfBirth;
         
         await dbContext.SaveChangesAsync();
