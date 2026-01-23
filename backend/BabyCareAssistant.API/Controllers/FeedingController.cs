@@ -20,7 +20,7 @@ public class FeedingController(IFeedingRepository feedingRepository, IMapper map
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
+    public async Task<ActionResult<FeedingLogDto>> GetByIdAsync([FromRoute] Guid id)
     {
         var feedingLog = await feedingRepository.GetByIdAsync(id);
 
@@ -34,7 +34,7 @@ public class FeedingController(IFeedingRepository feedingRepository, IMapper map
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateFeedingLogDto request)
+    public async Task<ActionResult<FeedingLogDto>> CreateAsync([FromBody] CreateFeedingLogDto request)
     {
         var feedingLog = mapper.Map<FeedingLog>(request);
         feedingLog = await feedingRepository.CreateAsync(feedingLog);
@@ -45,7 +45,7 @@ public class FeedingController(IFeedingRepository feedingRepository, IMapper map
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateFeedingLogDto request)
+    public async Task<ActionResult<FeedingLogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateFeedingLogDto request)
     {
         if (id != request.Id)
         {

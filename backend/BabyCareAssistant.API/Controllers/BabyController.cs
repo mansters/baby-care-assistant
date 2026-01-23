@@ -34,7 +34,7 @@ public class BabyController(IBabyRepository babyRepository, IMapper mapper): Con
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateBabyDto request)
+    public async Task<ActionResult<BabyDto>> CreateAsync([FromBody] CreateBabyDto request)
     {
         var entity = mapper.Map<Baby>(request);
         entity = await babyRepository.CreateAsync(entity);
@@ -45,7 +45,7 @@ public class BabyController(IBabyRepository babyRepository, IMapper mapper): Con
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateBabyDto request)
+    public async Task<ActionResult<BabyDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateBabyDto request)
     {
         if (id != request.Id)
         {

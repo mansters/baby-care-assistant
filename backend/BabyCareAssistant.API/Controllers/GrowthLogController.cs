@@ -14,13 +14,13 @@ public class GrowthLogController(IGrowthLogRepository growthLogRepository, IMapp
     public async Task<ActionResult<IEnumerable<GrowthLogDto>>> GetAllAsync()
     {
         var growthLogs = await growthLogRepository.GetAllAsync();
-        var growthLogDtos = mapper.Map<IEnumerable<GrowthLog>>(growthLogs);
+        var growthLogDtos = mapper.Map<IEnumerable<GrowthLogDto>>(growthLogs);
         
         return Ok(growthLogDtos);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
+    public async Task<ActionResult<GrowthLogDto>> GetByIdAsync([FromRoute] Guid id)
     {
         var growthLog = await growthLogRepository.GetByIdAsync(id);
 
@@ -29,12 +29,12 @@ public class GrowthLogController(IGrowthLogRepository growthLogRepository, IMapp
             return NotFound();
         }
         
-        var growthLogDto = mapper.Map<GrowthLog>(growthLog);
+        var growthLogDto = mapper.Map<GrowthLogDto>(growthLog);
         return Ok(growthLogDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateGrowthLogDto request)
+    public async Task<ActionResult<GrowthLogDto>> CreateAsync([FromBody] CreateGrowthLogDto request)
     {
         var growthLog = mapper.Map<GrowthLog>(request);
         growthLog = await growthLogRepository.CreateAsync(growthLog);
@@ -45,7 +45,7 @@ public class GrowthLogController(IGrowthLogRepository growthLogRepository, IMapp
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateGrowthLogDto request)
+    public async Task<ActionResult<GrowthLogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateGrowthLogDto request)
     {
         if (id != request.Id)
         {
