@@ -25,6 +25,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IFeedingRepository, FeedingRepository>();
 builder.Services.AddScoped<IBabyRepository, BabyRepository>();
+builder.Services.AddScoped<IGrowthLogRepository, GrowthLogRepository>();
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 
 builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>

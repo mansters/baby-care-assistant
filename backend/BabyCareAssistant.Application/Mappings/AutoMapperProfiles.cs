@@ -1,6 +1,7 @@
 using AutoMapper;
 using BabyCareAssistant.Application.Dtos.Baby;
 using BabyCareAssistant.Application.Dtos.FeedingLog;
+using BabyCareAssistant.Application.Dtos.GrowthLog;
 using BabyCareAssistant.Domain.Entities;
 
 namespace BabyCareAssistant.Application.Mappings;
@@ -18,5 +19,10 @@ public class AutoMapperProfiles : Profile
         CreateMap<FeedingLog, FeedingLogDto>().ReverseMap();
         CreateMap<CreateFeedingLogDto, FeedingLog>();
         CreateMap<UpdateFeedingLogDto, FeedingLog>();
+        
+        // Growth Log
+        CreateMap<GrowthLog, GrowthLogDto>().ReverseMap();
+        CreateMap<CreateGrowthLogDto, GrowthLog>();
+        CreateMap<UpdateGrowthLogDto, GrowthLog>();
     }
 }
