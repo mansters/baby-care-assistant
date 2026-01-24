@@ -3,7 +3,7 @@ import { getFeedingLogs } from '@/lib/api-client';
 import { getFeedingTypeConfig } from '@/app/utils/enums';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import { format } from 'date-fns';
-import FeedingLogDialog from './components/FeedingLogDialog';
+import DashboardFab from './components/DashboardFab';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 
 export default async function Dashboard() {
@@ -57,7 +57,7 @@ export default async function Dashboard() {
         </TableContainer>
 
         {}
-        <FeedingLogDialog />
+        <DashboardFab />
 
       </Container>
   );
