@@ -17,7 +17,7 @@ export interface CreateFeedingLogRequest {
     babyId: string; 
     feedingTime: string;
     durationMinutes: number;
-    type: string;
+    type: FeedingType;
     amountMl: number;
     notes?: string;
 }

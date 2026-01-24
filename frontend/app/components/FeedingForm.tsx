@@ -19,7 +19,7 @@ interface FeedingFormProps {
 }
 
 const feedingSchema = z.object({
-    type: z.enum(['Bottle', 'Breast', 'Solids']),
+    type: z.enum(FeedingType),
     amountMl: z.number().min(0, 'Amount must be positive').optional(),
     durationMinutes: z.number().min(1, 'Duration must be at least 1 min'),
     feedingTime: z.string().nonempty('Time is required'),
@@ -39,7 +39,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
     } = useForm<FeedingFormData>({
         resolver: zodResolver(feedingSchema),
         defaultValues: {
-            type: 'Bottle', 
+            type: FeedingType.Bottle, 
             amountMl: 0,
             durationMinutes: 15,
             feedingTime: new Date().toISOString().slice(0, 16)
