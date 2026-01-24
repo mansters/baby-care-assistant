@@ -3,6 +3,7 @@ using BabyCareAssistant.Application.Dtos.Baby;
 using BabyCareAssistant.Application.Dtos.ExcretionLog;
 using BabyCareAssistant.Application.Dtos.FeedingLog;
 using BabyCareAssistant.Application.Dtos.GrowthLog;
+using BabyCareAssistant.Application.Dtos.VaccinationRecord;
 using BabyCareAssistant.Application.Dtos.VaccineCatalog;
 using BabyCareAssistant.Domain.Entities;
 
@@ -36,5 +37,10 @@ public class AutoMapperProfiles : Profile
         CreateMap<VaccineCatalog, VaccineCatalogDto>().ReverseMap();
         CreateMap<CreateVaccineCatalogDto, VaccineCatalog>();
         CreateMap<UpdateVaccineCatalogDto, VaccineCatalog>();
+
+        // Vaccination Record
+        CreateMap<VaccinationRecord, VaccinationRecordDto>().ReverseMap();
+        CreateMap<CreateVaccinationRecordDto, VaccinationRecord>();
+        CreateMap<UpdateVaccinationRecordDto, VaccinationRecord>();
     }
 }
