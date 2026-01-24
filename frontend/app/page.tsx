@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { getFeedingLogs } from '@/lib/api-client';
+import { getFeedingTypeConfig } from '@/app/utils/enums';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import { format } from 'date-fns';
 import FeedingLogDialog from './components/FeedingLogDialog';
@@ -31,11 +32,16 @@ export default async function Dashboard() {
                   <TableRow key={log.id}>
                     <TableCell>{format(new Date(log.feedingTime), 'yyyy-MM-dd HH:mm')}</TableCell>
                     <TableCell>
-                      <Chip
-                          label={log.type}
-                          color={log.type === 'Breast' ? 'primary' : 'secondary'}
-                          size="small"
-                      />
+                      {(() => {
+                        const config = getFeedingTypeConfig(Number(log.type));
+                        return (
+                          <Chip
+                              label={config.label}
+                              color={config.color}
+                              size="small"
+                          />
+                        );
+                      })()}
                     </TableCell>
                     <TableCell>{log.durationMinutes > 0 ? `${log.durationMinutes} min` : '-'}</TableCell>
                     <TableCell>{log.amountMl > 0 ? `${log.amountMl} ml` : '-'}</TableCell>
