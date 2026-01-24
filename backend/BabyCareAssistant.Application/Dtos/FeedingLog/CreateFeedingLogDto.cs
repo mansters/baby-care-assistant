@@ -4,6 +4,7 @@ using BabyCareAssistant.Domain.Enums;
 namespace BabyCareAssistant.Application.Dtos.FeedingLog;
 
 public record CreateFeedingLogDto(
+    [Required] Guid BabyId,
     [Required] DateTime FeedingTime,
     [Range(1, 1000)] int? DurationMinutes,
     [Required] FeedingType? Type, 
