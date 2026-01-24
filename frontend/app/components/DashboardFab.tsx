@@ -3,14 +3,18 @@
 import { useState } from 'react';
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import EqualizerIcon from '@mui/icons-material/Equalizer'; 
 import FeedingLogDialog from './FeedingLogDialog';
+import GrowthLogDialog from './GrowthLogDialog';
 
 export default function DashboardFab() {
   const [openFeeding, setOpenFeeding] = useState(false);
+  const [openGrowth, setOpenGrowth] = useState(false);
 
   const actions = [
     { icon: <RestaurantMenuIcon />, name: 'Feeding', action: () => setOpenFeeding(true) },
-    // Future: Growth, Excretion, Vacation
+    { icon: <EqualizerIcon />, name: 'Growth', action: () => setOpenGrowth(true) },
+    // Future: Excretion, Vaccination
   ];
 
   return (
@@ -33,6 +37,11 @@ export default function DashboardFab() {
       <FeedingLogDialog 
         open={openFeeding} 
         onClose={() => setOpenFeeding(false)} 
+      />
+
+      <GrowthLogDialog 
+        open={openGrowth} 
+        onClose={() => setOpenGrowth(false)} 
       />
     </>
   );
