@@ -8,19 +8,17 @@ import {
     Typography, 
     Card, 
     CardContent, 
-    IconButton, 
-    Stack,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogContentText,
     DialogActions,
-    Button
+    Button,
+    Stack
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import GrowthLogDialog from './GrowthLogDialog';
 import { useRouter } from 'next/navigation';
+import SwipeableItem from './SwipeableItem';
 
 interface GrowthLogListProps {
     logs: GrowthLog[];
@@ -52,40 +50,55 @@ export default function GrowthLogList({ logs }: GrowthLogListProps) {
             ) : (
                 <Stack spacing={2}>
                     {logs.map((log) => (
-                        <Card key={log.id} elevation={2} sx={{ borderRadius: 2 }}>
-                            <CardContent sx={{ pb: '16px !important', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <Box>
-                                    <Typography variant="h6" component="div" sx={{ mb: 1, color: 'primary.main', fontWeight: 'bold' }}>
-                                        {formatLocal(log.dateMeasured, 'MMM d, yyyy h:mm a')}
-                                    </Typography>
-                                    
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                        <Typography variant="body1">
-                                            <strong>Weight:</strong> {log.weightKg} kg
-                                        </Typography>
-                                        {!!log.heightCm && (
-                                            <Typography variant="body1">
-                                                <strong>Height:</strong> {log.heightCm} cm
+                        <SwipeableItem
+                            key={log.id}
+                            onEdit={() => setEditingLog(log)}
+                            onDelete={() => setDeletingId(log.id)}
+                        >
+                            {(swipeDirection) => (
+                                <Card 
+                                    variant="outlined"
+                                    sx={{ 
+                                        width: '100%', 
+                                        bgcolor: 'background.paper',
+                                        position: 'relative',
+                                        overflow: 'visible',
+                                        transition: 'border-radius 0.2s ease',
+                                        // Dynamic border radius based on swipe direction
+                                        borderTopRightRadius: swipeDirection === 'left' ? 0 : 8,
+                                        borderBottomRightRadius: swipeDirection === 'left' ? 0 : 8,
+                                        borderTopLeftRadius: swipeDirection === 'right' ? 0 : 8,
+                                        borderBottomLeftRadius: swipeDirection === 'right' ? 0 : 8,
+                                        // Ensure default is 8px (2 * 4px) when no swipe
+                                        borderRadius: swipeDirection === 'none' ? 2 : undefined
+                                    }}
+                                >
+                                    <CardContent sx={{ pb: '16px !important', textAlign: 'left' }}>
+                                        <Box>
+                                            <Typography variant="h6" component="div" sx={{ mb: 1, color: 'primary.main', fontWeight: 'bold' }}>
+                                                {formatLocal(log.dateMeasured, 'MMM d, yyyy h:mm a')}
                                             </Typography>
-                                        )}
-                                        {!!log.headCircumferenceCm && (
-                                            <Typography variant="body1">
-                                                <strong>Head Circ:</strong> {log.headCircumferenceCm} cm
-                                            </Typography>
-                                        )}
-                                    </Box>
-                                </Box>
-
-                                <Box>
-                                    <IconButton size="small" onClick={() => setEditingLog(log)} aria-label="edit">
-                                        <EditIcon />
-                                    </IconButton>
-                                    <IconButton size="small" onClick={() => setDeletingId(log.id)} aria-label="delete" color="error">
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Box>
-                            </CardContent>
-                        </Card>
+                                            
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                                <Typography variant="body1">
+                                                    <strong>Weight:</strong> {log.weightKg} kg
+                                                </Typography>
+                                                {!!log.heightCm && (
+                                                    <Typography variant="body1">
+                                                        <strong>Height:</strong> {log.heightCm} cm
+                                                    </Typography>
+                                                )}
+                                                {!!log.headCircumferenceCm && (
+                                                    <Typography variant="body1">
+                                                        <strong>Head Circ:</strong> {log.headCircumferenceCm} cm
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </SwipeableItem>
                     ))}
                 </Stack>
             )}
