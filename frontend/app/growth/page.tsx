@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { getGrowthLogs } from '@/lib/api-client';
-import { Container, Typography } from '@mui/material';
+import { Container, Typography, Box, Button } from '@mui/material';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import DashboardFab from '../components/DashboardFab';
 import GrowthLogList from '../components/GrowthLogList';
@@ -15,6 +15,16 @@ export default async function GrowthPage() {
           Growth Logs
         </Typography>
 
+        <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+            <Button variant="contained" href="/growth/grouped">
+                View Grouped Cards
+            </Button>
+            <Button variant="contained" href="/growth/section">
+                View Section List
+            </Button>
+        </Box>
+
+        <Typography variant="h6" gutterBottom>Original List:</Typography>
         <GrowthLogList logs={logs} />
 
         <DashboardFab />
