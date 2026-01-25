@@ -31,3 +31,17 @@ export const getCurrentLocalForInput = (): string => {
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   return now.toISOString().slice(0, 16);
 };
+
+/**
+ * Returns the ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
+ * @param day Day of month (1-31)
+ */
+export const getOrdinalSuffix = (day: number): string => {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
+  }
+};
