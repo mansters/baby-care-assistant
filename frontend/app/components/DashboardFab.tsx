@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import EqualizerIcon from '@mui/icons-material/Equalizer'; 
-import FeedingLogDialog from './FeedingLogDialog';
-import GrowthLogDialog from './GrowthLogDialog';
+import FeedingLogDialog from '@features/feeding/components/FeedingLogDialog';
+import GrowthLogDialog from '@features/growth/components/GrowthLogDialog';
 
 export default function DashboardFab() {
   const [openFeeding, setOpenFeeding] = useState(false);

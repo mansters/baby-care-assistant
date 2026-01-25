@@ -2,7 +2,7 @@
 
 import { Box, Typography, Stack, ListItemButton, Divider } from '@mui/material';
 import { GrowthLog } from '@/lib/api-client';
-import { getOrdinalSuffix } from '@/lib/date-utils';
+import { getOrdinalSuffix } from '@shared/utils/date-utils';
 import { format } from 'date-fns';
 
 interface GrowthLogRowProps {
@@ -11,9 +11,7 @@ interface GrowthLogRowProps {
     showDivider?: boolean;
 }
 
-/**
- * Presentational component for a single GrowthLog entry with "Bold Date" layout.
- */
+
 export default function GrowthLogRow({ log, onClick, showDivider = false }: GrowthLogRowProps) {
     const date = new Date(log.dateMeasured);
     const dayNum = date.getDate();
@@ -29,7 +27,6 @@ export default function GrowthLogRow({ log, onClick, showDivider = false }: Grow
                     alignItems: 'center', 
                     minHeight: '80px',
                 }}>
-                    {/* Left Column: Big Date */}
                     <Box sx={{ 
                         minWidth: '80px', 
                         display: 'flex', 

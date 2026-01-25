@@ -1,7 +1,7 @@
 'use client';
 
 import { GrowthLog } from '@/lib/api-client';
-import { formatLocal } from '@/lib/date-utils';
+import { formatLocal } from '@shared/utils/date-utils';
 import { 
     Box, 
     Typography, 
@@ -9,12 +9,12 @@ import {
     ListSubheader,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { useGroupedLogs } from '@/hooks/useGroupedLogs';
-import { useGrowthLogActions } from '@/hooks/useGrowthLogActions';
+import { useGroupedLogs } from '../hooks/useGroupedLogs';
+import { useGrowthLogActions } from '../hooks/useGrowthLogActions';
 import GrowthLogRow from './GrowthLogRow';
 import GrowthLogDialog from './GrowthLogDialog';
-import RecordActionSheet from './RecordActionSheet';
-import ConfirmDeleteDialog from './ConfirmDeleteDialog';
+import RecordActionSheet from '@shared/components/RecordActionSheet';
+import ConfirmDeleteDialog from '@shared/components/ConfirmDeleteDialog';
 
 interface GrowthLogSectionListProps {
     logs: GrowthLog[];

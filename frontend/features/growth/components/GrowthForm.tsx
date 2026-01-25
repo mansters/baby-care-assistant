@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useRouter } from "next/navigation";
 import { createGrowthLog, updateGrowthLog, GrowthLog } from "@/lib/api-client";
-import { toUTCISO, getCurrentLocalForInput } from "@/lib/date-utils";
+import { toUTCISO, getCurrentLocalForInput } from "@shared/utils/date-utils";
 
 interface GrowthFormProps {
     onSuccess?: () => void;
