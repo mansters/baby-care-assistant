@@ -6,3 +6,5 @@ export { default as GrowthForm } from './components/GrowthForm';
 export { useGroupedLogs } from './hooks/useGroupedLogs';
 export { useGrowthLogActions } from './hooks/useGrowthLogActions';
 export type { MonthGroup } from './hooks/useGroupedLogs';
+export { default as GrowthFab } from './components/GrowthFab';
+

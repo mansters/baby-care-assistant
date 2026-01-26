@@ -2,7 +2,7 @@ import * as React from 'react';
 import { getGrowthLogs } from '@/lib/api-client';
 import { Box, Typography } from '@mui/material';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
-import DashboardFab from '../components/DashboardFab';
+import { GrowthFab } from '@features/growth';
 import GrowthLogSectionList from '@features/growth/components/GrowthLogSectionList';
 
 export default async function GrowthPage() {
@@ -19,7 +19,7 @@ export default async function GrowthPage() {
 
         <GrowthLogSectionList logs={logs} />
 
-        <DashboardFab />
+        <GrowthFab />
 
       </Box>
   );

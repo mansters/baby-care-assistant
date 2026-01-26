@@ -18,8 +18,8 @@ export default function GrowthLogRow({ log, onClick, showDivider = false }: Grow
     const suffix = getOrdinalSuffix(dayNum);
 
     return (
-        <Box component="li">
-            <ListItemButton onClick={onClick} sx={{ p: 0 }}>
+        <>
+            <ListItemButton component="li" onClick={onClick} sx={{ p: 0 }}>
                 <Box sx={{ 
                     p: 2,
                     width: '100%',
@@ -87,6 +87,6 @@ export default function GrowthLogRow({ log, onClick, showDivider = false }: Grow
                 </Box>
             </ListItemButton>
             {showDivider && <Divider variant="inset" component="li" />}
-        </Box>
+        </>
     );
 }
