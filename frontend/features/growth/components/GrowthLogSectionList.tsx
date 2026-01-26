@@ -1,7 +1,6 @@
 'use client';
 
 import { GrowthLog } from '@/lib/api-client';
-import { formatLocal } from '@shared/utils/date-utils';
 import { 
     Box, 
     Typography, 
@@ -13,7 +12,8 @@ import { useGroupedLogs } from '../hooks/useGroupedLogs';
 import { useGrowthLogActions } from '../hooks/useGrowthLogActions';
 import GrowthLogRow from './GrowthLogRow';
 import GrowthLogDialog from './GrowthLogDialog';
-import RecordActionSheet from '@shared/components/RecordActionSheet';
+
+import GrowthDetailSheet from './GrowthDetailSheet';
 import ConfirmDeleteDialog from '@shared/components/ConfirmDeleteDialog';
 
 interface GrowthLogSectionListProps {
@@ -92,16 +92,14 @@ export default function GrowthLogSectionList({ logs }: GrowthLogSectionListProps
                 </List>
             )}
 
-            {/* Action Sheet */}
-            <RecordActionSheet
+            <GrowthDetailSheet
                 open={isActionSheetOpen}
                 onClose={closeActionSheet}
+                log={selectedLog}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
-                recordDate={selectedLog ? formatLocal(selectedLog.dateMeasured, 'MMMM d, h:mm a') : undefined}
             />
 
-            {/* Edit Dialog */}
             {selectedLog && (
                 <GrowthLogDialog
                     open={isEditOpen}
@@ -110,7 +108,6 @@ export default function GrowthLogSectionList({ logs }: GrowthLogSectionListProps
                 />
             )}
 
-            {/* Delete Confirmation */}
             <ConfirmDeleteDialog
                 open={!!deletingId}
                 onClose={closeDeleteDialog}
