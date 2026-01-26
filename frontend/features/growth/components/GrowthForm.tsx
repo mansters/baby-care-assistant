@@ -19,9 +19,13 @@ interface GrowthFormProps {
 
 const growthSchema = z.object({
     dateMeasured: z.string().nonempty('Date is required'),
-    weightKg: z.number().min(0, 'Weight must be non-negative'),
+    weightKg: z
+        .number()
+        .min(0.01, 'Weight must be greater than 0')
+        .or(z.nan().refine(() => false, "Weight is required")), 
     heightCm: z.number().min(0, 'Height must be non-negative').optional().or(z.nan()),
     headCircumferenceCm: z.number().min(0, 'Head must be non-negative').optional().or(z.nan()),
+    note: z.string().max(500, 'Note must be less than 500 characters').optional(),
 });
 
 type GrowthFormData = z.infer<typeof growthSchema>;
@@ -38,9 +42,10 @@ export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) 
         resolver: zodResolver(growthSchema),
         defaultValues: {
             dateMeasured: initialData ? initialData.dateMeasured.slice(0, 16) : getCurrentLocalForInput(),
-            weightKg: initialData?.weightKg ?? 0,
-            heightCm: initialData?.heightCm ?? 0,
-            headCircumferenceCm: initialData?.headCircumferenceCm ?? 0,
+            weightKg: initialData?.weightKg ?? undefined,
+            heightCm: initialData?.heightCm ?? undefined,
+            headCircumferenceCm: initialData?.headCircumferenceCm ?? undefined,
+            note: initialData?.note ?? '',
         }
     });
 
@@ -52,6 +57,7 @@ export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) 
                 weightKg: data.weightKg,
                 heightCm: isNaN(data.heightCm as number) ? undefined : data.heightCm,
                 headCircumferenceCm: isNaN(data.headCircumferenceCm as number) ? undefined : data.headCircumferenceCm,
+                note: data.note || undefined,
             };
 
             if (initialData) {
@@ -64,7 +70,6 @@ export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) 
             router.refresh();
 
             onSuccess?.();
-            const action = initialData ? 'updated' : 'created';
         } catch (error) {
             console.error('Failed to log growth', error);
             alert('Error saving data. Is the backend running?');
@@ -123,6 +128,17 @@ export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) 
                 helperText={errors.headCircumferenceCm?.message}
                 fullWidth
                 slotProps={{ htmlInput: { step: "0.1" } }}
+            />
+
+            <TextField
+                label="Note (Optional)"
+                multiline
+                rows={3}
+                {...register('note')}
+                error={!!errors.note}
+                helperText={errors.note?.message}
+                fullWidth
+                placeholder="Add any additional details here..."
             />
 
             <Button

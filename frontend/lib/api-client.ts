@@ -51,6 +51,7 @@ export interface GrowthLog {
     weightKg: number;
     heightCm?: number;
     headCircumferenceCm?: number;
+    note?: string;
 }
 
 export interface CreateGrowthLogRequest {
@@ -59,7 +60,7 @@ export interface CreateGrowthLogRequest {
     weightKg: number;
     heightCm?: number;
     headCircumferenceCm?: number;
-    // notes?: string;
+    note?: string;
 }
 
 export async function getGrowthLogs(): Promise<GrowthLog[]> {

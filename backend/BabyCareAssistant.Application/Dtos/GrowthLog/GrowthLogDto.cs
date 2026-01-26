@@ -6,5 +6,6 @@ public record GrowthLogDto(
     DateTime DateMeasured,
     decimal WeightKg,
     decimal? HeightCm,
-    decimal? HeadCircumferenceCm
+    decimal? HeadCircumferenceCm,
+    string? Note
 );

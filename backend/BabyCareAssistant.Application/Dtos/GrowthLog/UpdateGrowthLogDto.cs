@@ -10,12 +10,15 @@ public record UpdateGrowthLogDto(
     DateTime DateMeasured,
 
     [Required]
-    [Range(0, 999.99)]
+    [Range(0.01, 300)]
     decimal? WeightKg,
 
     [Range(0, 400)]
     decimal? HeightCm,
 
     [Range(0, 400)]
-    decimal? HeadCircumferenceCm
+    decimal? HeadCircumferenceCm,
+
+    [MaxLength(500)]
+    string? Note
 );
