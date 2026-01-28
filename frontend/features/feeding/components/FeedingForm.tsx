@@ -12,22 +12,25 @@ import {
     Typography
 } from '@mui/material';
 import {useRouter} from "next/navigation";
-import {createFeedingLog, FeedingType} from "@/lib/api-client";
+import {createFeedingLog, updateFeedingLog, FeedingType, FeedingLog} from "@/lib/api-client";
+import { toUTCISO, getCurrentLocalForInput, toLocalInput } from "@shared/utils/date-utils";
 
 interface FeedingFormProps {
-    onSuccess?: () => void; 
+    onSuccess?: () => void;
+    initialData?: FeedingLog;
 }
 
 const feedingSchema = z.object({
-    type: z.enum(['Bottle', 'Breast', 'Solids']),
+    type: z.nativeEnum(FeedingType),
     amountMl: z.number().min(0, 'Amount must be positive').optional(),
     durationMinutes: z.number().min(1, 'Duration must be at least 1 min'),
     feedingTime: z.string().nonempty('Time is required'),
+    note: z.string().max(3000, 'Note must be less than 3000 characters').optional(),
 });
 
 type FeedingFormData = z.infer<typeof feedingSchema>;
 
-export default function FeedingForm({ onSuccess }: FeedingFormProps) {
+export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps) {
     const router = useRouter();
 
     const {
@@ -39,26 +42,30 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
     } = useForm<FeedingFormData>({
         resolver: zodResolver(feedingSchema),
         defaultValues: {
-            type: 'Bottle', 
-            amountMl: 0,
-            durationMinutes: 15,
-            feedingTime: new Date().toISOString().slice(0, 16)
+            type: initialData ? initialData.type : FeedingType.Bottle, 
+            amountMl: initialData?.amountMl ?? 0,
+            durationMinutes: initialData?.durationMinutes ?? 15,
+            feedingTime: initialData ? toLocalInput(initialData.feedingTime) : getCurrentLocalForInput(),
+            note: initialData?.note ?? ''
         }
     });
 
     const onSubmit = async (data: FeedingFormData) => {
         try {
-            
-            
             const payload = {
                 babyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', 
-                feedingTime: new Date(data.feedingTime).toISOString(), 
-                type: data.type,
+                feedingTime: toUTCISO(data.feedingTime), 
+                type: Number(data.type),
                 durationMinutes: data.durationMinutes,
-                amountMl: data.amountMl || 0,
+                amountMl: data.amountMl || 0, // Ensure 0 if undefined/null
+                note: data.note || undefined,
             };
             
-            await createFeedingLog(payload);
+            if (initialData) {
+                await updateFeedingLog(initialData.id, { ...payload, id: initialData.id });
+            } else {
+                await createFeedingLog(payload);
+            }
             
             reset();
             router.refresh();
@@ -82,7 +89,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
             }}
         >
 
-            {}
+            {/* Type Selector */}
             <Controller
                 name="type"
                 control={control}
@@ -102,7 +109,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 )}
             />
 
-            {}
+            {/* Amount and Duration */}
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                     label="Amount (ml)"
@@ -111,6 +118,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                     error={!!errors.amountMl}
                     helperText={errors.amountMl?.message}
                     fullWidth
+                    slotProps={{ htmlInput: { step: "1" } }}
                 />
 
                 <TextField
@@ -123,7 +131,7 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 />
             </Box>
 
-            {}
+            {/* Time Picker */}
             <TextField
                 type="datetime-local"
                 label="Time"
@@ -136,6 +144,18 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 fullWidth
             />
 
+            {/* Note Field */}
+            <TextField
+                label="Note (Optional)"
+                multiline
+                rows={3}
+                {...register('note')}
+                error={!!errors.note}
+                helperText={errors.note?.message}
+                fullWidth
+                placeholder="Add any additional details here..."
+            />
+
             <Button
                 type="submit"
                 variant="contained"
@@ -144,9 +164,8 @@ export default function FeedingForm({ onSuccess }: FeedingFormProps) {
                 fullWidth    
                 sx={{ py: 1.5, fontWeight: 'bold' }}
             >
-                {isSubmitting ? 'Saving...' : 'Log Feed'}
+                {isSubmitting ? 'Saving...' : (initialData ? 'Update Feed' : 'Log Feed')}
             </Button>
-
         </Box>
     );
 }

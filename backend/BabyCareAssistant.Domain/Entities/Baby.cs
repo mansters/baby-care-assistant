@@ -6,6 +6,7 @@ namespace BabyCareAssistant.Domain.Entities
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public string? PreferredName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
 
         public virtual ICollection<FeedingLog> FeedingLogs { get; set; } = new List<FeedingLog>();

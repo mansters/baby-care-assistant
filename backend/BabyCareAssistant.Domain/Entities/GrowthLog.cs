@@ -7,6 +7,8 @@ public class GrowthLog: BaseEntity
     public decimal? HeightCm { get; set; }
     public decimal? HeadCircumferenceCm { get; set; }
     
+    public string? Note { get; set; }
+    
     public Guid BabyId { get; set; }
     public virtual Baby Baby { get; set; }
 }

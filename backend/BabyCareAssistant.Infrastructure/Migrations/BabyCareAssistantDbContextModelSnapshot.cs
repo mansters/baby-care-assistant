@@ -42,6 +42,9 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PreferredName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -85,7 +88,7 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.Feeding.FeedingLog", b =>
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.FeedingLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -105,6 +108,9 @@ namespace BabyCareAssistant.Infrastructure.Migrations
 
                     b.Property<DateTime>("FeedingTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -145,6 +151,9 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                     b.Property<decimal?>("HeightCm")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -230,7 +239,7 @@ namespace BabyCareAssistant.Infrastructure.Migrations
                     b.Navigation("Baby");
                 });
 
-            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.Feeding.FeedingLog", b =>
+            modelBuilder.Entity("BabyCareAssistant.Domain.Entities.FeedingLog", b =>
                 {
                     b.HasOne("BabyCareAssistant.Domain.Entities.Baby", "Baby")
                         .WithMany("FeedingLogs")
