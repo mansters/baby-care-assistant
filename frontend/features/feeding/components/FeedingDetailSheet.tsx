@@ -6,12 +6,11 @@ import {
     Typography,
     Stack,
     Button,
-    Divider,
-    Chip
 } from '@mui/material';
 import { FeedingLog, FeedingType } from '@/lib/api-client';
 import { format } from 'date-fns';
-import { getFeedingTypeConfig } from '@/app/utils/enums';
+import { FeedingTypeLargeIcon, getFeedingLabel } from './FeedingTypeIcon';
+import { MdAccessTime } from 'react-icons/md';
 
 interface FeedingDetailSheetProps {
     open: boolean;
@@ -31,9 +30,8 @@ export default function FeedingDetailSheet({
     if (!log) return null;
 
     const feedingTime = new Date(log.feedingTime);
-    const formattedDate = format(feedingTime, 'EEEE, d MMM yyyy');
-    const formattedTime = format(feedingTime, 'HH:mm');
-    const typeConfig = getFeedingTypeConfig(Number(log.type));
+    const formattedDateTime = format(feedingTime, "EEEE, d MMM yyyy • h:mm a");
+    const typeLabel = getFeedingLabel(log.type);
 
     const handleEdit = () => {
         onEdit(log);
@@ -45,6 +43,52 @@ export default function FeedingDetailSheet({
         onClose();
     };
 
+    const renderMainContent = () => {
+        if (log.type === FeedingType.Bottle) {
+            return (
+                <>
+                    <Typography variant="h2" fontWeight="bold" sx={{ mb: 0.5 }}>
+                        {log.amountMl} ml
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+                        {typeLabel}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <MdAccessTime size={18} />
+                        <Typography variant="body2">{log.durationMinutes} min</Typography>
+                    </Box>
+                </>
+            );
+        }
+        
+        if (log.type === FeedingType.Breast) {
+            return (
+                <>
+                    <Typography variant="h2" fontWeight="bold" sx={{ mb: 0.5 }}>
+                        {log.durationMinutes} min
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {typeLabel}
+                    </Typography>
+                </>
+            );
+        }
+
+        return (
+            <>
+                <Typography variant="h3" fontWeight="bold" sx={{ mb: 0.5 }}>
+                    {typeLabel}
+                </Typography>
+                {log.durationMinutes > 0 && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <MdAccessTime size={18} />
+                        <Typography variant="body2">{log.durationMinutes} min</Typography>
+                    </Box>
+                )}
+            </>
+        );
+    };
+
     return (
         <Drawer
             anchor="bottom"
@@ -52,17 +96,16 @@ export default function FeedingDetailSheet({
             onClose={onClose}
             PaperProps={{
                 sx: {
-                    borderTopLeftRadius: 28,
-                    borderTopRightRadius: 28,
-                    p: 0,
-                    overflow: 'hidden'
+                    borderTopLeftRadius: 16,
+                    borderTopRightRadius: 16,
+                    maxHeight: '80vh',
                 }
             }}
         >
-            <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2, pb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1.5, pb: 1 }}>
                 <Box
                     sx={{
-                        width: 32,
+                        width: 40,
                         height: 4,
                         bgcolor: 'grey.300',
                         borderRadius: 2
@@ -71,51 +114,27 @@ export default function FeedingDetailSheet({
             </Box>
 
             <Box sx={{ px: 3, pb: 4 }}>
-                <Typography variant="h6" align="center" sx={{ mb: 3 }}>
-                    {formattedDate}
+                <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 3 }}>
+                    {formattedDateTime}
                 </Typography>
 
-                <Divider sx={{ mb: 3 }} />
-
-                {/* Main Value - Amount */}
-                <Box sx={{ textAlign: 'center', mb: 1 }}>
-                    <Typography variant="h2" component="div" fontWeight="bold">
-                        {log.amountMl} <Typography component="span" variant="h4" color="text.secondary" fontWeight="normal">ml</Typography>
-                    </Typography>
-                </Box>
-
-                {/* Secondary Values */}
-                <Stack spacing={2} alignItems="center" sx={{ mb: 4 }}>
-                    <Chip 
-                        label={typeConfig.label} 
-                        color={typeConfig.color} 
-                        variant="outlined"
-                        sx={{ fontWeight: 'bold' }}
-                    />
-                    
-                    <Typography variant="body1" color="text.secondary">
-                        {formattedTime} • {log.durationMinutes} min
-                    </Typography>
+                <Stack alignItems="center" spacing={1} sx={{ mb: 4 }}>
+                    <FeedingTypeLargeIcon type={log.type} />
+                    {renderMainContent()}
                 </Stack>
 
-                {/* Note Section */}
                 {log.note && (
-                    <>
-                        <Divider sx={{ mb: 3 }} />
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                                Note
-                            </Typography>
-                            <Typography variant="body1" sx={{ color: 'text.primary' }}>
-                                {log.note}
-                            </Typography>
-                        </Box>
-                    </>
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 0.5 }}>
+                            Note
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            {log.note}
+                        </Typography>
+                    </Box>
                 )}
 
-                <Divider sx={{ mb: 4 }} />
-
-                <Stack spacing={2}>
+                <Stack spacing={1.5}>
                     <Button
                         variant="contained"
                         size="large"
@@ -123,12 +142,14 @@ export default function FeedingDetailSheet({
                         onClick={handleEdit}
                         sx={{ 
                             py: 1.5, 
-                            bgcolor: '#1976d2',
-                            borderRadius: 28,
-                            fontWeight: 'bold'
+                            bgcolor: '#2196F3',
+                            borderRadius: 1,
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            '&:hover': { bgcolor: '#1976d2' }
                         }}
                     >
-                        UPDATE ENTRY
+                        Update Entry
                     </Button>
                     
                     <Button
@@ -136,16 +157,22 @@ export default function FeedingDetailSheet({
                         size="large"
                         fullWidth
                         onClick={handleDelete}
-                        color="error"
                         sx={{ 
                             py: 1.5, 
-                            borderRadius: 28,
+                            borderRadius: 1,
                             fontWeight: 'bold',
-                            borderWidth: 1.5,
-                            '&:hover': { borderWidth: 1.5 }
+                            textTransform: 'uppercase',
+                            color: '#d32f2f',
+                            borderColor: '#d32f2f',
+                            borderWidth: 2,
+                            '&:hover': { 
+                                borderWidth: 2,
+                                borderColor: '#b71c1c',
+                                bgcolor: 'rgba(211, 47, 47, 0.04)'
+                            }
                         }}
                     >
-                        DELETE RECORD
+                        Delete Record
                     </Button>
                 </Stack>
             </Box>

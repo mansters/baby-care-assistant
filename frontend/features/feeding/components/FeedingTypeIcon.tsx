@@ -8,17 +8,22 @@ import { PiBowlSteamBold } from "react-icons/pi";
 interface IconConfig {
     icon: ReactNode;
     color: string;
+    label: string;
 }
 
-const FEEDING_ICON_CONFIG: Record<FeedingType, IconConfig> = {
-    [FeedingType.Bottle]: { icon: <TbBabyBottle size={18} />, color: '#2196F3' },
-    [FeedingType.Breast]: { icon: <FaPersonBreastfeeding size={18} />, color: '#E91E63' },
-    [FeedingType.Solids]: { icon: <PiBowlSteamBold size={18} />, color: '#4CAF50' },
-};
+const ICON_SIZE_SMALL = 18;
+const ICON_SIZE_LARGE = 64;
 
-const DEFAULT_ICON_CONFIG: IconConfig = { 
-    icon: <TbBabyBottle size={18} />, 
-    color: '#9E9E9E' 
+const createIconConfig = (size: number): Record<FeedingType, IconConfig> => ({
+    [FeedingType.Bottle]: { icon: <TbBabyBottle size={size} />, color: '#2196F3', label: 'Formula Feed' },
+    [FeedingType.Breast]: { icon: <FaPersonBreastfeeding size={size} />, color: '#E91E63', label: 'Breast Feed' },
+    [FeedingType.Solids]: { icon: <PiBowlSteamBold size={size} />, color: '#4CAF50', label: 'Solids' },
+});
+
+const DEFAULT_CONFIG: IconConfig = { 
+    icon: <TbBabyBottle size={ICON_SIZE_SMALL} />, 
+    color: '#9E9E9E',
+    label: 'Feed'
 };
 
 interface FeedingTypeIconProps {
@@ -26,7 +31,7 @@ interface FeedingTypeIconProps {
 }
 
 export function FeedingTypeIcon({ type }: FeedingTypeIconProps) {
-    const config = FEEDING_ICON_CONFIG[type] || DEFAULT_ICON_CONFIG;
+    const config = createIconConfig(ICON_SIZE_SMALL)[type] || DEFAULT_CONFIG;
     
     return (
         <Box sx={{ 
@@ -45,6 +50,24 @@ export function FeedingTypeIcon({ type }: FeedingTypeIconProps) {
     );
 }
 
+interface FeedingTypeLargeIconProps {
+    type: FeedingType;
+}
+
+export function FeedingTypeLargeIcon({ type }: FeedingTypeLargeIconProps) {
+    const config = createIconConfig(ICON_SIZE_LARGE)[type] || { ...DEFAULT_CONFIG, icon: <TbBabyBottle size={ICON_SIZE_LARGE} /> };
+    
+    return (
+        <Box sx={{ color: config.color }}>
+            {config.icon}
+        </Box>
+    );
+}
+
 export function getIconColor(type: FeedingType): string {
-    return (FEEDING_ICON_CONFIG[type] || DEFAULT_ICON_CONFIG).color;
+    return (createIconConfig(ICON_SIZE_SMALL)[type] || DEFAULT_CONFIG).color;
+}
+
+export function getFeedingLabel(type: FeedingType): string {
+    return (createIconConfig(ICON_SIZE_SMALL)[type] || DEFAULT_CONFIG).label;
 }
