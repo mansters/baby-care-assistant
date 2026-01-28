@@ -33,6 +33,16 @@ export const getCurrentLocalForInput = (): string => {
 };
 
 /**
+ * Converts a UTC Date string to Local Date string for input (YYYY-MM-DDTHH:mm)
+ */
+export const toLocalInput = (utcDateString: string): string => {
+    if (!utcDateString) return '';
+    const date = new Date(utcDateString);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString().slice(0, 16);
+};
+
+/**
  * Returns the ordinal suffix for a day number (1st, 2nd, 3rd, 4th, etc.)
  * @param day Day of month (1-31)
  */

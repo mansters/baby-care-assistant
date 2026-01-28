@@ -11,12 +11,15 @@ import {
 import CloseIcon from '@mui/icons-material/Close'; 
 import FeedingForm from './FeedingForm';
 
+import { FeedingLog } from '@/lib/api-client';
+
 interface FeedingLogDialogProps {
   open: boolean;
   onClose: () => void;
+  initialData?: FeedingLog | null;
 }
 
-export default function FeedingLogDialog({ open, onClose }: FeedingLogDialogProps) {
+export default function FeedingLogDialog({ open, onClose, initialData }: FeedingLogDialogProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -29,7 +32,7 @@ export default function FeedingLogDialog({ open, onClose }: FeedingLogDialogProp
             maxWidth="sm"
         >
             <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Log New Feed</span>
+                <span>{initialData ? 'Edit Feed' : 'Log New Feed'}</span>
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -42,7 +45,7 @@ export default function FeedingLogDialog({ open, onClose }: FeedingLogDialogProp
             </DialogTitle>
 
             <DialogContent dividers>
-                <FeedingForm onSuccess={onClose} />
+                <FeedingForm onSuccess={onClose} initialData={initialData || undefined} />
             </DialogContent>
         </Dialog>
     );

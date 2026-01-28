@@ -8,5 +8,6 @@ public record FeedingLogDto(
     DateTime FeedingTime,   
     int? DurationMinutes,    
     FeedingType Type,            
-    int AmountMl            
+    int AmountMl,
+    string? Note
 );

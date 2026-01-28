@@ -9,6 +9,8 @@ public class FeedingLog: BaseEntity
     public FeedingType Type { get; set; }
     public int AmountMl { get; set; }
     
+    public string? Note { get; set; }
+
     public Guid BabyId { get; set; }
     public virtual Baby? Baby { get; set; }
 }

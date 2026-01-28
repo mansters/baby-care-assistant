@@ -11,6 +11,7 @@ export interface FeedingLog {
     durationMinutes: number;
     type: FeedingType;
     amountMl: number;
+    note?: string;
 }
 
 export interface CreateFeedingLogRequest {
@@ -19,7 +20,7 @@ export interface CreateFeedingLogRequest {
     durationMinutes: number;
     type: FeedingType;
     amountMl: number;
-    notes?: string;
+    note?: string;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280';
@@ -41,6 +42,34 @@ export async function createFeedingLog(log: CreateFeedingLogRequest): Promise<vo
 
     if (!res.ok) {
         throw new Error('Failed to create feeding log');
+    }
+}
+
+export interface UpdateFeedingLogRequest extends CreateFeedingLogRequest {
+    id: string;
+}
+
+export async function updateFeedingLog(id: string, log: UpdateFeedingLogRequest): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}/api/feeding/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(log),
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to update feeding log');
+    }
+}
+
+export async function deleteFeedingLog(id: string): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}/api/feeding/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to delete feeding log');
     }
 }
 
