@@ -36,7 +36,14 @@ export function NoteBubble({ note, marginLeft = '72px' }: NoteBubbleProps) {
             >
                 <Typography 
                     variant="body2" 
-                    sx={{ color: 'text.secondary' }}
+                    sx={{ 
+                        color: 'text.secondary',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                    }}
                 >
                     {note}
                 </Typography>

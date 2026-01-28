@@ -58,7 +58,7 @@ export default function FeedingLogRow({ log, onClick, showDivider = false }: Fee
                     {log.note && <NoteBubble note={log.note} />}
                 </Box>
             </ListItemButton>
-            {showDivider && <Divider component="li" />}
+            {showDivider && <Divider variant="inset" component="li" />}
         </>
     );
 }
