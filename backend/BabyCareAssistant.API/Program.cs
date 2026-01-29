@@ -30,6 +30,7 @@ builder.Services.AddScoped<IExcretionLogRepository, ExcretionLogRepository>();
 builder.Services.AddScoped<IVaccineCatalogRepository, VaccineCatalogRepository>();
 builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordRepository>();
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BabyCareAssistant.Application.Common.Result>());
 
 builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

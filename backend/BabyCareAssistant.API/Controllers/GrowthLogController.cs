@@ -1,73 +1,64 @@
-using AutoMapper;
+using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Dtos.GrowthLog;
-using BabyCareAssistant.Application.Interfaces;
-using BabyCareAssistant.Domain.Entities;
+using BabyCareAssistant.Application.Features.GrowthLog.Commands;
+using BabyCareAssistant.Application.Features.GrowthLog.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GrowthLogController(IGrowthLogRepository growthLogRepository, IMapper mapper): ControllerBase
+public class GrowthLogController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GrowthLogDto>>> GetAllAsync()
     {
-        var growthLogs = await growthLogRepository.GetAllAsync();
-        var growthLogDtos = mapper.Map<IEnumerable<GrowthLogDto>>(growthLogs);
-        
-        return Ok(growthLogDtos);
+        var result = await sender.Send(new GetAllGrowthLogsQuery());
+        return Ok(result.Value);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<GrowthLogDto>> GetByIdAsync([FromRoute] Guid id)
     {
-        var growthLog = await growthLogRepository.GetByIdAsync(id);
+        var result = await sender.Send(new GetGrowthLogByIdQuery(id));
 
-        if (growthLog == null)
+        if (!result.IsSuccess)
         {
             return NotFound();
         }
-        
-        var growthLogDto = mapper.Map<GrowthLogDto>(growthLog);
-        return Ok(growthLogDto);
+
+        return Ok(result.Value);
     }
 
     [HttpPost]
     public async Task<ActionResult<GrowthLogDto>> CreateAsync([FromBody] CreateGrowthLogDto request)
     {
-        var growthLog = mapper.Map<GrowthLog>(request);
-        growthLog = await growthLogRepository.CreateAsync(growthLog);
-        
-        var responseDto = mapper.Map<GrowthLogDto>(growthLog);
-        
-        return CreatedAtRoute(nameof(GetByIdAsync), new { id = growthLog.Id }, responseDto);
+        var result = await sender.Send(new CreateGrowthLogCommand(request));
+        return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<GrowthLogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateGrowthLogDto request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("The ID in the URL does not match the ID in the request body.");
-        }
-        
-        var entity = mapper.Map<GrowthLog>(request);
-        var updatedEntity = await growthLogRepository.UpdateAsync(entity);
+        var result = await sender.Send(new UpdateGrowthLogCommand(id, request));
 
-        if (updatedEntity == null)
+        if (!result.IsSuccess)
         {
+            if (result.Error == "The ID in the URL does not match the ID in the request body.")
+            {
+                return BadRequest(result.Error);
+            }
             return NotFound();
         }
-        
-        var responseDto = mapper.Map<GrowthLogDto>(updatedEntity);
-        return Ok(responseDto);
+
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
     {
-        await growthLogRepository.DeleteAsync(id);
+        await sender.Send(new DeleteGrowthLogCommand(id));
         return NoContent();
     }
 }

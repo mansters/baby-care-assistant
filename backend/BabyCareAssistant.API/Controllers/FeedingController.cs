@@ -1,76 +1,64 @@
-using AutoMapper;
+using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Dtos.FeedingLog;
-using BabyCareAssistant.Application.Interfaces;
-using BabyCareAssistant.Domain.Entities;
+using BabyCareAssistant.Application.Features.FeedingLog.Commands;
+using BabyCareAssistant.Application.Features.FeedingLog.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
-public class FeedingController(IFeedingRepository feedingRepository, IMapper mapper) : ControllerBase
+public class FeedingController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FeedingLogDto>>> GetAllAsync()
     {
-        var feedingLogs = await feedingRepository.GetAllAsync();
-        var feedingLogDtos = mapper.Map<List<FeedingLogDto>>(feedingLogs);
-
-        return Ok(feedingLogDtos);
+        var result = await sender.Send(new GetAllFeedingLogsQuery());
+        return Ok(result.Value);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<FeedingLogDto>> GetByIdAsync([FromRoute] Guid id)
     {
-        var feedingLog = await feedingRepository.GetByIdAsync(id);
+        var result = await sender.Send(new GetFeedingLogByIdQuery(id));
 
-        if (feedingLog == null)
+        if (!result.IsSuccess)
         {
             return NotFound();
         }
 
-        var feedingLogDto = mapper.Map<FeedingLogDto>(feedingLog);
-        return Ok(feedingLogDto);
+        return Ok(result.Value);
     }
 
     [HttpPost]
     public async Task<ActionResult<FeedingLogDto>> CreateAsync([FromBody] CreateFeedingLogDto request)
     {
-        var feedingLog = mapper.Map<FeedingLog>(request);
-        feedingLog = await feedingRepository.CreateAsync(feedingLog);
-        
-        var responseDto = mapper.Map<FeedingLogDto>(feedingLog);
-        
-        return CreatedAtRoute(nameof(GetByIdAsync), new { id = feedingLog.Id }, responseDto);
+        var result = await sender.Send(new CreateFeedingLogCommand(request));
+        return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<FeedingLogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateFeedingLogDto request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("The ID in the URL does not match the ID in the request body.");
-        }
+        var result = await sender.Send(new UpdateFeedingLogCommand(id, request));
 
-        var feedingLog = await feedingRepository.GetByIdAsync(id);
-        if (feedingLog == null)
+        if (!result.IsSuccess)
         {
+            if (result.Error == "The ID in the URL does not match the ID in the request body.")
+            {
+                return BadRequest(result.Error);
+            }
             return NotFound();
         }
 
-        mapper.Map(request, feedingLog);
-
-        feedingLog = await feedingRepository.UpdateAsync(feedingLog);
-
-        var responseDto = mapper.Map<FeedingLogDto>(feedingLog);
-
-        return Ok(responseDto);
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        await feedingRepository.DeleteAsync(id);
+        await sender.Send(new DeleteFeedingLogCommand(id));
         return NoContent();
     }
 }

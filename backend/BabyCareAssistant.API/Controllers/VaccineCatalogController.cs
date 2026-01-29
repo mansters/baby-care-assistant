@@ -1,73 +1,64 @@
-using AutoMapper;
+using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Dtos.VaccineCatalog;
-using BabyCareAssistant.Application.Interfaces;
-using BabyCareAssistant.Domain.Entities;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Commands;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class VaccineCatalogController(IVaccineCatalogRepository vaccineCatalogRepository, IMapper mapper) : ControllerBase
+public class VaccineCatalogController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VaccineCatalogDto>>> GetAllAsync()
     {
-        var catalogs = await vaccineCatalogRepository.GetAllAsync();
-        var dtos = mapper.Map<IEnumerable<VaccineCatalogDto>>(catalogs);
-        
-        return Ok(dtos);
+        var result = await sender.Send(new GetAllVaccineCatalogsQuery());
+        return Ok(result.Value);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<VaccineCatalogDto>> GetByIdAsync([FromRoute] Guid id)
     {
-        var catalog = await vaccineCatalogRepository.GetByIdAsync(id);
+        var result = await sender.Send(new GetVaccineCatalogByIdQuery(id));
 
-        if (catalog == null)
+        if (!result.IsSuccess)
         {
             return NotFound();
         }
-        
-        var dto = mapper.Map<VaccineCatalogDto>(catalog);
-        return Ok(dto);
+
+        return Ok(result.Value);
     }
 
     [HttpPost]
     public async Task<ActionResult<VaccineCatalogDto>> CreateAsync([FromBody] CreateVaccineCatalogDto request)
     {
-        var entity = mapper.Map<VaccineCatalog>(request);
-        entity = await vaccineCatalogRepository.CreateAsync(entity);
-        
-        var responseDto = mapper.Map<VaccineCatalogDto>(entity);
-        
-        return CreatedAtRoute(nameof(GetByIdAsync), new { id = entity.Id }, responseDto);
+        var result = await sender.Send(new CreateVaccineCatalogCommand(request));
+        return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<VaccineCatalogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateVaccineCatalogDto request)
     {
-        if (id != request.Id)
-        {
-            return BadRequest("The ID in the URL does not match the ID in the request body.");
-        }
-        
-        var entity = mapper.Map<VaccineCatalog>(request);
-        var updatedEntity = await vaccineCatalogRepository.UpdateAsync(entity);
+        var result = await sender.Send(new UpdateVaccineCatalogCommand(id, request));
 
-        if (updatedEntity == null)
+        if (!result.IsSuccess)
         {
+            if (result.Error == "The ID in the URL does not match the ID in the request body.")
+            {
+                return BadRequest(result.Error);
+            }
             return NotFound();
         }
-        
-        var responseDto = mapper.Map<VaccineCatalogDto>(updatedEntity);
-        return Ok(responseDto);
+
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
     {
-        await vaccineCatalogRepository.DeleteAsync(id);
+        await sender.Send(new DeleteVaccineCatalogCommand(id));
         return NoContent();
     }
 }

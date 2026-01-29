@@ -10,6 +10,7 @@ riderModule.iml
 /_ReSharper.Caches/
 Current_Progress.md
 plan/
+.agent/
 
 # =========================
 # BACKEND (.NET)
