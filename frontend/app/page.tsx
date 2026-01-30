@@ -1,64 +1,73 @@
 import * as React from 'react';
-import { getFeedingLogs } from '@/lib/api-client';
-import { getFeedingTypeConfig } from '@/app/utils/enums';
-import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
-import { format } from 'date-fns';
-import DashboardFab from './components/DashboardFab';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Paper,
+} from '@mui/material';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
+import Link from 'next/link';
 
-export default async function Dashboard() {
-  const logs = await getFeedingLogs();
-
+export default function LandingPage() {
   return (
-      <Container maxWidth="md" sx={{ mt: 4, mb: 10 }}> {}
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <ChildCareIcon fontSize="large" color="primary" />
-          BabyCare Dashboard
-        </Typography>
-
-        {}
-        <TableContainer component={Paper} elevation={3}>
-          <Table>
-            <TableHead sx={{ bgcolor: '#f5f5f5' }}>
-              <TableRow>
-                <TableCell><strong>Time</strong></TableCell>
-                <TableCell><strong>Type</strong></TableCell>
-                <TableCell><strong>Duration</strong></TableCell>
-                <TableCell><strong>Amount</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {logs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell>{format(new Date(log.feedingTime), 'yyyy-MM-dd HH:mm')}</TableCell>
-                    <TableCell>
-                      {(() => {
-                        const config = getFeedingTypeConfig(Number(log.type));
-                        return (
-                          <Chip
-                              label={config.label}
-                              color={config.color}
-                              size="small"
-                          />
-                        );
-                      })()}
-                    </TableCell>
-                    <TableCell>{log.durationMinutes > 0 ? `${log.durationMinutes} min` : '-'}</TableCell>
-                    <TableCell>{log.amountMl > 0 ? `${log.amountMl} ml` : '-'}</TableCell>
-                  </TableRow>
-              ))}
-              {logs.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} align="center">No logs found. Start tracking!</TableCell>
-                  </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        {}
-        <DashboardFab />
-
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={8}
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            borderRadius: 4,
+          }}
+        >
+          <ChildCareIcon
+            sx={{
+              fontSize: 80,
+              color: 'primary.main',
+              mb: 2,
+            }}
+          />
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
+            BabyCare Assistant
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ mb: 4 }}
+          >
+            Track feedings, growth, and milestones for your little one
+          </Typography>
+          <Link href="/login" passHref legacyBehavior>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                fontSize: '1.1rem',
+                borderRadius: 3,
+              }}
+            >
+              Get Started
+            </Button>
+          </Link>
+        </Paper>
       </Container>
+    </Box>
   );
 }

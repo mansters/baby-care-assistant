@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
+using BabyCareAssistant.API.Extensions;
 using BabyCareAssistant.Infrastructure.Persistence;
 using BabyCareAssistant.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +13,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") 
-                .AllowAnyHeader()                     
-                .AllowAnyMethod();                    
+            policy.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddAuthInfrastructure(builder.Configuration);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IFeedingRepository, FeedingRepository>();
 builder.Services.AddScoped<IBabyRepository, BabyRepository>();
@@ -29,21 +30,22 @@ builder.Services.AddScoped<IGrowthLogRepository, GrowthLogRepository>();
 builder.Services.AddScoped<IExcretionLogRepository, ExcretionLogRepository>();
 builder.Services.AddScoped<IVaccineCatalogRepository, VaccineCatalogRepository>();
 builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordRepository>();
+
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BabyCareAssistant.Application.Common.Result>());
 
-builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 var app = builder.Build();
 
+// Middlewares
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -51,7 +53,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseCors("AllowFrontend");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

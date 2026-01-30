@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.7.1",
+    "@aws-amplify/ui-react": "^6.13.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -16,6 +18,7 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@mui/material-nextjs": "^7.3.7",
+    "aws-amplify": "^6.16.0",
     "date-fns": "^4.1.0",
     "next": "16.1.1",
     "react": "19.2.3",
