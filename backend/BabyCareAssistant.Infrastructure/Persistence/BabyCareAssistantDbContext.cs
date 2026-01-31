@@ -11,8 +11,10 @@ public class BabyCareAssistantDbContext: DbContext
         
     }
 
+    public DbSet<User> Users { get; set; }
+    public DbSet<Family> Families { get; set; }
+    public DbSet<FamilyMember> FamilyMembers { get; set; }
     public DbSet<Baby> Babies { get; set; }
-
     public DbSet<FeedingLog> FeedingLogs { get; set; }
     public DbSet<ExcretionLog> ExcretionLogs { get; set; }
     public DbSet<GrowthLog> GrowthLogs { get; set; }
@@ -23,6 +25,26 @@ public class BabyCareAssistantDbContext: DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<FamilyMember>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.FamilyId });
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.FamilyMemberships)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Family)
+                .WithMany(f => f.Members)
+                .HasForeignKey(e => e.FamilyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+        });
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.CognitoSubjectId)
+            .IsUnique();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -35,12 +57,14 @@ public class BabyCareAssistantDbContext: DbContext
 
         foreach (var entityEntry in entries)
         {
-            var entity = (BaseEntity)entityEntry.Entity;
-            entity.UpdatedAt = DateTime.UtcNow;
-
-            if (entityEntry.State == EntityState.Added)
+            if (entityEntry.Entity is BaseEntity entity)
             {
-                entity.CreatedAt = DateTime.UtcNow;
+                entity.UpdatedAt = DateTime.UtcNow;
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    entity.CreatedAt = DateTime.UtcNow;
+                }
             }
         }
 
