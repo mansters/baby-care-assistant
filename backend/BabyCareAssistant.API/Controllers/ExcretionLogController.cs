@@ -1,7 +1,9 @@
-using BabyCareAssistant.Application.Common;
-using BabyCareAssistant.Application.Dtos.ExcretionLog;
-using BabyCareAssistant.Application.Features.ExcretionLog.Commands;
-using BabyCareAssistant.Application.Features.ExcretionLog.Queries;
+using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
+using BabyCareAssistant.Application.Features.ExcretionLog.Commands.CreateExcretionLog;
+using BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcretionLog;
+using BabyCareAssistant.Application.Features.ExcretionLog.Commands.DeleteExcretionLog;
+using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetAllExcretionLogs;
+using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

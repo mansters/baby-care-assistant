@@ -1,7 +1,9 @@
-using BabyCareAssistant.Application.Common;
-using BabyCareAssistant.Application.Dtos.VaccinationRecord;
-using BabyCareAssistant.Application.Features.VaccinationRecord.Commands;
-using BabyCareAssistant.Application.Features.VaccinationRecord.Queries;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Dtos;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Commands.CreateVaccinationRecord;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Commands.UpdateVaccinationRecord;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Commands.DeleteVaccinationRecord;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Queries.GetAllVaccinationRecords;
+using BabyCareAssistant.Application.Features.VaccinationRecord.Queries.GetVaccinationRecordById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

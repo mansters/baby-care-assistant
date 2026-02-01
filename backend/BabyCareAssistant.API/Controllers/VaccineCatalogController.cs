@@ -1,7 +1,9 @@
-using BabyCareAssistant.Application.Common;
-using BabyCareAssistant.Application.Dtos.VaccineCatalog;
-using BabyCareAssistant.Application.Features.VaccineCatalog.Commands;
-using BabyCareAssistant.Application.Features.VaccineCatalog.Queries;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Dtos;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Commands.CreateVaccineCatalog;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Commands.UpdateVaccineCatalog;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Commands.DeleteVaccineCatalog;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Queries.GetAllVaccineCatalogs;
+using BabyCareAssistant.Application.Features.VaccineCatalog.Queries.GetVaccineCatalogById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
