@@ -1,5 +1,5 @@
 import { Box, Typography, ListItemButton, Divider } from '@mui/material';
-import { FeedingLog, FeedingType } from '@/lib/api-client';
+import { FeedingLog, FeedingType } from '@/lib/types';
 import { format } from 'date-fns';
 import { FeedingTypeIcon } from './FeedingTypeIcon';
 import { NoteBubble } from './NoteBubble';

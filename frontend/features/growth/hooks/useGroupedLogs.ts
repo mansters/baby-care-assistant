@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { GrowthLog } from '@/lib/api-client';
+import { GrowthLog } from '@/lib/types';
 import { format } from 'date-fns';
 
 export interface MonthGroup {

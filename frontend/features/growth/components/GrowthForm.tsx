@@ -9,7 +9,8 @@ import {
     TextField,
 } from '@mui/material';
 import { useRouter } from "next/navigation";
-import { createGrowthLog, updateGrowthLog, GrowthLog } from "@/lib/api-client";
+import { growthService } from "@/lib/services/growth/growth.service.client";
+import { GrowthLog } from "@/lib/types";
 import { toUTCISO, getCurrentLocalForInput } from "@shared/utils/date-utils";
 
 interface GrowthFormProps {
@@ -61,9 +62,9 @@ export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) 
             };
 
             if (initialData) {
-                await updateGrowthLog(initialData.id, { ...payload, id: initialData.id });
+                await growthService.update(initialData.id, { ...payload, id: initialData.id });
             } else {
-                await createGrowthLog(payload);
+                await growthService.create(payload);
             }
 
             reset();

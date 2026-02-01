@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FeedingLog, deleteFeedingLog } from '@/lib/api-client';
+import { FeedingLog } from '@/lib/types';
+import { feedingService } from '@/lib/services/feeding/feeding.service.client';
 import { useRouter } from 'next/navigation';
 
 export function useFeedingLogActions() {
@@ -28,7 +29,7 @@ export function useFeedingLogActions() {
     const handleDeleteConfirm = async () => {
         if (deletingId) {
             try {
-                await deleteFeedingLog(deletingId);
+                await feedingService.delete(deletingId);
                 router.refresh();
                 setDeletingId(null);
                 setSelectedLog(null);

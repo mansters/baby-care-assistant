@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getFeedingLogs } from '@/lib/api-client';
+import { feedingService } from '@/lib/services/feeding/feeding.service.server';
 import { getFeedingTypeConfig } from '@/app/utils/enums';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
 import { format } from 'date-fns';
@@ -7,7 +7,7 @@ import DashboardFab from '../components/DashboardFab';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 
 export default async function Dashboard() {
-  const logs = await getFeedingLogs();
+  const logs = await feedingService.getAll();
 
   return (
       <Container maxWidth="md" sx={{ mt: 4, mb: 10 }}>

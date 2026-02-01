@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { getGrowthLogs } from '@/lib/api-client';
+import { growthService } from '@/lib/services/growth/growth.service.server';
 import { Box, Typography } from '@mui/material';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import { GrowthFab } from '@features/growth';
 import GrowthLogSectionList from '@features/growth/components/GrowthLogSectionList';
 
 export default async function GrowthPage() {
-  const logs = await getGrowthLogs();
+  const logs = await growthService.getAll();
 
   return (
       <Box sx={{ pb: 10, bgcolor: 'background.default', minHeight: '100vh' }}>

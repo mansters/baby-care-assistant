@@ -1,6 +1,6 @@
 'use client';
 
-import { GrowthLog } from '@/lib/api-client';
+import { GrowthLog } from '@/lib/types';
 import { 
     Box, 
     Typography, 

@@ -11,7 +11,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'; 
 import FeedingForm from './FeedingForm';
 
-import { FeedingLog } from '@/lib/api-client';
+import { FeedingLog } from '@/lib/types';
 
 interface FeedingLogDialogProps {
   open: boolean;

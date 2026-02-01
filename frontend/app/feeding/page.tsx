@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { getFeedingLogs } from '@/lib/api-client';
+import { feedingService } from '@/lib/services/feeding/feeding.service.server';
 import { Container, Typography } from '@mui/material';
 import FeedingFab from '@/features/feeding/components/FeedingFab';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 import FeedingLogSectionList from '@/features/feeding/components/FeedingLogSectionList';
 
 export default async function FeedingPage() {
-  const logs = await getFeedingLogs();
+  const logs = await feedingService.getAll();
 
   return (
       <Container maxWidth="md" sx={{ mt: 4, mb: 10, bgcolor: 'background.default', minHeight: '100vh', px: 0 }}>

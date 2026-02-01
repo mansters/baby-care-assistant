@@ -7,7 +7,7 @@ import {
     Stack,
     Button,
 } from '@mui/material';
-import { FeedingLog, FeedingType } from '@/lib/api-client';
+import { FeedingLog, FeedingType } from '@/lib/types';
 import { format } from 'date-fns';
 import { FeedingTypeLargeIcon, getFeedingLabel } from './FeedingTypeIcon';
 import { MdAccessTime } from 'react-icons/md';

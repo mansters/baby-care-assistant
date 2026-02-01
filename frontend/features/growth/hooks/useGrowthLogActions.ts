@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { GrowthLog, deleteGrowthLog } from '@/lib/api-client';
+import { GrowthLog } from '@/lib/types';
+import { growthService } from '@/lib/services/growth/growth.service.client';
 import { useRouter } from 'next/navigation';
 
 export interface UseGrowthLogActionsReturn {
@@ -49,7 +50,7 @@ export function useGrowthLogActions(): UseGrowthLogActionsReturn {
     const handleDeleteConfirm = async () => {
         if (!deletingId) return;
         try {
-            await deleteGrowthLog(deletingId);
+            await growthService.delete(deletingId);
             setDeletingId(null);
             setSelectedLog(null);
             router.refresh();

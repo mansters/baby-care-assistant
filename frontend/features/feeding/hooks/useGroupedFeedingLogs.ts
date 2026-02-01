@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { FeedingLog } from '@/lib/api-client';
+import { FeedingLog } from '@/lib/types';
 import { startOfDay } from 'date-fns';
 
 export interface GroupedFeedingLogs {

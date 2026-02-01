@@ -12,7 +12,8 @@ import {
     Typography
 } from '@mui/material';
 import {useRouter} from "next/navigation";
-import {createFeedingLog, updateFeedingLog, FeedingType, FeedingLog} from "@/lib/api-client";
+import { feedingService } from "@/lib/services/feeding/feeding.service.client";
+import { FeedingType, FeedingLog } from "@/lib/types";
 import { toUTCISO, getCurrentLocalForInput, toLocalInput } from "@shared/utils/date-utils";
 
 interface FeedingFormProps {
@@ -62,9 +63,9 @@ export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps
             };
             
             if (initialData) {
-                await updateFeedingLog(initialData.id, { ...payload, id: initialData.id });
+                await feedingService.update(initialData.id, { ...payload, id: initialData.id });
             } else {
-                await createFeedingLog(payload);
+                await feedingService.create(payload);
             }
             
             reset();

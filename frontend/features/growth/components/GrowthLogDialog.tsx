@@ -11,7 +11,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import GrowthForm from './GrowthForm';
 
-import { GrowthLog } from "@/lib/api-client";
+import { GrowthLog } from "@/lib/types";
 
 interface GrowthLogDialogProps {
     open: boolean;

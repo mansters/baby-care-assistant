@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedingLog } from '@/lib/api-client';
+import { FeedingLog } from '@/lib/types';
 import { 
     Box, 
     Typography, 

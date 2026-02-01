@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Box } from '@mui/material';
-import { FeedingType } from '@/lib/api-client';
+import { FeedingType } from '@/lib/types';
 import { TbBabyBottle } from "react-icons/tb";
 import { FaPersonBreastfeeding } from "react-icons/fa6";
 import { PiBowlSteamBold } from "react-icons/pi";

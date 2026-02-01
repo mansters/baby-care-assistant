@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Typography, Stack, ListItemButton, Divider } from '@mui/material';
-import { GrowthLog } from '@/lib/api-client';
+import { GrowthLog } from '@/lib/types';
 import { getOrdinalSuffix } from '@shared/utils/date-utils';
 import { format } from 'date-fns';
 

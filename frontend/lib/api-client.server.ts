@@ -1,4 +1,6 @@
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchAuthSession } from 'aws-amplify/auth/server';
+import { runWithAmplifyServerContext } from '@/lib/amplify-server-utils';
+import { cookies } from 'next/headers';
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -9,7 +11,7 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
 }
 
-class ApiClient {
+class ServerApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
 
@@ -20,8 +22,13 @@ class ApiClient {
 
   private async getAuthToken(): Promise<string | undefined> {
     try {
-      const session = await fetchAuthSession();
-      return session.tokens?.idToken?.toString();
+      return runWithAmplifyServerContext({
+        nextServerContext: { cookies: () => cookies() },
+        operation: async (contextSpec) => {
+          const session = await fetchAuthSession(contextSpec);
+          return session.tokens?.idToken?.toString();
+        },
+      });
     } catch {
       return undefined;
     }
@@ -95,18 +102,18 @@ class ApiClient {
     return this.fetch<T>(path, { ...options, method: 'DELETE' });
   }
 
-  create(config: Partial<ApiClientConfig>): ApiClient {
-    return new ApiClient({
+  create(config: Partial<ApiClientConfig>): ServerApiClient {
+    return new ServerApiClient({
       baseUrl: config.baseUrl || this.baseUrl,
       defaultHeaders: { ...this.defaultHeaders, ...config.defaultHeaders },
     });
   }
 }
 
-export function createApiClient(config: ApiClientConfig): ApiClient {
-  return new ApiClient(config);
+export function createServerApiClient(config: ApiClientConfig): ServerApiClient {
+  return new ServerApiClient(config);
 }
 
-export const apiClient = createApiClient({
+export const serverApiClient = createServerApiClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280',
 });

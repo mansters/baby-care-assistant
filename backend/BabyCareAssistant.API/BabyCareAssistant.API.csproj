@@ -31,8 +31,4 @@
       <ProjectReference Include="..\BabyCareAssistant.Domain\BabyCareAssistant.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Repositories\" />
-    </ItemGroup>
-
 </Project>
