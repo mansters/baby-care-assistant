@@ -34,6 +34,8 @@ builder.Services.AddScoped<IGrowthLogRepository, GrowthLogRepository>();
 builder.Services.AddScoped<IExcretionLogRepository, ExcretionLogRepository>();
 builder.Services.AddScoped<IVaccineCatalogRepository, VaccineCatalogRepository>();
 builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BabyCareAssistant.Application.Common.Result>());

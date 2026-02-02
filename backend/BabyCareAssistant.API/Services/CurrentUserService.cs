@@ -5,5 +5,9 @@ namespace BabyCareAssistant.API.Services;
 
 public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
-    public string? UserId => httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    private readonly ClaimsPrincipal? _user = httpContextAccessor.HttpContext?.User;
+
+    public string? CognitoSubjectId => _user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    public bool IsAuthenticated => _user?.Identity?.IsAuthenticated ?? false;
 }

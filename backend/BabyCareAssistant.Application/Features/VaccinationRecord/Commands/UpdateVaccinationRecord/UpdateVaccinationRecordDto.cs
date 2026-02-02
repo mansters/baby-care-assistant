@@ -2,12 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BabyCareAssistant.Application.Features.VaccinationRecord.Commands.UpdateVaccinationRecord;
 
-public record UpdateVaccinationRecordDto(
+public record UpdateVaccinationRecordDto
+{
     [Required]
-    Guid Id,
+    public Guid Id { get; init; }
 
     [Required]
-    DateTime AdministeredAt,
+    public DateTime AdministeredAt { get; init; }
 
-    string? Notes
-);
+    public string? Notes { get; init; }
+}

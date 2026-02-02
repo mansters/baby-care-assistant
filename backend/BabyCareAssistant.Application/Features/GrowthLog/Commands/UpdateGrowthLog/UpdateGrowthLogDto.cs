@@ -2,23 +2,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowthLog;
 
-public record UpdateGrowthLogDto(
+public record UpdateGrowthLogDto
+{
     [Required]
-    Guid Id,
-    
+    public Guid Id { get; init; }
+
     [Required]
-    DateTime DateMeasured,
+    public DateTime DateMeasured { get; init; }
 
     [Required]
     [Range(0.01, 300)]
-    decimal? WeightKg,
+    public decimal? WeightKg { get; init; }
 
     [Range(0, 400)]
-    decimal? HeightCm,
+    public decimal? HeightCm { get; init; }
 
     [Range(0, 400)]
-    decimal? HeadCircumferenceCm,
+    public decimal? HeadCircumferenceCm { get; init; }
 
     [MaxLength(500)]
-    string? Note
-);
+    public string? Note { get; init; }
+}

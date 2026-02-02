@@ -2,9 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BabyCareAssistant.Application.Features.Baby.Commands.CreateBaby;
 
-public record CreateBabyDto(
-    [Required] string FirstName,
-    [Required] string LastName,
-    string? PreferredName,
-    [Required] DateTime DateOfBirth
-);
+public record CreateBabyDto
+{
+    [Required]
+    public string FirstName { get; init; } = string.Empty;
+
+    [Required]
+    public string LastName { get; init; } = string.Empty;
+
+    public string? PreferredName { get; init; }
+
+    [Required]
+    public DateTime DateOfBirth { get; init; }
+}

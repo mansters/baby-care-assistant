@@ -2,12 +2,13 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 
-public record FeedingLogDto(
-    Guid Id,
-    Guid BabyId,
-    DateTime FeedingTime,   
-    int? DurationMinutes,    
-    FeedingType Type,            
-    int AmountMl,
-    string? Note
-);
+public record FeedingLogDto
+{
+    public Guid Id { get; init; }
+    public Guid BabyId { get; init; }
+    public DateTime FeedingTime { get; init; }
+    public int? DurationMinutes { get; init; }
+    public FeedingType Type { get; init; }
+    public int AmountMl { get; init; }
+    public string? Note { get; init; }
+}

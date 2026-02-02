@@ -3,15 +3,16 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcretionLog;
 
-public record UpdateExcretionLogDto(
+public record UpdateExcretionLogDto
+{
     [Required]
-    Guid Id,
-    
-    [Required]
-    DateTime Time,
+    public Guid Id { get; init; }
 
     [Required]
-    ExcretionType Type,
+    public DateTime Time { get; init; }
 
-    string? Notes
-);
+    [Required]
+    public ExcretionType Type { get; init; }
+
+    public string? Notes { get; init; }
+}

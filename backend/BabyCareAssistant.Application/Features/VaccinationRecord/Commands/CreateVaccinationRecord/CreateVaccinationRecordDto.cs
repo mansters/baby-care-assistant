@@ -2,15 +2,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BabyCareAssistant.Application.Features.VaccinationRecord.Commands.CreateVaccinationRecord;
 
-public record CreateVaccinationRecordDto(
+public record CreateVaccinationRecordDto
+{
     [Required]
-    Guid BabyId,
+    public Guid BabyId { get; init; }
 
     [Required]
-    Guid VaccineCatalogId,
+    public Guid VaccineCatalogId { get; init; }
 
     [Required]
-    DateTime AdministeredAt,
+    public DateTime AdministeredAt { get; init; }
 
-    string? Notes
-);
+    public string? Notes { get; init; }
+}

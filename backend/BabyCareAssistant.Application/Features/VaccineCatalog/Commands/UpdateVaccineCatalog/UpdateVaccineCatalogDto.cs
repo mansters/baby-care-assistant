@@ -2,14 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BabyCareAssistant.Application.Features.VaccineCatalog.Commands.UpdateVaccineCatalog;
 
-public record UpdateVaccineCatalogDto(
+public record UpdateVaccineCatalogDto
+{
     [Required]
-    Guid Id,
+    public Guid Id { get; init; }
 
     [Required]
-    string Name,
+    public string Name { get; init; } = string.Empty;
 
     [Required]
     [Range(0, 240)]
-    decimal DueAtMonths
-);
+    public decimal DueAtMonths { get; init; }
+}

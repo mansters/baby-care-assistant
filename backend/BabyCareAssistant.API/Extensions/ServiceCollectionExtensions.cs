@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
         // Config
         var userPoolId = configuration["Authentication:Cognito:UserPoolId"];
         var clientId = configuration["Authentication:Cognito:ClientId"];
-        var region = "ap-northeast-1"; // Tokyo
+        var region = configuration["Authentication:Cognito:Region"];
         var authority = $"https://cognito-idp.{region}.amazonaws.com/{userPoolId}";
 
         // Add Authentication

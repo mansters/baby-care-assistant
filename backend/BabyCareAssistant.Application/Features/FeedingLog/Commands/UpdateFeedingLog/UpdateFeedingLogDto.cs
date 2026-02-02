@@ -3,11 +3,23 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Commands.UpdateFeedingLog;
 
-public record UpdateFeedingLogDto(
-    [Required] Guid Id,
-    [Required] DateTime FeedingTime,
-    [Range(1, 1000)] int? DurationMinutes,
-    [Required] FeedingType? Type,
-    [Range(0, 500)] int AmountMl,
-    [MaxLength(3000, ErrorMessage = "Note must be less than 3000 characters")] string? Note
-);
+public record UpdateFeedingLogDto
+{
+    [Required]
+    public Guid Id { get; init; }
+
+    [Required]
+    public DateTime FeedingTime { get; init; }
+
+    [Range(1, 1000)]
+    public int? DurationMinutes { get; init; }
+
+    [Required]
+    public FeedingType? Type { get; init; }
+
+    [Range(0, 500)]
+    public int AmountMl { get; init; }
+
+    [MaxLength(3000, ErrorMessage = "Note must be less than 3000 characters")]
+    public string? Note { get; init; }
+}
