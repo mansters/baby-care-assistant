@@ -11,6 +11,7 @@ riderModule.iml
 Current_Progress.md
 plan/
 .agent/
+design/
 
 # =========================
 # BACKEND (.NET)
