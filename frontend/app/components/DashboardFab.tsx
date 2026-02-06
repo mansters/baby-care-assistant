@@ -14,7 +14,6 @@ export default function DashboardFab() {
   const actions = [
     { icon: <RestaurantMenuIcon />, name: 'Feeding', action: () => setOpenFeeding(true) },
     { icon: <EqualizerIcon />, name: 'Growth', action: () => setOpenGrowth(true) },
-    // Future: Excretion, Vaccination
   ];
 
   return (

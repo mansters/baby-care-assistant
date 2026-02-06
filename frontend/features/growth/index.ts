@@ -1,4 +1,3 @@
-// Growth feature public exports
 export { default as GrowthLogSectionList } from './components/GrowthLogSectionList';
 export { default as GrowthLogRow } from './components/GrowthLogRow';
 export { default as GrowthLogDialog } from './components/GrowthLogDialog';

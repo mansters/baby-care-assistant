@@ -15,7 +15,7 @@ export function useGroupedFeedingLogs(logs: FeedingLog[]): GroupedFeedingLogs[] 
 
         const groups: Record<string, GroupedFeedingLogs> = {};
 
-        // Sort logs by date descending (newest first)
+
         const sortedLogs = [...logs].sort((a, b) => 
             new Date(b.feedingTime).getTime() - new Date(a.feedingTime).getTime()
         );
@@ -38,7 +38,7 @@ export function useGroupedFeedingLogs(logs: FeedingLog[]): GroupedFeedingLogs[] 
             groups[dayKey].totalAmount += (log.amountMl || 0);
         }
 
-        // Return array of groups, sorted by date descending
+
         return Object.values(groups).sort((a, b) => b.date.getTime() - a.date.getTime());
     }, [logs]);
 }

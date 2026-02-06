@@ -39,7 +39,8 @@ export default function HomePage({ baby }: HomePageProps) {
     {
       icon: <TbBabyBottle />,
       title: 'Feeding',
-      subtitle: '2 hours ago',
+      subtitle: 'Last: 14:30',
+      badge: "Next: 17:30",
       backgroundColor: '#FFE5EC',
       iconColor: '#FF6B9D',
       href: '/feeding',
@@ -95,7 +96,6 @@ export default function HomePage({ baby }: HomePageProps) {
         flexDirection: 'column',
       }}
     >
-      {/* Purple Header with Baby Info */}
       <Box
         sx={{
           background: 'linear-gradient(135deg, #786dce 0%, #a89ad8 100%)',
@@ -103,7 +103,6 @@ export default function HomePage({ baby }: HomePageProps) {
         }}
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          {/* Left Section - Baby Info */}
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Avatar
               sx={{
@@ -138,7 +137,6 @@ export default function HomePage({ baby }: HomePageProps) {
             </Box>
           </Stack>
 
-          {/* Right Section - Icons */}
           <Stack direction="row" spacing={1}>
             <IconButton
               sx={{
@@ -153,12 +151,9 @@ export default function HomePage({ baby }: HomePageProps) {
         </Stack>
       </Box>
 
-      {/* Wavy Separator */}
       <WavySeparator />
 
-      {/* Content Area */}
       <Container maxWidth="sm" sx={{ py: 3, flex: 1 }}>
-        {/* Section Title */}
         <Typography
           variant="h6"
           sx={{
@@ -170,7 +165,6 @@ export default function HomePage({ baby }: HomePageProps) {
           Today&apos;s Records
         </Typography>
 
-        {/* Feature Grid - 2 columns */}
         <Grid container spacing={1.5}>
           {features.map((feature) => (
             <Grid key={feature.title} size={{ xs: 6 }}>

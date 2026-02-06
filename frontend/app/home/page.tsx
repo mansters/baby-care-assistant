@@ -4,7 +4,6 @@ import HomePage from './HomePage';
 export default async function Home() {
   const userContext = await userService.getMyContext();
   
-  // Get the first baby from the first family
   const firstFamily = userContext.families[0];
   const firstBaby = firstFamily?.babies[0];
   

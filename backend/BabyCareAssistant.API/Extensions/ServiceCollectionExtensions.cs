@@ -7,13 +7,11 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAuthInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Config
         var userPoolId = configuration["Authentication:Cognito:UserPoolId"];
         var clientId = configuration["Authentication:Cognito:ClientId"];
         var region = configuration["Authentication:Cognito:Region"];
         var authority = $"https://cognito-idp.{region}.amazonaws.com/{userPoolId}";
 
-        // Add Authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

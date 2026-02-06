@@ -90,7 +90,6 @@ export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps
             }}
         >
 
-            {/* Type Selector */}
             <Controller
                 name="type"
                 control={control}
@@ -110,7 +109,6 @@ export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps
                 )}
             />
 
-            {/* Amount and Duration */}
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                     label="Amount (ml)"
@@ -132,7 +130,6 @@ export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps
                 />
             </Box>
 
-            {/* Time Picker */}
             <TextField
                 type="datetime-local"
                 label="Time"
@@ -145,7 +142,6 @@ export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps
                 fullWidth
             />
 
-            {/* Note Field */}
             <TextField
                 label="Note (Optional)"
                 multiline

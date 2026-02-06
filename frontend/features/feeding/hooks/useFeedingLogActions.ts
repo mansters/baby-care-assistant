@@ -42,10 +42,6 @@ export function useFeedingLogActions() {
 
     const closeActionSheet = () => {
         setIsActionSheetOpen(false);
-        // Delay clearing selected log to allow animation to finish if needed, 
-        // but for now immediate close is fine or we keep it until next open.
-        // We keep selectedLog populated so the sheet implementation can animate out gracefully if it relied on data.
-        // However, standard Drawer unmounts if open is false usually.
     };
 
     const closeEditDialog = () => {

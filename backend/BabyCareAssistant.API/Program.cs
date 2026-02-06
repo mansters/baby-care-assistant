@@ -51,7 +51,7 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
-// Middlewares
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -18,12 +18,12 @@ export interface MonthGroup {
  */
 export function useGroupedLogs(logs: GrowthLog[]): MonthGroup[] {
     return useMemo(() => {
-        // Sort logs by date descending
+
         const sortedLogs = [...logs].sort(
             (a, b) => new Date(b.dateMeasured).getTime() - new Date(a.dateMeasured).getTime()
         );
 
-        // Group by month using Record for O(1) lookup
+
         const groupMap: Record<string, MonthGroup> = {};
 
         sortedLogs.forEach(log => {
@@ -37,10 +37,10 @@ export function useGroupedLogs(logs: GrowthLog[]): MonthGroup[] {
             }
         });
 
-        // Convert to array (already sorted since we iterated in order)
+
         const groups = Object.values(groupMap);
 
-        // Calculate weight change between consecutive months
+
         for (let i = 0; i < groups.length; i++) {
             const currentGroup = groups[i];
             const previousGroup = groups[i + 1];

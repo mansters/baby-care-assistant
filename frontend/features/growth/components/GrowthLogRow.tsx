@@ -58,14 +58,11 @@ export default function GrowthLogRow({ log, onClick, showDivider = false }: Grow
                         </Typography>
                     </Box>
                     
-                    {/* Right Column: Content */}
                     <Stack spacing={0.5} sx={{ flex: 1 }}>
-                        {/* Day of Week */}
                         <Typography variant="body2" color="text.secondary">
                             {format(date, 'EEEE')}
                         </Typography>
 
-                        {/* Weight Value */}
                         <Typography 
                             variant="h5" 
                             fontWeight="bold" 
@@ -75,7 +72,6 @@ export default function GrowthLogRow({ log, onClick, showDivider = false }: Grow
                             {log.weightKg.toFixed(2)} kg
                         </Typography>
 
-                        {/* Stats Line */}
                         {(!!log.heightCm || !!log.headCircumferenceCm) && (
                             <Typography variant="body2" color="text.secondary" sx={{ fontVariantNumeric: 'tabular-nums' }}>
                                 {log.heightCm && `H: ${log.heightCm.toFixed(2)} cm`}
