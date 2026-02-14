@@ -8,6 +8,7 @@ export interface FormPageFrameProps extends React.PropsWithChildren {
   themeColor: string;
   onBack?: () => void;
   onSave?: () => void;
+  formId?: string;
   saveLabel?: string;
   isSaving?: boolean;
 }
@@ -17,6 +18,7 @@ export default function FormPageFrame({
   themeColor,
   onBack,
   onSave,
+  formId,
   saveLabel = 'Save',
   isSaving = false,
   children,
@@ -50,10 +52,12 @@ export default function FormPageFrame({
       </div>
 
 
-      {onSave && (
+      {(onSave || formId) && (
         <div className="shrink-0 pt-[25px] px-6 pb-6 bg-white border-t border-[var(--gray-border)]">
           <Button
             onClick={onSave}
+            type={formId ? "submit" : "button"}
+            form={formId}
             disabled={isSaving}
             fullWidth
             sx={{

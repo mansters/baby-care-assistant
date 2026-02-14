@@ -11,6 +11,8 @@ export interface FeedingLog {
   durationMinutes: number;
   type: FeedingType;
   amountMl: number;
+  leftBreastDurationMinutes?: number;
+  rightBreastDurationMinutes?: number;
   note?: string;
 }
 
@@ -20,6 +22,8 @@ export interface CreateFeedingLogRequest {
   durationMinutes: number;
   type: FeedingType;
   amountMl: number;
+  leftBreastDurationMinutes?: number;
+  rightBreastDurationMinutes?: number;
   note?: string;
 }
 

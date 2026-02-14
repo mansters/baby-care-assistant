@@ -1,120 +1,330 @@
 'use client';
 
-import React, { useState } from 'react';
-import FormPageFrame from '@/shared/components/FormPageFrame';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { InputBase, Slider, Box } from '@mui/material';
 import FormRow from '@/shared/components/FormRow';
-import { Box, Typography } from '@mui/material';
 import { FeatureTheme } from '@/lib/theme';
+import { feedingFormSchema, FeedingFormValues } from '@/lib/schemas/feeding.schema';
 
 interface FeedingFormProps {
-    onBack?: () => void;
-    onSave?: (data: any) => void;
-    initialData?: any;
-    isSaving?: boolean;
+    onSubmit: (data: FeedingFormValues) => void;
+    initialData?: Partial<FeedingFormValues>;
     isEditing?: boolean;
 }
 
-export default function FeedingForm({ onBack, onSave, isSaving, initialData, isEditing = false }: FeedingFormProps) {
-    const [startTime, setStartTime] = useState(initialData?.startTime ? new Date(initialData.startTime) : new Date());
-    const [leftDuration, setLeftDuration] = useState<number>(initialData?.leftBreastDurationMinutes || 0);
-    const [rightDuration, setRightDuration] = useState<number>(initialData?.rightBreastDurationMinutes || 0);
-    const [feedingType, setFeedingType] = useState<'Nursing' | 'Bottle'>(initialData?.type === 0 ? 'Bottle' : 'Nursing');
-    
-    const [note, setNote] = useState<string>(initialData?.note || '');
-    const [isNoteVisible, setIsNoteVisible] = useState(!!initialData?.note);
+export default function FeedingForm({ onSubmit, initialData, isEditing = false }: FeedingFormProps) {
+    const { control, handleSubmit, watch, reset, setValue } = useForm<FeedingFormValues>({
+        resolver: zodResolver(feedingFormSchema),
+        mode: 'onChange',
+        defaultValues: {
+            type: 'Bottle',
+            leftDuration: 0,
+            rightDuration: 0,
+            amountMl: 0,
+            note: '',
+            ...initialData,
+            startTime: initialData?.startTime ? new Date(initialData.startTime) : new Date(),
+        },
+    });
 
-    const [mounted, setMounted] = useState(false);
-    React.useEffect(() => {
-        setMounted(true);
-    }, []);
+    const feedingType = watch('type');
+    const amountMl = watch('amountMl');
+
+    useEffect(() => {
+        if (initialData) {
+            reset({
+                type: 'Nursing',
+                leftDuration: 0,
+                rightDuration: 0,
+                amountMl: 0,
+                note: '',
+                ...initialData,
+                startTime: initialData?.startTime ? new Date(initialData.startTime) : new Date(),
+            });
+        }
+    }, [initialData, reset]);
+
+    const [isNoteVisible, setIsNoteVisible] = React.useState(!!initialData?.note);
 
     return (
-        <FormPageFrame
-            title={isEditing ? "Edit Feeding" : "Add Feeding"}
-            themeColor={FeatureTheme.feeding.primary}
-            onBack={onBack}
-            isSaving={isSaving}
-            onSave={() => onSave?.({
-                startTime,
-                leftDuration,
-                rightDuration,
-                type: feedingType,
-                note: note
-            })}
-        >
-            <div className="p-6 flex flex-col gap-6">
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <form id="feeding-form" onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-6">
                 
-                {!isEditing && (
-                    <div className="bg-[#f3f4f6] p-[4px] rounded-full flex h-[52px]">
-                        <button 
-                            className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
-                                ${feedingType === 'Nursing' ? 'bg-[#ff6b9d] text-white shadow-sm' : 'text-[#4a5565]'}
-                            `}
-                            onClick={() => setFeedingType('Nursing')}
-                        >
-                            Nursing
-                        </button>
-                        <button 
-                            className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
-                                ${feedingType === 'Bottle' ? 'bg-[#ff6b9d] text-white shadow-sm' : 'text-[#4a5565]'}
-                            `}
-                            onClick={() => setFeedingType('Bottle')}
-                        >
-                            Bottle
-                        </button>
-                    </div>
-                )}
+                <Controller
+                    name="type"
+                    control={control}
+                    render={({ field }) => {
+                        if (isEditing) return <></>;
+                        return (
+                            <div className="bg-[#f3f4f6] p-[4px] rounded-full flex h-[52px]">
+                                <button 
+                                    type="button"
+                                    className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
+                                        ${field.value === 'Nursing' ? 'text-white shadow-sm' : 'text-[#4a5565]'}
+                                    `}
+                                    style={{ backgroundColor: field.value === 'Nursing' ? FeatureTheme.feeding.primary : 'transparent' }}
+                                    onClick={() => field.onChange('Nursing')}
+                                >
+                                    Nursing
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
+                                        ${field.value === 'Bottle' ? 'text-white shadow-sm' : 'text-[#4a5565]'}
+                                    `}
+                                    style={{ backgroundColor: field.value === 'Bottle' ? FeatureTheme.feeding.primary : 'transparent' }}
+                                    onClick={() => field.onChange('Bottle')}
+                                >
+                                    Bottle
+                                </button>
+                            </div>
+                        );
+                    }}
+                />
 
-                <div className="flex flex-col gap-4 bg-white rounded-2xl">
-                    <FormRow label="Start Time">
-                        <Typography sx={{ color: FeatureTheme.feeding.primary, fontWeight: 500, fontSize: '16px' }}>
-                            {mounted ? startTime.toLocaleTimeString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
-                        </Typography>
-                    </FormRow>
+                <div className="flex flex-col bg-white rounded-2xl overflow-hidden px-4">
+                    
+                    <Controller
+                        name="startTime"
+                        control={control}
+                        render={({ field }) => (
+                            <FormRow label="Start Time" showDivider={true}>
+                                <ThemeProvider theme={createTheme({
+                                    palette: {
+                                        primary: {
+                                            main: FeatureTheme.feeding.primary,
+                                        },
+                                    },
+                                    components: {
+                                        MuiPickersDay: {
+                                            styleOverrides: {
+                                                root: {
+                                                    '&.Mui-selected': {
+                                                        backgroundColor: FeatureTheme.feeding.primary,
+                                                        color: '#fff',
+                                                        '&:hover': {
+                                                            backgroundColor: FeatureTheme.feeding.primary,
+                                                        },
+                                                        '&:focus': {
+                                                            backgroundColor: FeatureTheme.feeding.primary,
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                })}>
+                                    <MobileDateTimePicker
+                                        value={field.value}
+                                        onChange={(newValue) => field.onChange(newValue)}
+                                        format="yyyy-MM-dd HH:mm"
+                                        ampm={false}
+                                        slotProps={{
+                                            textField: {
+                                                variant: 'standard',
+                                                InputProps: {
+                                                    disableUnderline: true,
+                                                    sx: {
+                                                        fontSize: '18px',
+                                                        fontWeight: 500,
+                                                        color: `${FeatureTheme.feeding.primary} !important`,
+                                                        '& .MuiInputBase-input': {
+                                                            textAlign: 'right',
+                                                            padding: 0,
+                                                            color: `${FeatureTheme.feeding.primary} !important`,
+                                                            WebkitTextFillColor: `${FeatureTheme.feeding.primary} !important`,
+                                                            cursor: 'pointer',
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </ThemeProvider>
+                            </FormRow>
+                        )}
+                    />
 
-                    <FormRow label="Left Breast">
-                         <input 
-                            type="number" 
-                            value={leftDuration}
-                            onChange={(e) => setLeftDuration(Number(e.target.value))}
-                            className="text-right font-medium text-16px text-[#ff6b9d] w-24 outline-none bg-transparent placeholder-[#ff6b9d]/50" 
-                            placeholder="0"
-                            style={{ fontSize: '16px', color: leftDuration === 0 ? 'rgba(255, 107, 157, 0.5)' : '#ff6b9d' }}
-                        />
-                    </FormRow>
+                    {feedingType === 'Nursing' ? (
+                        <>
+                            <Controller
+                                name="leftDuration"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <FormRow 
+                                        label="Left Breast" 
+                                        showDivider={true}
+                                        error={!!fieldState.error}
+                                        helperText={fieldState.error?.message}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                            <InputBase
+                                                {...field}
+                                                type="number"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                placeholder="0"
+                                                sx={{
+                                                    fontSize: '18px',
+                                                    fontWeight: 500,
+                                                    color: field.value ? FeatureTheme.feeding.primary : 'text.disabled',
+                                                    textAlign: 'right',
+                                                    '& input': { textAlign: 'right', p: 0 }
+                                                }}
+                                            />
+                                            <Box component="span" sx={{ ml: 0.5, fontSize: '18px', fontWeight: 500, color: FeatureTheme.feeding.primary }}>min</Box>
+                                        </Box>
+                                    </FormRow>
+                                )}
+                            />
+                            <Controller
+                                name="rightDuration"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <FormRow 
+                                        label="Right Breast" 
+                                        showDivider={false}
+                                        error={!!fieldState.error}
+                                        helperText={fieldState.error?.message}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                            <InputBase
+                                                {...field}
+                                                type="number"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                placeholder="0"
+                                                sx={{
+                                                    fontSize: '18px',
+                                                    fontWeight: 500,
+                                                    color: field.value ? FeatureTheme.feeding.primary : 'text.disabled',
+                                                    textAlign: 'right',
+                                                    '& input': { textAlign: 'right', p: 0 }
+                                                }}
+                                            />
+                                            <Box component="span" sx={{ ml: 0.5, fontSize: '18px', fontWeight: 500, color: FeatureTheme.feeding.primary }}>min</Box>
+                                        </Box>
+                                    </FormRow>
+                                )}
+                            />
 
-                    <FormRow label="Right Breast" showDivider={false}>
-                        <input 
-                            type="number" 
-                            value={rightDuration}
-                            onChange={(e) => setRightDuration(Number(e.target.value))}
-                            className="text-right font-medium text-16px text-[#ff6b9d] w-24 outline-none bg-transparent placeholder-[#ff6b9d]/50" 
-                            placeholder="0" 
-                            style={{ fontSize: '16px', color: rightDuration === 0 ? 'rgba(255, 107, 157, 0.5)' : '#ff6b9d' }}
-                        />
-                    </FormRow>
+                            {control._formState.errors.root && (
+                                <p className="px-5 pb-3 text-xs text-red-500 text-right -mt-2">
+                                    {control._formState.errors.root.message}
+                                </p>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <Controller
+                                name="amountMl"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <FormRow 
+                                        label="Amount" 
+                                        showDivider={false}
+                                        error={!!fieldState.error}
+                                        helperText={fieldState.error?.message}
+                                        footer={
+                                            <Box sx={{ px: 1, pt: 1 }}>
+                                                <Slider
+                                                    value={field.value || 0}
+                                                    onChange={(_, newValue) => field.onChange(newValue as number)}
+                                                    min={0}
+                                                    max={300}
+                                                    step={5}
+                                                    sx={{
+                                                        color: FeatureTheme.feeding.primary,
+                                                        height: 6,
+                                                        '& .MuiSlider-thumb': {
+                                                            width: 24,
+                                                            height: 24,
+                                                            backgroundColor: '#fff',
+                                                            border: `2px solid ${FeatureTheme.feeding.primary}`,
+                                                            '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+                                                                boxShadow: `0px 0px 0px 8px ${FeatureTheme.feeding.primary}20`,
+                                                            },
+                                                        },
+                                                        '& .MuiSlider-rail': {
+                                                            opacity: 0.2,
+                                                            backgroundColor: FeatureTheme.feeding.primary,
+                                                        },
+                                                    }}
+                                                />
+                                            </Box>
+                                        }
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                            <InputBase
+                                                {...field}
+                                                type="number"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                placeholder="0"
+                                                sx={{
+                                                    fontSize: '18px',
+                                                    fontWeight: 500,
+                                                    color: field.value ? FeatureTheme.feeding.primary : 'text.disabled',
+                                                    textAlign: 'right',
+                                                    '& input': { textAlign: 'right', p: 0 }
+                                                }}
+                                            />
+                                            <Box component="span" sx={{ ml: 0.5, fontSize: '18px', fontWeight: 500, color: FeatureTheme.feeding.primary }}>ml</Box>
+                                        </Box>
+                                    </FormRow>
+                                )}
+                            />
+                        </>
+                    )}
                 </div>
 
-                {isNoteVisible ? (
-                    <div className="flex flex-col gap-2">
-                        <textarea
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            placeholder="Add a note..."
-                            className="w-full p-4 bg-[#f9fafb] rounded-xl border border-[#e5e7eb] outline-none text-[#101828] text-base resize-none focus:border-[#ff6b9d] focus:ring-1 focus:ring-[#ff6b9d] transition-all"
-                            rows={3}
-                        />
-                    </div>
-                ) : (
-                    <button 
-                        onClick={() => setIsNoteVisible(true)}
-                        className="text-[#99a1af] text-sm font-normal flex items-center gap-1 self-start ml-2 mt-4 hover:opacity-80 transition-opacity"
-                    >
-                        + add note
-                    </button>
-                )}
+                <div className="bg-white rounded-2xl overflow-hidden px-4">
+                     <Controller
+                        name="note"
+                        control={control}
+                        render={({ field }) => {
+                             const hasValue = field.value && field.value.length > 0;
+                            
+                             if (isNoteVisible || hasValue) {
+                                 return (
+                                     <FormRow label="Note" layout="vertical" showDivider={false}>
+                                         <InputBase
+                                             {...field}
+                                             placeholder="Add a note..."
+                                             multiline
+                                             minRows={3}
+                                             fullWidth
+                                             sx={{
+                                                 fontSize: '16px',
+                                                 color: '#101828',
+                                                 backgroundColor: '#f9fafb',
+                                                 borderRadius: '12px',
+                                                 padding: '12px',
+                                             }}
+                                         />
+                                     </FormRow>
+                                 );
+                             }
 
-            </div>
-        </FormPageFrame>
+                             return (
+                                 <button 
+                                     type="button"
+                                     onClick={() => {
+                                         setIsNoteVisible(true);
+                                         field.onChange(''); 
+                                     }}
+                                     className="text-[#99a1af] text-sm font-normal flex items-center gap-1 py-4 hover:opacity-80 transition-opacity"
+                                 >
+                                     + add note
+                                 </button>
+                             );
+                        }}
+                    />
+                </div>
+            </form>
+        </LocalizationProvider>
     );
 }

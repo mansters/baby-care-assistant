@@ -1,6 +1,7 @@
 'use client';
 
-import { Box, Typography, Avatar, IconButton, Container, Stack, Grid } from '@mui/material';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Box, Typography, Avatar, IconButton, Container, Stack, Grid, Snackbar, Alert } from '@mui/material';
 import { differenceInMonths, differenceInDays } from 'date-fns';
 import { FiSettings, FiTrendingUp, FiAward } from 'react-icons/fi';
 import { IoMdMoon } from 'react-icons/io';
@@ -11,6 +12,7 @@ import { BabyDto } from '@/lib/services/user';
 import FeatureCard from './FeatureCard';
 import WavySeparator from '@/components/WavySeparator';
 import { FeatureTheme } from '@/lib/theme';
+import React, { useEffect, useState } from 'react';
 
 interface HomePageProps {
   baby: BabyDto;
@@ -33,8 +35,27 @@ function getBabyDisplayName(baby: BabyDto): string {
 }
 
 export default function HomePage({ baby }: HomePageProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const babyAge = formatBabyAge(baby.dateOfBirth);
   const babyName = getBabyDisplayName(baby);
+
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+
+  useEffect(() => {
+    if (searchParams.get('feeding_created') === 'true') {
+      setSnackbar({ open: true, message: 'Feeding logged successfully!', severity: 'success' });
+      // Clean up URL
+      router.replace('/home');
+    } else if (searchParams.get('feeding_updated') === 'true') {
+      setSnackbar({ open: true, message: 'Feeding updated successfully!', severity: 'success' });
+      router.replace('/home');
+    }
+  }, [searchParams, router]);
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   const features = [
     {
@@ -44,7 +65,7 @@ export default function HomePage({ baby }: HomePageProps) {
       badge: "Next: 17:30",
       backgroundColor: '#FFE5EC',
       iconColor: FeatureTheme.feeding.primary,
-      href: '/feeding',
+      href: '/feeding/new',
     },
     {
       icon: <IoMdMoon />,
@@ -174,6 +195,16 @@ export default function HomePage({ baby }: HomePageProps) {
           ))}
         </Grid>
       </Container>
+      <Snackbar 
+          open={snackbar.open} 
+          autoHideDuration={4000} 
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+              {snackbar.message}
+          </Alert>
+      </Snackbar>
     </Box>
   );
 }
