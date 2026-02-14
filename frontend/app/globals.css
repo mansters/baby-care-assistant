@@ -1,8 +1,57 @@
 @import "tailwindcss";
+@source "../shared";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+
+  --gray-border: #e5e7eb;
+  --gray-text: #99a1af;
+  --text-primary: #101828;
+}
+
+
+.feature-feeding {
+  --feature-primary: #FF6B9D;
+  --feature-primary-light: #FF6B9D80;
+  --feature-surface: #FF6B9D1F;
+  --feature-surface-light: #FF6B9D12;
+}
+
+.feature-sleep {
+  --feature-primary: #4ECDC4;
+  --feature-primary-light: #4ECDC480;
+  --feature-surface: #4ECDC41F;
+  --feature-surface-light: #4ECDC412;
+}
+
+.feature-diaper {
+  --feature-primary: #FFB347;
+  --feature-primary-light: #FFB34780;
+  --feature-surface: #FFB3471F;
+  --feature-surface-light: #FFB34712;
+}
+
+.feature-growth {
+  --feature-primary: #66BB6A;
+  --feature-primary-light: #66BB6A80;
+  --feature-surface: #66BB6A1F;
+  --feature-surface-light: #66BB6A12;
+}
+
+.feature-vaccine {
+  --feature-primary: #786DCE;
+  --feature-primary-light: #786DCE80;
+  --feature-surface: #786DCE1F;
+  --feature-surface-light: #786DCE12;
+}
+
+.feature-milestone {
+  --feature-primary: #E91E63;
+  --feature-primary-light: #E91E6380;
+  --feature-surface: #E91E631F;
+  --feature-surface-light: #E91E6312;
 }
 
 @theme inline {
