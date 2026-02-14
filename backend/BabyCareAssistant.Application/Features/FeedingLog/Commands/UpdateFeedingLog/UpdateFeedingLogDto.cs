@@ -14,6 +14,12 @@ public record UpdateFeedingLogDto
     [Range(1, 1000)]
     public int? DurationMinutes { get; init; }
 
+    [Range(0, 500)]
+    public int? LeftBreastDurationMinutes { get; init; }
+
+    [Range(0, 500)]
+    public int? RightBreastDurationMinutes { get; init; }
+
     [Required]
     public FeedingType? Type { get; init; }
 

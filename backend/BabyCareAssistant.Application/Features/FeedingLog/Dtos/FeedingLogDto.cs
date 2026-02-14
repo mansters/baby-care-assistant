@@ -8,6 +8,8 @@ public record FeedingLogDto
     public Guid BabyId { get; init; }
     public DateTime FeedingTime { get; init; }
     public int? DurationMinutes { get; init; }
+    public int? LeftBreastDurationMinutes { get; init; }
+    public int? RightBreastDurationMinutes { get; init; }
     public FeedingType Type { get; init; }
     public int AmountMl { get; init; }
     public string? Note { get; init; }

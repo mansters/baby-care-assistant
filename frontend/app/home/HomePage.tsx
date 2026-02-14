@@ -10,6 +10,7 @@ import { FaSyringe } from 'react-icons/fa';
 import { BabyDto } from '@/lib/services/user';
 import FeatureCard from './FeatureCard';
 import WavySeparator from '@/components/WavySeparator';
+import { FeatureTheme } from '@/lib/theme';
 
 interface HomePageProps {
   baby: BabyDto;
@@ -42,7 +43,7 @@ export default function HomePage({ baby }: HomePageProps) {
       subtitle: 'Last: 14:30',
       badge: "Next: 17:30",
       backgroundColor: '#FFE5EC',
-      iconColor: '#FF6B9D',
+      iconColor: FeatureTheme.feeding.primary,
       href: '/feeding',
     },
     {

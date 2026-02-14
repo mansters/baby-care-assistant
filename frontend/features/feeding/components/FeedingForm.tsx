@@ -1,168 +1,120 @@
 'use client';
 
-import {useForm, Controller} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {z} from 'zod';
-import {
-    Box,
-    Button,
-    TextField,
-    MenuItem,
-    Paper,
-    Typography
-} from '@mui/material';
-import {useRouter} from "next/navigation";
-import { feedingService } from "@/lib/services/feeding/feeding.service.client";
-import { FeedingType, FeedingLog } from "@/lib/types";
-import { toUTCISO, getCurrentLocalForInput, toLocalInput } from "@shared/utils/date-utils";
+import React, { useState } from 'react';
+import FormPageFrame from '@/shared/components/FormPageFrame';
+import FormRow from '@/shared/components/FormRow';
+import { Box, Typography } from '@mui/material';
+import { FeatureTheme } from '@/lib/theme';
 
 interface FeedingFormProps {
-    onSuccess?: () => void;
-    initialData?: FeedingLog;
+    onBack?: () => void;
+    onSave?: (data: any) => void;
+    initialData?: any;
+    isSaving?: boolean;
+    isEditing?: boolean;
 }
 
-const feedingSchema = z.object({
-    type: z.nativeEnum(FeedingType),
-    amountMl: z.number().min(0, 'Amount must be positive').optional(),
-    durationMinutes: z.number().min(1, 'Duration must be at least 1 min'),
-    feedingTime: z.string().nonempty('Time is required'),
-    note: z.string().max(3000, 'Note must be less than 3000 characters').optional(),
-});
+export default function FeedingForm({ onBack, onSave, isSaving, initialData, isEditing = false }: FeedingFormProps) {
+    const [startTime, setStartTime] = useState(initialData?.startTime ? new Date(initialData.startTime) : new Date());
+    const [leftDuration, setLeftDuration] = useState<number>(initialData?.leftBreastDurationMinutes || 0);
+    const [rightDuration, setRightDuration] = useState<number>(initialData?.rightBreastDurationMinutes || 0);
+    const [feedingType, setFeedingType] = useState<'Nursing' | 'Bottle'>(initialData?.type === 0 ? 'Bottle' : 'Nursing');
+    
+    const [note, setNote] = useState<string>(initialData?.note || '');
+    const [isNoteVisible, setIsNoteVisible] = useState(!!initialData?.note);
 
-type FeedingFormData = z.infer<typeof feedingSchema>;
-
-export default function FeedingForm({ onSuccess, initialData }: FeedingFormProps) {
-    const router = useRouter();
-
-    const {
-        register,
-        control,
-        handleSubmit,
-        formState: {errors, isSubmitting},
-        reset
-    } = useForm<FeedingFormData>({
-        resolver: zodResolver(feedingSchema),
-        defaultValues: {
-            type: initialData ? initialData.type : FeedingType.Bottle, 
-            amountMl: initialData?.amountMl ?? 0,
-            durationMinutes: initialData?.durationMinutes ?? 15,
-            feedingTime: initialData ? toLocalInput(initialData.feedingTime) : getCurrentLocalForInput(),
-            note: initialData?.note ?? ''
-        }
-    });
-
-    const onSubmit = async (data: FeedingFormData) => {
-        try {
-            const payload = {
-                babyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', 
-                feedingTime: toUTCISO(data.feedingTime), 
-                type: Number(data.type),
-                durationMinutes: data.durationMinutes,
-                amountMl: data.amountMl || 0, // Ensure 0 if undefined/null
-                note: data.note || undefined,
-            };
-            
-            if (initialData) {
-                await feedingService.update(initialData.id, { ...payload, id: initialData.id });
-            } else {
-                await feedingService.create(payload);
-            }
-            
-            reset();
-            router.refresh();
-
-            onSuccess?.();
-        } catch (error) {
-            console.error('Failed to log feed', error);
-            alert('Error saving data. Is the backend running?');
-        }
-    };
+    const [mounted, setMounted] = useState(false);
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{
-                display: 'flex',
-                flexDirection: 'column', 
-                gap: 3,                  
-                mt: 1                    
-            }}
+        <FormPageFrame
+            title={isEditing ? "Edit Feeding" : "Add Feeding"}
+            themeColor={FeatureTheme.feeding.primary}
+            onBack={onBack}
+            isSaving={isSaving}
+            onSave={() => onSave?.({
+                startTime,
+                leftDuration,
+                rightDuration,
+                type: feedingType,
+                note: note
+            })}
         >
-
-            <Controller
-                name="type"
-                control={control}
-                render={({ field }) => (
-                    <TextField
-                        {...field}
-                        select
-                        label="Type"
-                        error={!!errors.type}
-                        helperText={errors.type?.message}
-                        fullWidth
-                    >
-                        <MenuItem value={FeedingType.Bottle}>Bottle</MenuItem>
-                        <MenuItem value={FeedingType.Breast}>Breast</MenuItem>
-                        <MenuItem value={FeedingType.Solids}>Solids</MenuItem>
-                    </TextField>
+            <div className="p-6 flex flex-col gap-6">
+                
+                {!isEditing && (
+                    <div className="bg-[#f3f4f6] p-[4px] rounded-full flex h-[52px]">
+                        <button 
+                            className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
+                                ${feedingType === 'Nursing' ? 'bg-[#ff6b9d] text-white shadow-sm' : 'text-[#4a5565]'}
+                            `}
+                            onClick={() => setFeedingType('Nursing')}
+                        >
+                            Nursing
+                        </button>
+                        <button 
+                            className={`flex-1 rounded-full text-base font-medium transition-all h-[44px] flex items-center justify-center 
+                                ${feedingType === 'Bottle' ? 'bg-[#ff6b9d] text-white shadow-sm' : 'text-[#4a5565]'}
+                            `}
+                            onClick={() => setFeedingType('Bottle')}
+                        >
+                            Bottle
+                        </button>
+                    </div>
                 )}
-            />
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
-                <TextField
-                    label="Amount (ml)"
-                    type="number"
-                    {...register('amountMl', { valueAsNumber: true })}
-                    error={!!errors.amountMl}
-                    helperText={errors.amountMl?.message}
-                    fullWidth
-                    slotProps={{ htmlInput: { step: "1" } }}
-                />
+                <div className="flex flex-col gap-4 bg-white rounded-2xl">
+                    <FormRow label="Start Time">
+                        <Typography sx={{ color: FeatureTheme.feeding.primary, fontWeight: 500, fontSize: '16px' }}>
+                            {mounted ? startTime.toLocaleTimeString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                        </Typography>
+                    </FormRow>
 
-                <TextField
-                    label="Duration (min)"
-                    type="number"
-                    {...register('durationMinutes', { valueAsNumber: true })}
-                    error={!!errors.durationMinutes}
-                    helperText={errors.durationMinutes?.message}
-                    fullWidth
-                />
-            </Box>
+                    <FormRow label="Left Breast">
+                         <input 
+                            type="number" 
+                            value={leftDuration}
+                            onChange={(e) => setLeftDuration(Number(e.target.value))}
+                            className="text-right font-medium text-16px text-[#ff6b9d] w-24 outline-none bg-transparent placeholder-[#ff6b9d]/50" 
+                            placeholder="0"
+                            style={{ fontSize: '16px', color: leftDuration === 0 ? 'rgba(255, 107, 157, 0.5)' : '#ff6b9d' }}
+                        />
+                    </FormRow>
 
-            <TextField
-                type="datetime-local"
-                label="Time"
-                {...register('feedingTime')}
-                error={!!errors.feedingTime}
-                helperText={errors.feedingTime?.message}
-                slotProps={{
-                    inputLabel: { shrink: true }
-                }}
-                fullWidth
-            />
+                    <FormRow label="Right Breast" showDivider={false}>
+                        <input 
+                            type="number" 
+                            value={rightDuration}
+                            onChange={(e) => setRightDuration(Number(e.target.value))}
+                            className="text-right font-medium text-16px text-[#ff6b9d] w-24 outline-none bg-transparent placeholder-[#ff6b9d]/50" 
+                            placeholder="0" 
+                            style={{ fontSize: '16px', color: rightDuration === 0 ? 'rgba(255, 107, 157, 0.5)' : '#ff6b9d' }}
+                        />
+                    </FormRow>
+                </div>
 
-            <TextField
-                label="Note (Optional)"
-                multiline
-                rows={3}
-                {...register('note')}
-                error={!!errors.note}
-                helperText={errors.note?.message}
-                fullWidth
-                placeholder="Add any additional details here..."
-            />
+                {isNoteVisible ? (
+                    <div className="flex flex-col gap-2">
+                        <textarea
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                            placeholder="Add a note..."
+                            className="w-full p-4 bg-[#f9fafb] rounded-xl border border-[#e5e7eb] outline-none text-[#101828] text-base resize-none focus:border-[#ff6b9d] focus:ring-1 focus:ring-[#ff6b9d] transition-all"
+                            rows={3}
+                        />
+                    </div>
+                ) : (
+                    <button 
+                        onClick={() => setIsNoteVisible(true)}
+                        className="text-[#99a1af] text-sm font-normal flex items-center gap-1 self-start ml-2 mt-4 hover:opacity-80 transition-opacity"
+                    >
+                        + add note
+                    </button>
+                )}
 
-            <Button
-                type="submit"
-                variant="contained"
-                size="large" 
-                disabled={isSubmitting}
-                fullWidth    
-                sx={{ py: 1.5, fontWeight: 'bold' }}
-            >
-                {isSubmitting ? 'Saving...' : (initialData ? 'Update Feed' : 'Log Feed')}
-            </Button>
-        </Box>
+            </div>
+        </FormPageFrame>
     );
 }
