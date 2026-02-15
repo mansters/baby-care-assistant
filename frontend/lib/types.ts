@@ -1,7 +1,7 @@
 export enum FeedingType {
-  Bottle,
-  Breast,
-  Solids
+  Bottle = 'Bottle',
+  Breast = 'Breast',
+  Solids = 'Solids'
 }
 
 export interface FeedingLog {

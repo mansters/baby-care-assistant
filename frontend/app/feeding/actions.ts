@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { feedingService } from '@/lib/services/feeding/feeding.service.server';
-import { CreateFeedingLogRequest, UpdateFeedingLogRequest } from '@/lib/types';
+import { CreateFeedingLogRequest, UpdateFeedingLogRequest, FeedingType } from '@/lib/types';
 import { FeedingFormValues } from '@/lib/schemas/feeding.schema';
 
 export async function createFeedingLog(data: FeedingFormValues, babyId: string) {
@@ -11,7 +11,7 @@ export async function createFeedingLog(data: FeedingFormValues, babyId: string) 
     const request: CreateFeedingLogRequest = {
         babyId,
         feedingTime: new Date(data.startTime).toISOString(),
-        type: data.type === 'Nursing' ? 1 : 0,
+        type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
         rightBreastDurationMinutes: data.rightDuration || 0,
@@ -31,7 +31,7 @@ export async function updateFeedingLog(id: string, data: FeedingFormValues, baby
         id,
         babyId,
         feedingTime: new Date(data.startTime).toISOString(),
-        type: data.type === 'Nursing' ? 1 : 0,
+        type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
         rightBreastDurationMinutes: data.rightDuration || 0,

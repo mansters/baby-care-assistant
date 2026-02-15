@@ -37,7 +37,7 @@ export default function EditFeedingClient({ initialData }: EditFeedingClientProp
     // Transform API data to form values
     const formInitialData: Partial<FeedingFormValues> = {
         startTime: new Date(initialData.feedingTime),
-        type: initialData.type === 1 ? 'Nursing' : 'Bottle',
+        type: initialData.type === 'Breast' ? 'Nursing' : 'Bottle',
         leftDuration: initialData.leftBreastDurationMinutes || 0,
         rightDuration: initialData.rightBreastDurationMinutes || 0,
         amountMl: initialData.amountMl || 0,

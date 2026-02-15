@@ -6,6 +6,8 @@ using BabyCareAssistant.API.Services;
 using BabyCareAssistant.Application.Common.Interfaces;
 using BabyCareAssistant.Infrastructure.Persistence;
 using BabyCareAssistant.Infrastructure.Repositories;
+using BabyCareAssistant.Application.Features.Log;
+using BabyCareAssistant.Infrastructure.Strategies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +36,10 @@ builder.Services.AddScoped<IGrowthLogRepository, GrowthLogRepository>();
 builder.Services.AddScoped<IExcretionLogRepository, ExcretionLogRepository>();
 builder.Services.AddScoped<IVaccineCatalogRepository, VaccineCatalogRepository>();
 builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordRepository>();
+
+
+builder.Services.AddScoped<ILogSourceStrategy, FeedingLogStrategy>();
+builder.Services.AddScoped<LogAggregationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
