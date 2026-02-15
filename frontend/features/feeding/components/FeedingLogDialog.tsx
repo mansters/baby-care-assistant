@@ -55,7 +55,7 @@ export default function FeedingLogDialog({ open, onClose, initialData }: Feeding
                 feedingTime: data.startTime.toISOString(),
                 type: data.type === 'Nursing' ? 1 : 0,
                 amountMl: data.amountMl || 0,
-                durationMinutes: (data.leftDuration || 0) + (data.rightDuration || 0),
+
                 leftBreastDurationMinutes: data.leftDuration || 0,
                 rightBreastDurationMinutes: data.rightDuration || 0,
                 note: data.note || undefined

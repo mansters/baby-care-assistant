@@ -8,7 +8,7 @@ export interface FeedingLog {
   id: string;
   babyId: string;
   feedingTime: string;    
-  durationMinutes: number;
+
   type: FeedingType;
   amountMl: number;
   leftBreastDurationMinutes?: number;
@@ -19,7 +19,7 @@ export interface FeedingLog {
 export interface CreateFeedingLogRequest {
   babyId: string; 
   feedingTime: string;
-  durationMinutes: number;
+
   type: FeedingType;
   amountMl: number;
   leftBreastDurationMinutes?: number;

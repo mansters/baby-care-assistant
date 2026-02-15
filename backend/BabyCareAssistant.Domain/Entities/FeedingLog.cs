@@ -5,7 +5,7 @@ namespace BabyCareAssistant.Domain.Entities;
 public class FeedingLog: BaseEntity
 {
     public DateTime FeedingTime { get; set; }
-    public int? DurationMinutes { get; set; }
+
     public FeedingType Type { get; set; }
     public int AmountMl { get; set; }
 

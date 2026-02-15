@@ -32,6 +32,7 @@ export default function FeedingDetailSheet({
     const feedingTime = new Date(log.feedingTime);
     const formattedDateTime = format(feedingTime, "EEEE, d MMM yyyy • h:mm a");
     const typeLabel = getFeedingLabel(log.type);
+    const totalDuration = (log.leftBreastDurationMinutes || 0) + (log.rightBreastDurationMinutes || 0);
 
     const handleEdit = () => {
         onEdit(log);
@@ -55,7 +56,7 @@ export default function FeedingDetailSheet({
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
                         <MdAccessTime size={18} />
-                        <Typography variant="body2">{log.durationMinutes} min</Typography>
+                        <Typography variant="body2">{totalDuration} min</Typography>
                     </Box>
                 </>
             );
@@ -65,7 +66,7 @@ export default function FeedingDetailSheet({
             return (
                 <>
                     <Typography variant="h2" fontWeight="bold" sx={{ mb: 0.5 }}>
-                        {log.durationMinutes} min
+                        {totalDuration} min
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                         {typeLabel}
@@ -79,10 +80,10 @@ export default function FeedingDetailSheet({
                 <Typography variant="h3" fontWeight="bold" sx={{ mb: 0.5 }}>
                     {typeLabel}
                 </Typography>
-                {log.durationMinutes > 0 && (
+                {totalDuration > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
                         <MdAccessTime size={18} />
-                        <Typography variant="body2">{log.durationMinutes} min</Typography>
+                        <Typography variant="body2">{totalDuration} min</Typography>
                     </Box>
                 )}
             </>

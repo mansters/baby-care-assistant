@@ -11,8 +11,7 @@ public record CreateFeedingLogDto
     [Required]
     public DateTime FeedingTime { get; init; }
 
-    [Range(1, 1000)]
-    public int? DurationMinutes { get; init; }
+
 
     [Range(0, 500)]
     public int? LeftBreastDurationMinutes { get; init; }

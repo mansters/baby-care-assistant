@@ -34,7 +34,7 @@ public class FeedingRepository(BabyCareAssistantDbContext context) : IFeedingRep
         }
         
         existingLog.FeedingTime = log.FeedingTime;
-        existingLog.DurationMinutes = log.DurationMinutes;
+
         existingLog.Type = log.Type;
         existingLog.AmountMl = log.AmountMl;
         

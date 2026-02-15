@@ -15,7 +15,7 @@ function getDetailsText(log: FeedingLog): string {
         case FeedingType.Bottle:
             return `${log.amountMl} ml Formula`;
         case FeedingType.Breast:
-            return `${log.durationMinutes} min`;
+            return `${(log.leftBreastDurationMinutes || 0) + (log.rightBreastDurationMinutes || 0)} min`;
         case FeedingType.Solids:
             return 'Solids';
         default:

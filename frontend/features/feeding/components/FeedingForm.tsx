@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -134,13 +135,31 @@ export default function FeedingForm({ onSubmit, initialData, isEditing = false }
                                                         fontSize: '18px',
                                                         fontWeight: 500,
                                                         color: `${FeatureTheme.feeding.primary} !important`,
+                                                        width: 'fit-content',
+                                                        display: 'inline-flex',
                                                         '& .MuiInputBase-input': {
                                                             textAlign: 'right',
                                                             padding: 0,
                                                             color: `${FeatureTheme.feeding.primary} !important`,
                                                             WebkitTextFillColor: `${FeatureTheme.feeding.primary} !important`,
                                                             cursor: 'pointer',
+                                                            width: 'auto',
+                                                        },
+                                                        '& .MuiInputAdornment-root': {
+                                                            marginLeft: '4px'
+                                                        },
+                                                        '& .MuiPickersSectionList-root': {
+                                                            justifyContent: 'flex-end',
+                                                            flexGrow: '0 !important',
                                                         }
+                                                    }
+                                                },
+                                                sx: { 
+                                                    width: 'auto',
+                                                    '& .MuiInputBase-root': {
+                                                        width: 'fit-content',
+                                                        display: 'inline-flex',
+                                                        justifyContent: 'flex-end !important',
                                                     }
                                                 }
                                             }

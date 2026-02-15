@@ -7,7 +7,7 @@ public record FeedingLogDto
     public Guid Id { get; init; }
     public Guid BabyId { get; init; }
     public DateTime FeedingTime { get; init; }
-    public int? DurationMinutes { get; init; }
+
     public int? LeftBreastDurationMinutes { get; init; }
     public int? RightBreastDurationMinutes { get; init; }
     public FeedingType Type { get; init; }
