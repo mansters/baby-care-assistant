@@ -2,9 +2,9 @@ using BabyCareAssistant.Application.Features.Log.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Enums;
 
-namespace BabyCareAssistant.Application.Features.Log;
+namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class LogAggregationService(IEnumerable<ILogSourceStrategy> strategies)
+public class LogRepository(IEnumerable<ILogSourceStrategy> strategies) : ILogRepository
 {
     public async Task<PaginatedLogResponse> GetLogsAsync(
         Guid babyId, string? cursor, int pageSize, LogType[]? types,

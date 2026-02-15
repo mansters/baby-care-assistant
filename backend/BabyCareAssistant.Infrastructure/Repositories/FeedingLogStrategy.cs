@@ -4,7 +4,7 @@ using BabyCareAssistant.Domain.Enums;
 using BabyCareAssistant.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BabyCareAssistant.Infrastructure.Strategies;
+namespace BabyCareAssistant.Infrastructure.Repositories;
 
 public class FeedingLogStrategy(BabyCareAssistantDbContext context) : ILogSourceStrategy
 {
