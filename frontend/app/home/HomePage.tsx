@@ -1,18 +1,29 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Box, Typography, Avatar, IconButton, Container, Stack, Grid, Snackbar, Alert } from '@mui/material';
-import { differenceInMonths, differenceInDays } from 'date-fns';
-import { FiSettings, FiTrendingUp, FiAward } from 'react-icons/fi';
-import { IoMdMoon } from 'react-icons/io';
-import { MdBabyChangingStation } from 'react-icons/md';
-import { TbBabyBottle } from 'react-icons/tb';
-import { FaSyringe } from 'react-icons/fa';
-import { BabyDto } from '@/lib/services/user';
-import FeatureCard from './FeatureCard';
-import WavySeparator from '@/components/WavySeparator';
-import { FeatureTheme } from '@/lib/theme';
-import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Box,
+  Typography,
+  Avatar,
+  IconButton,
+  Container,
+  Stack,
+  Grid,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { differenceInMonths, differenceInDays } from "date-fns";
+import { FiSettings, FiTrendingUp, FiAward } from "react-icons/fi";
+import { IoMdMoon } from "react-icons/io";
+import { MdBabyChangingStation } from "react-icons/md";
+import { TbBabyBottle } from "react-icons/tb";
+import { FaSyringe } from "react-icons/fa";
+import { BabyDto } from "@/lib/services/user";
+import FeatureCard from "./FeatureCard";
+import WavySeparator from "@/components/WavySeparator";
+import { FeatureTheme } from "@/lib/theme";
+import React, { useEffect, useState } from "react";
+import useToastFromParams from "@/shared/hooks/useParamsMessage";
 
 interface HomePageProps {
   baby: BabyDto;
@@ -23,7 +34,7 @@ function formatBabyAge(dateOfBirth: string): string {
   const now = new Date();
   const months = differenceInMonths(now, dob);
   const days = differenceInDays(now, dob) % 30;
-  
+
   if (months === 0) {
     return `${days} days`;
   }
@@ -40,16 +51,20 @@ export default function HomePage({ baby }: HomePageProps) {
   const babyAge = formatBabyAge(baby.dateOfBirth);
   const babyName = getBabyDisplayName(baby);
 
-  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
 
   useEffect(() => {
-    if (searchParams.get('feeding_created') === 'true') {
-      setSnackbar({ open: true, message: 'Feeding logged successfully!', severity: 'success' });
-      // Clean up URL
-      router.replace('/home');
-    } else if (searchParams.get('feeding_updated') === 'true') {
-      setSnackbar({ open: true, message: 'Feeding updated successfully!', severity: 'success' });
-      router.replace('/home');
+    if (searchParams.get("toast") && searchParams.get("toastMessage")) {
+      setSnackbar({
+        open: true,
+        message: searchParams.get("toastMessage")!,
+        severity: searchParams.get("toast")! as "success" | "error",
+      });
+      router.replace("/home");
     }
   }, [searchParams, router]);
 
@@ -57,83 +72,89 @@ export default function HomePage({ baby }: HomePageProps) {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const notification = useToastFromParams();
+
   const features = [
     {
       icon: <TbBabyBottle />,
-      title: 'Feeding',
-      subtitle: 'Last: 14:30',
+      title: "Feeding",
+      subtitle: "Last: 14:30",
       badge: "Next: 17:30",
-      backgroundColor: '#FFE5EC',
+      backgroundColor: "#FFE5EC",
       iconColor: FeatureTheme.feeding.primary,
-      href: '/feeding/new',
+      href: "/feeding/new",
     },
     {
       icon: <IoMdMoon />,
-      title: 'Sleep',
-      subtitle: '1h 20min',
-      backgroundColor: '#E5F4FF',
-      iconColor: '#4ECDC4',
-      href: '/sleep',
+      title: "Sleep",
+      subtitle: "1h 20min",
+      backgroundColor: "#E5F4FF",
+      iconColor: "#4ECDC4",
+      href: "/sleep",
     },
     {
       icon: <MdBabyChangingStation />,
-      title: 'Diaper',
-      subtitle: '30 min ago',
-      backgroundColor: '#FFF3E0',
-      iconColor: '#FFB347',
-      href: '/diaper',
+      title: "Diaper",
+      subtitle: "30 min ago",
+      backgroundColor: "#FFF3E0",
+      iconColor: "#FFB347",
+      href: "/diaper",
     },
     {
       icon: <FiTrendingUp />,
-      title: 'Growth',
-      subtitle: '6.5kg / 62cm',
-      backgroundColor: '#E8F5E9',
-      iconColor: '#66BB6A',
-      href: '/growth',
+      title: "Growth",
+      subtitle: "6.5kg / 62cm",
+      backgroundColor: "#E8F5E9",
+      iconColor: "#66BB6A",
+      href: "/growth/new",
     },
     {
       icon: <FaSyringe />,
-      title: 'Vaccine',
-      subtitle: 'Next: Mar 15',
-      backgroundColor: '#EDE7F6',
-      iconColor: '#786dce',
-      href: '/vaccine',
+      title: "Vaccine",
+      subtitle: "Next: Mar 15",
+      backgroundColor: "#EDE7F6",
+      iconColor: "#786dce",
+      href: "/vaccine",
     },
     {
       icon: <FiAward />,
-      title: 'Milestone',
-      subtitle: 'Roll over ✓',
-      backgroundColor: '#FCE4EC',
-      iconColor: '#E91E63',
-      href: '/milestone',
+      title: "Milestone",
+      subtitle: "Roll over ✓",
+      backgroundColor: "#FCE4EC",
+      iconColor: "#E91E63",
+      href: "/milestone",
     },
   ];
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        backgroundColor: '#FFFFFF',
-        display: 'flex',
-        flexDirection: 'column',
+        minHeight: "100vh",
+        backgroundColor: "#FFFFFF",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #786dce 0%, #a89ad8 100%)',
-          padding: { xs: '24px 20px 70px', sm: '32px 24px 70px' },
+          background: "linear-gradient(135deg, #786dce 0%, #a89ad8 100%)",
+          padding: { xs: "24px 20px 70px", sm: "32px 24px 70px" },
         }}
       >
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Avatar
               sx={{
                 width: 48,
                 height: 48,
-                backgroundColor: '#FFFFFF',
-                color: '#786dce',
+                backgroundColor: "#FFFFFF",
+                color: "#786dce",
                 fontWeight: 700,
-                fontSize: '20px',
+                fontSize: "20px",
               }}
             >
               {babyName.charAt(0).toUpperCase()}
@@ -142,7 +163,7 @@ export default function HomePage({ baby }: HomePageProps) {
               <Typography
                 variant="h6"
                 sx={{
-                  color: '#FFFFFF',
+                  color: "#FFFFFF",
                   fontWeight: 700,
                 }}
               >
@@ -151,7 +172,7 @@ export default function HomePage({ baby }: HomePageProps) {
               <Typography
                 variant="body2"
                 sx={{
-                  color: 'rgba(255,255,255,0.8)',
+                  color: "rgba(255,255,255,0.8)",
                 }}
               >
                 {babyAge}
@@ -162,9 +183,9 @@ export default function HomePage({ baby }: HomePageProps) {
           <Stack direction="row" spacing={1}>
             <IconButton
               sx={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: '#FFFFFF',
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.3)' },
+                backgroundColor: "rgba(255,255,255,0.2)",
+                color: "#FFFFFF",
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.3)" },
               }}
             >
               <FiSettings size={20} />
@@ -180,7 +201,7 @@ export default function HomePage({ baby }: HomePageProps) {
           variant="h6"
           sx={{
             fontWeight: 700,
-            color: '#1A1A2E',
+            color: "#1A1A2E",
             mb: 2,
           }}
         >
@@ -195,16 +216,8 @@ export default function HomePage({ baby }: HomePageProps) {
           ))}
         </Grid>
       </Container>
-      <Snackbar 
-          open={snackbar.open} 
-          autoHideDuration={4000} 
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-              {snackbar.message}
-          </Alert>
-      </Snackbar>
+
+      {notification}
     </Box>
   );
 }

@@ -1,157 +1,298 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import {
-    Box,
-    Button,
-    TextField,
-} from '@mui/material';
-import { useRouter } from "next/navigation";
-import { growthService } from "@/lib/services/growth/growth.service.client";
-import { GrowthLog } from "@/lib/types";
-import { toUTCISO, getCurrentLocalForInput } from "@shared/utils/date-utils";
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { InputBase, Box } from '@mui/material';
+import FormRow from '@/shared/components/FormRow';
+import { FeatureTheme } from '@/lib/theme';
+import { growthFormSchema, GrowthFormValues } from '@/lib/schemas/growth.schema';
 
 interface GrowthFormProps {
-    onSuccess?: () => void;
-    initialData?: GrowthLog;
+    onSubmit: (data: GrowthFormValues) => void;
+    initialData?: Partial<GrowthFormValues>;
+    isEditing?: boolean;
 }
 
-const growthSchema = z.object({
-    dateMeasured: z.string().nonempty('Date is required'),
-    weightKg: z
-        .number()
-        .min(0.01, 'Weight must be greater than 0')
-        .or(z.nan().refine(() => false, "Weight is required")), 
-    heightCm: z.number().min(0, 'Height must be non-negative').optional().or(z.nan()),
-    headCircumferenceCm: z.number().min(0, 'Head must be non-negative').optional().or(z.nan()),
-    note: z.string().max(500, 'Note must be less than 500 characters').optional(),
+const growthTheme = createTheme({
+    palette: {
+        primary: {
+            main: FeatureTheme.growth.primary,
+        },
+    },
+    components: {
+        MuiPickersDay: {
+            styleOverrides: {
+                root: {
+                    '&.Mui-selected': {
+                        backgroundColor: FeatureTheme.growth.primary,
+                        color: '#fff',
+                        '&:hover': {
+                            backgroundColor: FeatureTheme.growth.primary,
+                        },
+                        '&:focus': {
+                            backgroundColor: FeatureTheme.growth.primary,
+                        },
+                    },
+                },
+            },
+        },
+    },
 });
 
-type GrowthFormData = z.infer<typeof growthSchema>;
+const datePickerSlotProps = {
+    textField: {
+        variant: 'standard' as const,
+        InputProps: {
+            disableUnderline: true,
+            sx: {
+                fontSize: '18px',
+                fontWeight: 500,
+                color: `${FeatureTheme.growth.primary} !important`,
+                width: 'fit-content',
+                display: 'inline-flex',
+                '& .MuiInputBase-input': {
+                    textAlign: 'right',
+                    padding: 0,
+                    color: `${FeatureTheme.growth.primary} !important`,
+                    WebkitTextFillColor: `${FeatureTheme.growth.primary} !important`,
+                    cursor: 'pointer',
+                    width: 'auto',
+                },
+                '& .MuiInputAdornment-root': {
+                    marginLeft: '4px',
+                },
+                '& .MuiPickersSectionList-root': {
+                    justifyContent: 'flex-end',
+                    flexGrow: '0 !important',
+                },
+            },
+        },
+        sx: {
+            width: 'auto',
+            '& .MuiInputBase-root': {
+                width: 'fit-content',
+                display: 'inline-flex',
+                justifyContent: 'flex-end !important',
+            },
+        },
+    },
+};
 
-export default function GrowthForm({ onSuccess, initialData }: GrowthFormProps) {
-    const router = useRouter();
+const numberInputSx = (hasValue: boolean) => ({
+    fontSize: '18px',
+    fontWeight: 500,
+    color: hasValue ? FeatureTheme.growth.primary : 'text.disabled',
+    textAlign: 'right' as const,
+    '& input': { textAlign: 'right', p: 0 },
+});
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-        reset
-    } = useForm<GrowthFormData>({
-        resolver: zodResolver(growthSchema),
+const unitSx = {
+    ml: 0.5,
+    fontSize: '18px',
+    fontWeight: 500,
+    color: FeatureTheme.growth.primary,
+};
+
+export default function GrowthForm({ onSubmit, initialData, isEditing = false }: GrowthFormProps) {
+    const { control, handleSubmit, reset } = useForm<GrowthFormValues>({
+        resolver: zodResolver(growthFormSchema),
+        mode: 'onChange',
         defaultValues: {
-            dateMeasured: initialData ? initialData.dateMeasured.slice(0, 16) : getCurrentLocalForInput(),
-            weightKg: initialData?.weightKg ?? undefined,
-            heightCm: initialData?.heightCm ?? undefined,
-            headCircumferenceCm: initialData?.headCircumferenceCm ?? undefined,
-            note: initialData?.note ?? '',
-        }
+            weightKg: undefined,
+            heightCm: undefined,
+            headCircumferenceCm: undefined,
+            note: '',
+            ...initialData,
+            startTime: initialData?.startTime ? new Date(initialData.startTime) : new Date(),
+        },
     });
 
-    const onSubmit = async (data: GrowthFormData) => {
-        try {
-            const payload = {
-                babyId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Hardcoded for now
-                dateMeasured: toUTCISO(data.dateMeasured),
-                weightKg: data.weightKg,
-                heightCm: isNaN(data.heightCm as number) ? undefined : data.heightCm,
-                headCircumferenceCm: isNaN(data.headCircumferenceCm as number) ? undefined : data.headCircumferenceCm,
-                note: data.note || undefined,
-            };
+    useEffect(() => {
+        if (initialData) {
+            reset({
+                weightKg: undefined,
+                heightCm: undefined,
+                headCircumferenceCm: undefined,
+                note: '',
+                ...initialData,
+                startTime: initialData?.startTime ? new Date(initialData.startTime) : new Date(),
+            });
+        }
+    }, [initialData, reset]);
 
-            if (initialData) {
-                await growthService.update(initialData.id, { ...payload, id: initialData.id });
-            } else {
-                await growthService.create(payload);
-            }
+    const [isNoteVisible, setIsNoteVisible] = React.useState(!!initialData?.note);
 
-            reset();
-            router.refresh();
-
-            onSuccess?.();
-        } catch (error) {
-            console.error('Failed to log growth', error);
-            alert('Error saving data. Is the backend running?');
+    const handleNumberChange = (
+        onChange: (val: number | undefined) => void,
+        rawValue: string
+    ) => {
+        if (rawValue === '') {
+            onChange(undefined);
+            return;
+        }
+        const num = parseFloat(rawValue);
+        if (!isNaN(num)) {
+            onChange(num);
         }
     };
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 3,
-                mt: 1
-            }}
-        >
-            <TextField
-                type="datetime-local"
-                label="Date & Time"
-                {...register('dateMeasured')}
-                error={!!errors.dateMeasured}
-                helperText={errors.dateMeasured?.message}
-                slotProps={{
-                    inputLabel: { shrink: true }
-                }}
-                fullWidth
-            />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <form id="growth-form" onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-6">
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
-                <TextField
-                    label="Weight (kg)"
-                    type="number"
-                    {...register('weightKg', { valueAsNumber: true })}
-                    error={!!errors.weightKg}
-                    helperText={errors.weightKg?.message}
-                    fullWidth
-                    slotProps={{ htmlInput: { step: "0.01" } }}
-                />
-                <TextField
-                    label="Height (cm)"
-                    type="number"
-                    {...register('heightCm', { valueAsNumber: true })}
-                    error={!!errors.heightCm}
-                    helperText={errors.heightCm?.message}
-                    fullWidth
-                    slotProps={{ htmlInput: { step: "0.1" } }}
-                />
-            </Box>
+                <div className="flex flex-col bg-white rounded-2xl overflow-hidden px-4">
 
-            <TextField
-                label="Head Circumference (cm)"
-                type="number"
-                {...register('headCircumferenceCm', { valueAsNumber: true })}
-                error={!!errors.headCircumferenceCm}
-                helperText={errors.headCircumferenceCm?.message}
-                fullWidth
-                slotProps={{ htmlInput: { step: "0.1" } }}
-            />
+                    <Controller
+                        name="startTime"
+                        control={control}
+                        render={({ field }) => (
+                            <FormRow label="Start Time" required showDivider={true}>
+                                <ThemeProvider theme={growthTheme}>
+                                    <MobileDateTimePicker
+                                        value={field.value}
+                                        onChange={(newValue) => field.onChange(newValue)}
+                                        format="MMM d, hh:mm a"
+                                        ampm={true}
+                                        slotProps={datePickerSlotProps}
+                                    />
+                                </ThemeProvider>
+                            </FormRow>
+                        )}
+                    />
 
-            <TextField
-                label="Note (Optional)"
-                multiline
-                rows={3}
-                {...register('note')}
-                error={!!errors.note}
-                helperText={errors.note?.message}
-                fullWidth
-                placeholder="Add any additional details here..."
-            />
+                    <Controller
+                        name="weightKg"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <FormRow
+                                label="Weight (kg)"
+                                required
+                                showDivider={true}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                    <InputBase
+                                        value={field.value ?? ''}
+                                        onChange={(e) => handleNumberChange(field.onChange, e.target.value)}
+                                        onBlur={field.onBlur}
+                                        type="number"
+                                        placeholder="0"
+                                        inputProps={{ step: '0.01', inputMode: 'decimal' }}
+                                        sx={numberInputSx(!!field.value && field.value > 0)}
+                                    />
+                                    <Box component="span" sx={unitSx}>kg</Box>
+                                </Box>
+                            </FormRow>
+                        )}
+                    />
 
-            <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={isSubmitting}
-                fullWidth
-                sx={{ py: 1.5, fontWeight: 'bold' }}
-            >
-                {isSubmitting ? 'Saving...' : (initialData ? 'Update Log' : 'Log Growth')}
-            </Button>
-        </Box>
+                    <Controller
+                        name="heightCm"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <FormRow
+                                label="Height (cm)"
+                                sublabel="optional"
+                                showDivider={true}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                    <InputBase
+                                        value={field.value ?? ''}
+                                        onChange={(e) => handleNumberChange(field.onChange, e.target.value)}
+                                        onBlur={field.onBlur}
+                                        type="number"
+                                        placeholder="0"
+                                        inputProps={{ step: '0.01', inputMode: 'decimal' }}
+                                        sx={numberInputSx(!!field.value && field.value > 0)}
+                                    />
+                                    <Box component="span" sx={unitSx}>cm</Box>
+                                </Box>
+                            </FormRow>
+                        )}
+                    />
+
+                    <Controller
+                        name="headCircumferenceCm"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <FormRow
+                                label="Head Circumference (cm)"
+                                sublabel="optional"
+                                showDivider={false}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                    <InputBase
+                                        value={field.value ?? ''}
+                                        onChange={(e) => handleNumberChange(field.onChange, e.target.value)}
+                                        onBlur={field.onBlur}
+                                        type="number"
+                                        placeholder="0"
+                                        inputProps={{ step: '0.01', inputMode: 'decimal' }}
+                                        sx={numberInputSx(!!field.value && field.value > 0)}
+                                    />
+                                    <Box component="span" sx={unitSx}>cm</Box>
+                                </Box>
+                            </FormRow>
+                        )}
+                    />
+                </div>
+
+                <div className="bg-white rounded-2xl overflow-hidden px-4">
+                    <Controller
+                        name="note"
+                        control={control}
+                        render={({ field }) => {
+                            const hasValue = field.value && field.value.length > 0;
+
+                            if (isNoteVisible || hasValue) {
+                                return (
+                                    <FormRow label="Note" layout="vertical" showDivider={false}>
+                                        <InputBase
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            placeholder="Add a note..."
+                                            multiline
+                                            minRows={3}
+                                            fullWidth
+                                            sx={{
+                                                fontSize: '16px',
+                                                color: '#101828',
+                                                backgroundColor: '#f9fafb',
+                                                borderRadius: '12px',
+                                                padding: '12px',
+                                            }}
+                                        />
+                                    </FormRow>
+                                );
+                            }
+
+                            return (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsNoteVisible(true);
+                                        field.onChange('');
+                                    }}
+                                    className="text-[#99a1af] text-sm font-normal flex items-center gap-1 py-4 hover:opacity-80 transition-opacity"
+                                >
+                                    + add note
+                                </button>
+                            );
+                        }}
+                    />
+                </div>
+            </form>
+        </LocalizationProvider>
     );
 }
