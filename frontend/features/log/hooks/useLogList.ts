@@ -16,6 +16,7 @@ interface UseLogListReturn {
   activeFilter: LogFilter;
   setActiveFilter: (filter: LogFilter) => void;
   sentinelRef: (node: HTMLDivElement | null) => void;
+  setLogs: (updater: LogEntry[] | ((prev: LogEntry[]) => LogEntry[])) => void;
 }
 
 export function useLogList(babyId: string): UseLogListReturn {
@@ -88,5 +89,5 @@ export function useLogList(babyId: string): UseLogListReturn {
     setActiveFilterState(filter);
   }, []);
 
-  return { logs, loading, hasMore, activeFilter, setActiveFilter, sentinelRef };
+  return { logs, loading, hasMore, activeFilter, setActiveFilter, sentinelRef, setLogs };
 }

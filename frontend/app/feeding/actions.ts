@@ -25,8 +25,6 @@ export async function createFeedingLog(data: FeedingFormValues, babyId: string) 
 }
 
 export async function updateFeedingLog(id: string, data: FeedingFormValues, babyId: string) {
-    // Backend requires DurationMinutes > 0.
-    // We default to 1 minute if calculation yields 0 (e.g. for Bottle or if duration omitted)
     const request: UpdateFeedingLogRequest = {
         id,
         babyId,
@@ -42,4 +40,8 @@ export async function updateFeedingLog(id: string, data: FeedingFormValues, baby
 
     await feedingService.update(id, request);
     redirect('/home?feeding_updated=true');
+}
+
+export async function deleteFeedingLog(id: string) {
+    await feedingService.delete(id);
 }

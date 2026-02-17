@@ -7,9 +7,10 @@ import { format } from 'date-fns';
 
 interface LogItemProps {
   entry: LogEntry;
+  onSelect: (entry: LogEntry) => void;
 }
 
-export default function LogItem({ entry }: LogItemProps) {
+export default function LogItem({ entry, onSelect }: LogItemProps) {
   const renderer = getRenderer(entry.type, entry.details);
   const featureKey = renderer.getFeatureKey();
   const theme = FeatureTheme[featureKey as keyof typeof FeatureTheme];
@@ -18,7 +19,15 @@ export default function LogItem({ entry }: LogItemProps) {
   const time = format(new Date(entry.startTime), 'HH:mm');
 
   return (
-    <div className="flex items-start gap-3 py-1">
+    <div
+      className="flex items-start gap-3 py-1 cursor-pointer"
+      onClick={() => onSelect(entry)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onSelect(entry);
+      }}
+    >
 
       <div className="w-14 flex-shrink-0 pt-2">
         <span className="text-base font-bold text-[#364153]">{time}</span>
@@ -26,7 +35,7 @@ export default function LogItem({ entry }: LogItemProps) {
 
 
       <div
-        className="flex-1 rounded-[14px] p-3"
+        className="flex-1 rounded-[14px] p-3 transition-colors hover:brightness-95 active:brightness-90 overflow-hidden"
         style={{ backgroundColor: theme?.surfaceLight || '#f3f4f6' }}
       >
         <div className="flex items-center gap-3">
@@ -47,7 +56,7 @@ export default function LogItem({ entry }: LogItemProps) {
 
 
         {entry.note && (
-          <p className="text-sm text-[#6a7282] mt-1 ml-12">{entry.note}</p>
+          <p className="text-sm text-[#6a7282] mt-1 ml-12 truncate">{entry.note}</p>
         )}
       </div>
     </div>

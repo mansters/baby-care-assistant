@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { Snackbar, Alert } from '@mui/material';
 import FeedingForm from '@/features/feeding/components/FeedingForm';
 import { FeatureTheme } from '@/lib/theme';
@@ -22,15 +23,13 @@ export default function CreateFeedingClient({ babyId }: CreateFeedingClientProps
         setIsSaving(true);
         try {
             await createFeedingLog(data, babyId);
-            // Server actions handle redirect, so we don't need router.push here if successful
-            // However, we might want to show success message.
-            // But if we redirect, the snackbar won't be seen unless we use a persistent store or params.
-            // For now, let's assume the redirect happens quickly.
-            // If we want to show a success message on the NEXT page, we'd need to pass a query param.
         } catch (error) {
+            if (isRedirectError(error)) {
+                throw error;
+            }
             console.error(error);
             setSnackbar({ open: true, message: 'Failed to save feeding.', severity: 'error' });
-            setIsSaving(false); // Only stop saving if error
+            setIsSaving(false);
         }
     };
 

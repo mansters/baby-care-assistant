@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { Snackbar, Alert } from '@mui/material';
 import FeedingForm from '@/features/feeding/components/FeedingForm';
 import { FeatureTheme } from '@/lib/theme';
@@ -24,6 +25,9 @@ export default function EditFeedingClient({ initialData }: EditFeedingClientProp
         try {
             await updateFeedingLog(initialData.id, data, initialData.babyId);
         } catch (error) {
+            if (isRedirectError(error)) {
+                throw error;
+            }
             console.error('Error updating feeding:', error);
             setSnackbar({ open: true, message: 'Failed to update feeding.', severity: 'error' });
             setIsSaving(false);
@@ -34,7 +38,6 @@ export default function EditFeedingClient({ initialData }: EditFeedingClientProp
         setSnackbar({ ...snackbar, open: false });
     };
 
-    // Transform API data to form values
     const formInitialData: Partial<FeedingFormValues> = {
         startTime: new Date(initialData.feedingTime),
         type: initialData.type === 'Breast' ? 'Nursing' : 'Bottle',

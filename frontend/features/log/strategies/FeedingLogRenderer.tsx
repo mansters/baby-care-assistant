@@ -3,9 +3,10 @@
 import { ReactNode } from 'react';
 import { TbBabyBottle } from 'react-icons/tb';
 import { FaPersonBreastfeeding } from 'react-icons/fa6';
-import { ILogRendererStrategy, FeedingDetails } from '@/features/log/types';
+import { ILogRendererStrategy, ILogDrawerStrategy, FeedingDetails } from '@/features/log/types';
+import { deleteFeedingLog } from '@/app/feeding/actions';
 
-export class FeedingLogRenderer implements ILogRendererStrategy {
+export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrategy {
   private details: FeedingDetails;
 
   constructor(details: FeedingDetails) {
@@ -38,10 +39,45 @@ export class FeedingLogRenderer implements ILogRendererStrategy {
       return `${amountMl}ml Formula`;
     }
 
-    if (feedingType === 'Solids') {
-      return `${amountMl}ml Solids`;
+    return `${amountMl}ml ${feedingType}`;
+  }
+
+  getDrawerIcon(details: FeedingDetails): ReactNode {
+    if (details.feedingType === 'Breast') {
+      return <FaPersonBreastfeeding size={40} color="#ffffff" />;
+    }
+    return <TbBabyBottle size={40} color="#ffffff" />;
+  }
+
+  getPrimaryInfo(): string {
+    const { feedingType, leftBreastDurationMinutes, rightBreastDurationMinutes, amountMl } = this.details;
+
+    if (feedingType === 'Breast') {
+      const total = (leftBreastDurationMinutes || 0) + (rightBreastDurationMinutes || 0);
+      return `${total} min`;
     }
 
-    return `${amountMl}ml ${feedingType}`;
+    return `${amountMl} ml`;
+  }
+
+  getSecondaryInfo(): string {
+    const { feedingType, leftBreastDurationMinutes, rightBreastDurationMinutes, amountMl } = this.details;
+
+    if (feedingType === 'Breast') {
+      const parts: string[] = [];
+      if (leftBreastDurationMinutes != null) parts.push(`L: ${leftBreastDurationMinutes}m`);
+      if (rightBreastDurationMinutes != null) parts.push(`R: ${rightBreastDurationMinutes}m`);
+      return `Nursing • ${parts.join(' | ')}`;
+    }
+
+    return `Bottle • ${amountMl}ml Formula`;
+  }
+
+  getUpdatePath(id: string): string {
+    return `/feeding/${id}`;
+  }
+
+  async deleteEntry(id: string): Promise<void> {
+    await deleteFeedingLog(id);
   }
 }

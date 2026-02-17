@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 
 export enum LogType {
-  Feeding = 0,
-  Sleep = 1,
-  Diaper = 2,
-  Growth = 3,
+  Feeding = "Feeding",
+  Sleep = "Sleep",
+  Diaper = "Diaper",
+  Growth = "Growth",
 }
 
 export interface FeedingDetails {
@@ -31,4 +31,13 @@ export interface ILogRendererStrategy {
   getIcon(details: FeedingDetails): ReactNode;
   getFeatureKey(): string;
   renderContent(details: FeedingDetails): string;
+}
+
+export interface ILogDrawerStrategy {
+  getDrawerIcon(details: FeedingDetails): ReactNode;
+  getPrimaryInfo(details: FeedingDetails): string;
+  getSecondaryInfo(details: FeedingDetails): string;
+  getFeatureKey(): string;
+  getUpdatePath(id: string): string;
+  deleteEntry(id: string): Promise<void>;
 }

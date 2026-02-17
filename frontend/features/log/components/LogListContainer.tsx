@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoArrowBack } from 'react-icons/io5';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,6 +10,7 @@ import { LogEntry } from '@/features/log/types';
 import LogFilterBar from './LogFilterBar';
 import LogGroup from './LogGroup';
 import LogItem from './LogItem';
+import LogDetailDrawer from './LogDetailDrawer';
 
 interface LogListContainerProps {
   babyId: string;
@@ -38,10 +39,21 @@ function groupByDate(logs: LogEntry[]): Map<string, LogEntry[]> {
 
 export default function LogListContainer({ babyId }: LogListContainerProps) {
   const router = useRouter();
-  const { logs, loading, hasMore, activeFilter, setActiveFilter, sentinelRef } =
+  const { logs, loading, hasMore, activeFilter, setActiveFilter, sentinelRef, setLogs } =
     useLogList(babyId);
 
+  const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+
   const grouped = useMemo(() => groupByDate(logs), [logs]);
+
+  const handleDrawerClose = useCallback(() => {
+    setSelectedLog(null);
+  }, []);
+
+  const handleDeleted = useCallback((id: string) => {
+    setLogs((prev: LogEntry[]) => prev.filter((l) => l.id !== id));
+    setSelectedLog(null);
+  }, [setLogs]);
 
   return (
     <div className="flex flex-col h-screen bg-[#f9fafb]">
@@ -67,7 +79,7 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
         {Array.from(grouped.entries()).map(([dateKey, entries]) => (
           <LogGroup key={dateKey} dateLabel={getDateLabel(entries[0].startTime)}>
             {entries.map((entry) => (
-              <LogItem key={entry.id} entry={entry} />
+              <LogItem key={entry.id} entry={entry} onSelect={setSelectedLog} />
             ))}
           </LogGroup>
         ))}
@@ -89,6 +101,12 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
 
         {hasMore && <div ref={sentinelRef} className="h-4" />}
       </div>
+
+      <LogDetailDrawer
+        entry={selectedLog}
+        onClose={handleDrawerClose}
+        onDeleted={handleDeleted}
+      />
     </div>
   );
 }
