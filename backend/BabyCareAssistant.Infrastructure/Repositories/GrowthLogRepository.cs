@@ -37,6 +37,7 @@ public class GrowthLogRepository(BabyCareAssistantDbContext dbContext) : IGrowth
         existingGrowthLog.WeightKg = growthLog.WeightKg;
         existingGrowthLog.HeightCm = growthLog.HeightCm;
         existingGrowthLog.HeadCircumferenceCm = growthLog.HeadCircumferenceCm;
+        existingGrowthLog.Note = growthLog.Note;
         
         await dbContext.SaveChangesAsync();
 

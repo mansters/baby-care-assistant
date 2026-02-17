@@ -14,12 +14,20 @@ export interface FeedingDetails {
   amountMl: number;
 }
 
+export interface GrowthDetails {
+  weightKg: number;
+  heightCm?: number;
+  headCircumferenceCm?: number;
+}
+
+export type LogDetails = FeedingDetails | GrowthDetails;
+
 export interface LogEntry {
   id: string;
   startTime: string;
   type: LogType;
   note?: string;
-  details: FeedingDetails;
+  details: LogDetails;
 }
 
 export interface PaginatedLogResponse {
@@ -28,15 +36,15 @@ export interface PaginatedLogResponse {
 }
 
 export interface ILogRendererStrategy {
-  getIcon(details: FeedingDetails): ReactNode;
+  getIcon(details: LogDetails): ReactNode;
   getFeatureKey(): string;
-  renderContent(details: FeedingDetails): string;
+  renderContent(details: LogDetails): string;
 }
 
 export interface ILogDrawerStrategy {
-  getDrawerIcon(details: FeedingDetails): ReactNode;
-  getPrimaryInfo(details: FeedingDetails): string;
-  getSecondaryInfo(details: FeedingDetails): string;
+  getDrawerIcon(details: LogDetails): ReactNode;
+  getPrimaryInfo(details: LogDetails): string;
+  getSecondaryInfo(details: LogDetails): string;
   getFeatureKey(): string;
   getUpdatePath(id: string): string;
   deleteEntry(id: string): Promise<void>;

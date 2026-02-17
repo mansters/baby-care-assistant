@@ -37,6 +37,7 @@ builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordReposi
 
 
 builder.Services.AddScoped<ILogSourceStrategy, FeedingLogStrategy>();
+builder.Services.AddScoped<ILogSourceStrategy, GrowthLogStrategy>();
 builder.Services.AddScoped<ILogRepository, LogRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

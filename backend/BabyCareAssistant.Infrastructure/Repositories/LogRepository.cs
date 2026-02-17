@@ -16,12 +16,14 @@ public class LogRepository(IEnumerable<ILogSourceStrategy> strategies) : ILogRep
             ? strategies.Where(s => types.Contains(s.LogType))
             : strategies;
 
-        var tasks = activeStrategies
-            .Select(s => s.GetLogsAsync(babyId, cursorTime, pageSize, cancellationToken));
-        var results = await Task.WhenAll(tasks);
+        var allEntries = new List<LogEntryDto>();
+        foreach (var strategy in activeStrategies)
+        {
+            var entries = await strategy.GetLogsAsync(babyId, cursorTime, pageSize, cancellationToken);
+            allEntries.AddRange(entries);
+        }
 
-        var page = results
-            .SelectMany(r => r)
+        var page = allEntries
             .OrderByDescending(x => x.StartTime)
             .Take(pageSize)
             .ToList();
