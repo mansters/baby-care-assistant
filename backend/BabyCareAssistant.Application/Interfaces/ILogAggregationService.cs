@@ -3,7 +3,7 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Application.Interfaces;
 
-public interface ILogRepository
+public interface ILogAggregationService
 {
     Task<PaginatedLogResponse> GetLogsAsync(
         Guid babyId, string? cursor, int pageSize, LogType[]? types,

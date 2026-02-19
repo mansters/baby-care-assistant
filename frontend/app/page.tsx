@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Box, Button } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { TbBabyBottle, TbStar } from 'react-icons/tb';
-import { TfiRulerAlt } from 'react-icons/tfi';
-import BannerSection from '@/components/BannerSection';
-import WavySeparator from '@/components/WavySeparator';
-import FeatureCard from '@/components/FeatureCard';
+import { Box, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { TbBabyBottle, TbStar } from "react-icons/tb";
+import { TfiRulerAlt } from "react-icons/tfi";
+import BannerSection from "@/components/BannerSection";
+import WavySeparator from "@/components/WavySeparator";
+import FeatureCard from "@/components/FeatureCard";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -14,12 +14,12 @@ export default function LandingPage() {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#ffffff',
-        position: 'relative',
-        overflow: 'hidden',
+        minHeight: "100svh",
+        display: "flex",
+        flexDirection: "column",
+        background: "#ffffff",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <BannerSection
@@ -37,31 +37,31 @@ export default function LandingPage() {
       <Box
         sx={{
           flex: 1,
-          background: 'white',
-          position: 'relative',
+          background: "white",
+          position: "relative",
           zIndex: 2,
           px: 3,
           pb: 4,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Button
           variant="contained"
           fullWidth
-          onClick={() => router.push('/login')}
+          onClick={() => router.push("/login")}
           sx={{
-            background: '#786dce',
-            borderRadius: '9999px',
-            padding: '14px',
+            background: "#786dce",
+            borderRadius: "9999px",
+            padding: "14px",
             fontWeight: 600,
-            fontSize: '1rem',
-            textTransform: 'none',
-            border: 'none',
-            boxShadow: '0 4px 12px rgba(155, 143, 200, 0.7)',
+            fontSize: "1rem",
+            textTransform: "none",
+            border: "none",
+            boxShadow: "0 4px 12px rgba(155, 143, 200, 0.7)",
             mb: 1.5,
-            '&:hover': {
-              background: 'linear-gradient(135deg, #8a7eb7 0%, #a794c8 100%)',
+            "&:hover": {
+              background: "linear-gradient(135deg, #8a7eb7 0%, #a794c8 100%)",
             },
           }}
         >
@@ -70,13 +70,13 @@ export default function LandingPage() {
 
         <Box
           sx={{
-            textAlign: 'center',
-            color: '#666',
-            fontSize: '0.9rem',
+            textAlign: "center",
+            color: "#666",
+            fontSize: "0.9rem",
             mb: 4,
-            cursor: 'pointer',
-            '&:hover': {
-              color: '#786dce',
+            cursor: "pointer",
+            "&:hover": {
+              color: "#786dce",
             },
           }}
         >
@@ -103,13 +103,13 @@ export default function LandingPage() {
 
         <Box
           sx={{
-            textAlign: 'center',
-            color: '#888',
-            fontSize: '0.8rem',
-            mt: 'auto',
+            textAlign: "center",
+            color: "#888",
+            fontSize: "0.8rem",
+            mt: "auto",
             pt: 3,
             maxWidth: 360,
-            mx: 'auto',
+            mx: "auto",
             lineHeight: 1.5,
           }}
         >

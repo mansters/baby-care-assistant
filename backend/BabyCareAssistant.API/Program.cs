@@ -4,6 +4,7 @@ using BabyCareAssistant.Application.Mappings;
 using BabyCareAssistant.API.Extensions;
 using BabyCareAssistant.API.Services;
 using BabyCareAssistant.Application.Common.Interfaces;
+using BabyCareAssistant.Application.Services;
 using BabyCareAssistant.Infrastructure.Persistence;
 using BabyCareAssistant.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "http://192.168.1.65:3000", "https://linnie-clamorous-jurnee.ngrok-free.dev")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -38,7 +39,7 @@ builder.Services.AddScoped<IVaccinationRecordRepository, VaccinationRecordReposi
 
 builder.Services.AddScoped<ILogSourceStrategy, FeedingLogStrategy>();
 builder.Services.AddScoped<ILogSourceStrategy, GrowthLogStrategy>();
-builder.Services.AddScoped<ILogRepository, LogRepository>();
+builder.Services.AddScoped<ILogAggregationService, LogAggregationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 

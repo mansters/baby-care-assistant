@@ -57,21 +57,6 @@ export default function HomePage({ baby }: HomePageProps) {
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
 
-  useEffect(() => {
-    if (searchParams.get("toast") && searchParams.get("toastMessage")) {
-      setSnackbar({
-        open: true,
-        message: searchParams.get("toastMessage")!,
-        severity: searchParams.get("toast")! as "success" | "error",
-      });
-      router.replace("/home");
-    }
-  }, [searchParams, router]);
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   const notification = useToastFromParams();
 
   const features = [
@@ -129,7 +114,7 @@ export default function HomePage({ baby }: HomePageProps) {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100svh",
         backgroundColor: "#FFFFFF",
         display: "flex",
         flexDirection: "column",

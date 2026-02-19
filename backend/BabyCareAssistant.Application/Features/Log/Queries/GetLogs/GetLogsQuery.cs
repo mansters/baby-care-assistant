@@ -12,13 +12,13 @@ public record GetLogsQuery(
     int PageSize,
     LogType[]? Types) : IRequest<Result<PaginatedLogResponse>>;
 
-internal sealed class GetLogsQueryHandler(ILogRepository logRepository)
+internal sealed class GetLogsQueryHandler(ILogAggregationService logAggregationService)
     : IRequestHandler<GetLogsQuery, Result<PaginatedLogResponse>>
 {
     public async Task<Result<PaginatedLogResponse>> Handle(
         GetLogsQuery request, CancellationToken cancellationToken)
     {
-        var result = await logRepository.GetLogsAsync(
+        var result = await logAggregationService.GetLogsAsync(
             request.BabyId, request.Cursor, request.PageSize, request.Types, cancellationToken);
         return Result<PaginatedLogResponse>.Success(result);
     }
