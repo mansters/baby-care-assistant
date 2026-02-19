@@ -13,7 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import { differenceInMonths, differenceInDays } from "date-fns";
-import { FiSettings, FiTrendingUp, FiAward } from "react-icons/fi";
+import { FiTrendingUp, FiAward } from "react-icons/fi";
 import { IoMdMoon } from "react-icons/io";
 import { MdBabyChangingStation } from "react-icons/md";
 import { TbBabyBottle } from "react-icons/tb";
@@ -23,6 +23,7 @@ import FeatureCard from "./FeatureCard";
 import WavySeparator from "@/components/WavySeparator";
 import { FeatureTheme } from "@/lib/theme";
 import React, { useEffect, useState } from "react";
+import TimezoneSwitcher from "@/shared/components/TimezoneSwitcher";
 import useToastFromParams from "@/shared/hooks/useParamsMessage";
 
 interface HomePageProps {
@@ -173,7 +174,7 @@ export default function HomePage({ baby }: HomePageProps) {
                 "&:hover": { backgroundColor: "rgba(255,255,255,0.3)" },
               }}
             >
-              <FiSettings size={20} />
+              <TimezoneSwitcher variant="inline" />
             </IconButton>
           </Stack>
         </Stack>

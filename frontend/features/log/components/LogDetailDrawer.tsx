@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { Button } from '@mui/material';
-import { IoClose } from 'react-icons/io5';
-import { format } from 'date-fns';
-import { LogEntry } from '@/features/log/types';
-import { getDrawerRenderer } from '@/features/log/strategies/registry';
-import { FeatureTheme } from '@/lib/theme/feature-theme';
-import DeleteConfirmDialog from './DeleteConfirmDialog';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import { Button } from "@mui/material";
+import { IoClose } from "react-icons/io5";
+import { formatLocalDate } from "@/lib/utils/datetime";
+import { LogEntry } from "@/features/log/types";
+import { getDrawerRenderer } from "@/features/log/strategies/registry";
+import { FeatureTheme } from "@/lib/theme/feature-theme";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import { useTimezone } from "@/lib/contexts/timezone.context";
 
 interface LogDetailDrawerProps {
   entry: LogEntry | null;
@@ -17,15 +18,24 @@ interface LogDetailDrawerProps {
   onDeleted: (id: string) => void;
 }
 
-export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetailDrawerProps) {
+export default function LogDetailDrawer({
+  entry,
+  onClose,
+  onDeleted,
+}: LogDetailDrawerProps) {
   const router = useRouter();
+  const { timeZoneId } = useTimezone();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const strategy = entry ? getDrawerRenderer(entry.type, entry.details) : null;
   const featureKey = strategy?.getFeatureKey();
-  const theme = featureKey ? FeatureTheme[featureKey as keyof typeof FeatureTheme] : null;
-  const dateStr = entry ? format(new Date(entry.startTime), 'EEEE, dd MMM yyyy • h:mm a') : '';
+  const theme = featureKey
+    ? FeatureTheme[featureKey as keyof typeof FeatureTheme]
+    : null;
+  const dateStr = entry
+    ? formatLocalDate(entry.startTime, "EEEE, dd MMM yyyy • h:mm a", timeZoneId)
+    : "";
 
   const handleUpdate = () => {
     if (!entry || !strategy) return;
@@ -41,7 +51,7 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
       setDeleteDialogOpen(false);
       onDeleted(entry.id);
     } catch (error) {
-      console.error('Failed to delete log entry:', error);
+      console.error("Failed to delete log entry:", error);
     } finally {
       setDeleting(false);
     }
@@ -59,9 +69,9 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
         slotProps={{
           paper: {
             sx: {
-              borderRadius: '24px 24px 0 0',
-              maxWidth: '600px',
-              mx: 'auto',
+              borderRadius: "24px 24px 0 0",
+              maxWidth: "600px",
+              mx: "auto",
             },
           },
         }}
@@ -89,7 +99,7 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
             <div className="flex justify-center mt-6">
               <div
                 className="w-20 h-20 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: theme?.primary || '#6b7280' }}
+                style={{ backgroundColor: theme?.primary || "#6b7280" }}
               >
                 {strategy.getDrawerIcon(entry.details)}
               </div>
@@ -109,7 +119,9 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
             {entry.note && (
               <div className="mt-6">
                 <p className="text-sm font-semibold text-gray-900 mb-1">Note</p>
-                <p className="text-sm text-gray-500 leading-5 m-0">{entry.note}</p>
+                <p className="text-sm text-gray-500 leading-5 m-0">
+                  {entry.note}
+                </p>
               </div>
             )}
 
@@ -119,8 +131,8 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
                 onClick={handleUpdate}
                 className="h-14 rounded-[14px] text-base font-semibold tracking-tight uppercase"
                 style={{
-                  backgroundColor: theme?.primary || '#6b7280',
-                  color: '#ffffff',
+                  backgroundColor: theme?.primary || "#6b7280",
+                  color: "#ffffff",
                   borderRadius: 14,
                   height: 56,
                 }}
@@ -131,9 +143,9 @@ export default function LogDetailDrawer({ entry, onClose, onDeleted }: LogDetail
                 onClick={() => setDeleteDialogOpen(true)}
                 className="h-[60px] rounded-[14px] text-base font-semibold tracking-tight uppercase"
                 style={{
-                  border: `2px solid ${theme?.primary || '#6b7280'}`,
-                  backgroundColor: '#ffffff',
-                  color: theme?.primary || '#6b7280',
+                  border: `2px solid ${theme?.primary || "#6b7280"}`,
+                  backgroundColor: "#ffffff",
+                  color: theme?.primary || "#6b7280",
                   borderRadius: 14,
                   height: 60,
                 }}

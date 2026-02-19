@@ -26,4 +26,17 @@ export class FeedingService extends BaseService {
   delete(id: string): Promise<void> {
     return this.api.delete(`/${id}`);
   }
+
+  getDailyFeedingSummary(babyId: string, timeZoneId: string = 'Asia/Shanghai'): Promise<DailyFeedingSummaryDto> {
+    return this.api.get(`/daily-summary?babyId=${babyId}&timeZoneId=${encodeURIComponent(timeZoneId)}`);
+  }
+}
+
+export interface DailyFeedingInfo {
+  totalMl: number;
+  feedCount: number;
+}
+
+export interface DailyFeedingSummaryDto {
+  dailyTotals: Record<string, DailyFeedingInfo>;
 }

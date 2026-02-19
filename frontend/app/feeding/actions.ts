@@ -5,11 +5,12 @@ import { feedingService } from '@/lib/services/feeding/feeding.service.server';
 import { CreateFeedingLogRequest, UpdateFeedingLogRequest, FeedingType } from '@/lib/types';
 import { FeedingFormValues } from '@/lib/schemas/feeding.schema';
 import { buildRedirectUrl } from '@/lib/utils/redirect';
+import { toUtcIsoString } from '@/lib/utils/datetime';
 
 export async function createFeedingLog(data: FeedingFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateFeedingLogRequest = {
         babyId,
-        feedingTime: new Date(data.startTime).toISOString(),
+        feedingTime: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
@@ -27,7 +28,7 @@ export async function updateFeedingLog(id: string, data: FeedingFormValues, baby
     const request: UpdateFeedingLogRequest = {
         id,
         babyId,
-        feedingTime: new Date(data.startTime).toISOString(),
+        feedingTime: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
@@ -44,3 +45,4 @@ export async function updateFeedingLog(id: string, data: FeedingFormValues, baby
 export async function deleteFeedingLog(id: string) {
     await feedingService.delete(id);
 }
+

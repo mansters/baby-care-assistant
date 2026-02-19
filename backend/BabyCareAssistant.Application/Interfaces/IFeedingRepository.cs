@@ -1,3 +1,4 @@
+using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Domain.Entities;
 
 namespace BabyCareAssistant.Application.Interfaces;
@@ -13,4 +14,7 @@ public interface IFeedingRepository
     Task<FeedingLog?> UpdateAsync(FeedingLog log);
     
     Task<bool> DeleteAsync(Guid id);
+
+    Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(
+        Guid babyId, string timeZoneId, CancellationToken cancellationToken = default);
 }

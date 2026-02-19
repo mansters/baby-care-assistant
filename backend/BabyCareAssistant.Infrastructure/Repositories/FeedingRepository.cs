@@ -1,5 +1,7 @@
+using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
+using BabyCareAssistant.Domain.Enums;
 using BabyCareAssistant.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,5 +57,23 @@ public class FeedingRepository(BabyCareAssistantDbContext context) : IFeedingRep
         await context.SaveChangesAsync();
         
         return true;
+    }
+
+    public async Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(
+        Guid babyId, string timeZoneId, CancellationToken cancellationToken = default)
+    {
+        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+        var feedingLogs = await context.FeedingLogs
+            .AsNoTracking()
+            .Where(f => f.BabyId == babyId && f.AmountMl > 0 && f.Type == FeedingType.Bottle)
+            .ToListAsync(cancellationToken);
+
+        return feedingLogs
+            .GroupBy(f => TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.SpecifyKind(f.FeedingTime, DateTimeKind.Utc), timeZone).Date)
+            .ToDictionary(
+                g => g.Key.ToString("yyyy-MM-dd"),
+                g => new DailyFeedingInfo(g.Sum(f => f.AmountMl), g.Count()));
     }
 }

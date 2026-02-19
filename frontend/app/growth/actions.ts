@@ -5,11 +5,12 @@ import { growthService } from '@/lib/services/growth/growth.service.server';
 import { CreateGrowthLogRequest, UpdateGrowthLogRequest } from '@/lib/types';
 import { GrowthFormValues } from '@/lib/schemas/growth.schema';
 import { buildRedirectUrl } from '@/lib/utils/redirect';
+import { toUtcIsoString } from '@/lib/utils/datetime';
 
 export async function createGrowthLog(data: GrowthFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateGrowthLogRequest = {
         babyId,
-        dateMeasured: new Date(data.startTime).toISOString(),
+        dateMeasured: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,
@@ -24,7 +25,7 @@ export async function updateGrowthLog(id: string, data: GrowthFormValues, babyId
     const request: UpdateGrowthLogRequest = {
         id,
         babyId,
-        dateMeasured: new Date(data.startTime).toISOString(),
+        dateMeasured: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,
@@ -38,3 +39,4 @@ export async function updateGrowthLog(id: string, data: GrowthFormValues, babyId
 export async function deleteGrowthLog(id: string) {
     await growthService.delete(id);
 }
+

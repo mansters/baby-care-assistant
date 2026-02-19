@@ -4,6 +4,7 @@ using BabyCareAssistant.Application.Features.FeedingLog.Commands.UpdateFeedingLo
 using BabyCareAssistant.Application.Features.FeedingLog.Commands.DeleteFeedingLog;
 using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetAllFeedingLogs;
 using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetFeedingLogById;
+using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetDailyFeedingSummary;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,5 +63,14 @@ public class FeedingController(ISender sender) : ControllerBase
     {
         await sender.Send(new DeleteFeedingLogCommand(id));
         return NoContent();
+    }
+
+    [HttpGet("daily-summary")]
+    public async Task<ActionResult<DailyFeedingSummaryDto>> GetDailySummaryAsync(
+        [FromQuery] Guid babyId,
+        [FromQuery] string timeZoneId = "Asia/Shanghai")
+    {
+        var result = await sender.Send(new GetDailyFeedingSummaryQuery(babyId, timeZoneId));
+        return Ok(result.Value);
     }
 }
