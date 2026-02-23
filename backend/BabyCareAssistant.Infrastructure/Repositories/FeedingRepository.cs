@@ -76,4 +76,26 @@ public class FeedingRepository(BabyCareAssistantDbContext context) : IFeedingRep
                 g => g.Key.ToString("yyyy-MM-dd"),
                 g => new DailyFeedingInfo(g.Sum(f => f.AmountMl), g.Count()));
     }
+
+    public async Task<FeedingLog?> GetLatestAsync(
+        Guid babyId, CancellationToken cancellationToken = default)
+    {
+        return await context.FeedingLogs
+            .AsNoTracking()
+            .Where(f => f.BabyId == babyId)
+            .OrderByDescending(f => f.FeedingTime)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<List<DateTime>> GetRecentFeedingTimesAsync(
+        Guid babyId, int count, CancellationToken cancellationToken = default)
+    {
+        return await context.FeedingLogs
+            .AsNoTracking()
+            .Where(f => f.BabyId == babyId)
+            .OrderByDescending(f => f.FeedingTime)
+            .Take(count)
+            .Select(f => f.FeedingTime)
+            .ToListAsync(cancellationToken);
+    }
 }

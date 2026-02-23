@@ -30,6 +30,10 @@ export class FeedingService extends BaseService {
   getDailyFeedingSummary(babyId: string, timeZoneId: string = 'Asia/Shanghai'): Promise<DailyFeedingSummaryDto> {
     return this.api.get(`/daily-summary?babyId=${babyId}&timeZoneId=${encodeURIComponent(timeZoneId)}`);
   }
+
+  getNextFeeding(babyId: string): Promise<NextFeedingDto> {
+    return this.api.get(`/next-feeding?babyId=${babyId}`);
+  }
 }
 
 export interface DailyFeedingInfo {
@@ -39,4 +43,9 @@ export interface DailyFeedingInfo {
 
 export interface DailyFeedingSummaryDto {
   dailyTotals: Record<string, DailyFeedingInfo>;
+}
+
+export interface NextFeedingDto {
+  lastFeedingTime: string | null;
+  nextFeedingTime: string | null;
 }

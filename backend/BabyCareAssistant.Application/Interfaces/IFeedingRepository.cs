@@ -17,4 +17,9 @@ public interface IFeedingRepository
 
     Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(
         Guid babyId, string timeZoneId, CancellationToken cancellationToken = default);
+
+    Task<FeedingLog?> GetLatestAsync(Guid babyId, CancellationToken cancellationToken = default);
+
+    Task<List<DateTime>> GetRecentFeedingTimesAsync(
+        Guid babyId, int count, CancellationToken cancellationToken = default);
 }

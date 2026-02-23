@@ -25,6 +25,7 @@ import { FeatureTheme } from "@/lib/theme";
 import React, { useEffect, useState } from "react";
 import TimezoneSwitcher from "@/shared/components/TimezoneSwitcher";
 import useToastFromParams from "@/shared/hooks/useParamsMessage";
+import { useNextFeeding } from "@/features/home/hooks/useNextFeeding";
 
 interface HomePageProps {
   baby: BabyDto;
@@ -52,20 +53,15 @@ export default function HomePage({ baby }: HomePageProps) {
   const babyAge = formatBabyAge(baby.dateOfBirth);
   const babyName = getBabyDisplayName(baby);
 
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({ open: false, message: "", severity: "success" });
-
   const notification = useToastFromParams();
+  const { lastFeedingDisplay, nextFeedingDisplay } = useNextFeeding(baby.id);
 
   const features = [
     {
       icon: <TbBabyBottle />,
       title: "Feeding",
-      subtitle: "Last: 14:30",
-      badge: "Next: 17:30",
+      subtitle: lastFeedingDisplay ? `Last: ${lastFeedingDisplay}` : undefined,
+      badge: nextFeedingDisplay ? `Next: ${nextFeedingDisplay}` : undefined,
       backgroundColor: "#FFE5EC",
       iconColor: FeatureTheme.feeding.primary,
       href: "/feeding/new",
