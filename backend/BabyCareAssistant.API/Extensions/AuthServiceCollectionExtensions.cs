@@ -3,9 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BabyCareAssistant.API.Extensions;
 
-public static class ServiceCollectionExtensions
+public static class AuthServiceCollectionExtensions
 {
-    public static IServiceCollection AddAuthInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCognitoAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var userPoolId = configuration["Authentication:Cognito:UserPoolId"];
         var clientId = configuration["Authentication:Cognito:ClientId"];

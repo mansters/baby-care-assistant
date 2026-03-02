@@ -8,6 +8,9 @@ using BabyCareAssistant.Application.Services;
 using BabyCareAssistant.Infrastructure.Persistence;
 using BabyCareAssistant.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Amazon; 
+using Amazon.DynamoDBv2;
+using BabyCareAssistant.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +25,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddAuthInfrastructure(builder.Configuration);
+builder.Services.AddCognitoAuthentication(builder.Configuration);
+builder.Services.AddDynamoDbInfrastructure(builder.Configuration);
+
 
 builder.Services.AddDbContext<BabyCareAssistantDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
