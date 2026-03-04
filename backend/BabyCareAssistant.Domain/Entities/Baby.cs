@@ -2,16 +2,14 @@
 
 namespace BabyCareAssistant.Domain.Entities
 {
-    public class Baby: BaseEntity
+    public class Baby: DynamoBaseEntity
     {
+        public string BabyId { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string? PreferredName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
-
-        public virtual ICollection<FeedingLog> FeedingLogs { get; set; } = new List<FeedingLog>();
-        public virtual ICollection<GrowthLog> GrowthLogs { get; set; } = new List<GrowthLog>();
-        public virtual ICollection<ExcretionLog> ExcretionLogs { get; set; } = new List<ExcretionLog>();
-        public virtual ICollection<VaccinationRecord> VaccinationRecords { get; set; } = new List<VaccinationRecord>();
+        public string FamilyId { get; set; } = string.Empty;
+        public string TimeZone { get; set; } = string.Empty;
     }
 }

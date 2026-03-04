@@ -2,14 +2,12 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Domain.Entities;
 
-public class ExcretionLog : BaseEntity
+public class ExcretionLog : LogBaseEntity
 {
-    public Guid BabyId { get; set; }
-    public virtual Baby Baby { get; set; }
-    
-    public DateTime Time { get; set; }
+    protected override string LogPrefix { get; } = "EXCR";
     
     public ExcretionType Type { get; set; } 
     
-    public string? Notes { get; set; } 
+    public string? Notes { get; set; }
+
 }

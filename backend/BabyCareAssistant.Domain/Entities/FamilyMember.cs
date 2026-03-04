@@ -2,15 +2,15 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Domain.Entities;
 
-public class FamilyMember
+public class FamilyMember: DynamoBaseEntity
 {
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public string UserId { get; set; } = null!;
 
-    public Guid FamilyId { get; set; }
-    public Family Family { get; set; } = null!;
+    public string FamilyId { get; set; } = null!;
 
     public FamilyRole Role { get; set; } = FamilyRole.Member;
     
     public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+    
+    public string? UserName { get; set; }
 }

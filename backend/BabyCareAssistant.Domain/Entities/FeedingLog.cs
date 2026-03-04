@@ -2,10 +2,10 @@ using BabyCareAssistant.Domain.Enums;
 
 namespace BabyCareAssistant.Domain.Entities;
 
-public class FeedingLog: BaseEntity
+public class FeedingLog: LogBaseEntity
 {
-    public DateTime FeedingTime { get; set; }
-
+    protected override string LogPrefix { get; } = "FEED";
+    
     public FeedingType Type { get; set; }
     public int AmountMl { get; set; }
 
@@ -13,7 +13,4 @@ public class FeedingLog: BaseEntity
     public int? RightBreastDurationMinutes { get; set; }
     
     public string? Note { get; set; }
-
-    public Guid BabyId { get; set; }
-    public virtual Baby? Baby { get; set; }
 }
