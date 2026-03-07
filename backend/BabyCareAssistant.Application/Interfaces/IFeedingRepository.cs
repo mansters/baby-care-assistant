@@ -5,21 +5,17 @@ namespace BabyCareAssistant.Application.Interfaces;
 
 public interface IFeedingRepository
 {
-    Task<List<FeedingLog>> GetAllAsync();
+    Task<List<FeedingLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct);
     
-    Task<FeedingLog?> GetByIdAsync(Guid id);
+    Task<FeedingLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct);
     
-    Task<FeedingLog> CreateAsync(FeedingLog log);
+    Task<FeedingLog> CreateAsync(FeedingLog log, CancellationToken ct);
     
-    Task<FeedingLog?> UpdateAsync(FeedingLog log);
+    Task<FeedingLog?> UpdateAsync(string babyId, string sk, FeedingLog item, CancellationToken ct);
     
-    Task<bool> DeleteAsync(Guid id);
-
-    Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(
-        Guid babyId, string timeZoneId, CancellationToken cancellationToken = default);
-
-    Task<FeedingLog?> GetLatestAsync(Guid babyId, CancellationToken cancellationToken = default);
-
-    Task<List<DateTime>> GetRecentFeedingTimesAsync(
-        Guid babyId, int count, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(string babyId, string sk, CancellationToken ct);
+    
+    Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(string babyId, CancellationToken ct);
+    
+    Task<FeedingLog?> GetLatestAsync(string babyId, CancellationToken ct);
 }

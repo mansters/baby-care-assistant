@@ -29,6 +29,8 @@ builder.Services.AddDynamoDbInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped(typeof(IDynamoDbBaseRepository<>), typeof(DynamoDbBaseRepository<>));
 builder.Services.AddScoped<IFeedingRepository, FeedingRepository>();
 builder.Services.AddScoped<IBabyRepository, BabyRepository>();
 builder.Services.AddScoped<IGrowthLogRepository, GrowthLogRepository>();

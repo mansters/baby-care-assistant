@@ -1,101 +1,89 @@
-using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
+using Amazon.DynamoDBv2;
+using BabyCareAssistant.Application.Features.FeedingLog.Dtos; // 我们暂用高阶的 DynamoDBContext 简化操作
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
-using BabyCareAssistant.Domain.Enums;
-using BabyCareAssistant.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration; 
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class FeedingRepository(BabyCareAssistantDbContext context) : IFeedingRepository
+public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseRepository) : IFeedingRepository
 {
-    public async Task<List<FeedingLog>> GetAllAsync()
+
+    public async Task<List<FeedingLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await context.FeedingLogs.ToListAsync();
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, limit, cursorSk, ct);
     }
 
-    public async Task<FeedingLog?> GetByIdAsync(Guid id)
+    public async Task<FeedingLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
-        return await context.FeedingLogs.FindAsync(id);
+        return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<FeedingLog> CreateAsync(FeedingLog log)
+    public async Task<FeedingLog> CreateAsync(FeedingLog log, CancellationToken ct)
     {
-        await context.FeedingLogs.AddAsync(log);
-        await context.SaveChangesAsync();
-        return log;
+        return await dynamoDbBaseRepository.CreateAsync(log, ct);
     }
 
-    public async Task<FeedingLog?> UpdateAsync(FeedingLog log)
+    public async Task<FeedingLog?> UpdateAsync(string babyId, string sk, FeedingLog item, CancellationToken ct)
     {
-        var existingLog = await context.FeedingLogs.FindAsync(log.Id);
-
-        if (existingLog == null)
+        var mutate = (FeedingLog log) =>
         {
-            return null;
-        }
+            log.AmountMl = item.AmountMl;
+            log.LeftBreastDurationMinutes = item.LeftBreastDurationMinutes;
+            log.RightBreastDurationMinutes = item.RightBreastDurationMinutes;
+            log.Note = item.Note;
+            log.UpdatedAt = DateTime.UtcNow;
+        };
         
-        existingLog.FeedingTime = log.FeedingTime;
-
-        existingLog.Type = log.Type;
-        existingLog.AmountMl = log.AmountMl;
-        
-        await context.SaveChangesAsync();
-        return existingLog;
+        return await dynamoDbBaseRepository.UpdateAsync($"BABY#{babyId}", sk, mutate, ct);
+    }
+    
+    public async Task<bool> DeleteAsync(string babyId, string sk, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(string babyId, CancellationToken ct)
     {
-        var existingLog = await context.FeedingLogs.FindAsync(id);
+        // 1. 获取所有的历史 FeedingLog
+        // 这里的 limit 传 int.MaxValue，因为我们要聚合全量数据
+        var allLogs = await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, int.MaxValue, null, ct);
 
-        if (existingLog == null)
+        var dailyTotals = new Dictionary<string, DailyFeedingInfo>();
+
+        foreach (var log in allLogs)
         {
-            return false;
+            var date = log.LocalDate;
+
+            // 只需要统计配方奶 (Formula) 类型的总奶量
+            if (log.Type == BabyCareAssistant.Domain.Enums.FeedingType.Bottle)
+            {
+                if (!dailyTotals.ContainsKey(date))
+                {
+                    // 如果这一天还没出现过，直接 new 一个初始的 record
+                    dailyTotals[date] = new DailyFeedingInfo(log.AmountMl, 1);
+                }
+                else
+                {
+                    // 如果已经出现过，说明这是一个 record
+                    var current = dailyTotals[date];
+                    
+                    // 用 C# 9 的 with 表达式，基于当前记录"克隆"出一个新对象并替换掉要改的值
+                    dailyTotals[date] = current with 
+                    { 
+                        TotalMl = current.TotalMl + log.AmountMl,
+                        FeedCount = current.FeedCount + 1
+                    };
+                }
+            }
         }
 
-        context.FeedingLogs.Remove(existingLog);
-        await context.SaveChangesAsync();
-        
-        return true;
+        return dailyTotals;
     }
 
-    public async Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(
-        Guid babyId, string timeZoneId, CancellationToken cancellationToken = default)
+
+    public async Task<FeedingLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-
-        var feedingLogs = await context.FeedingLogs
-            .AsNoTracking()
-            .Where(f => f.BabyId == babyId && f.AmountMl > 0 && f.Type == FeedingType.Bottle)
-            .ToListAsync(cancellationToken);
-
-        return feedingLogs
-            .GroupBy(f => TimeZoneInfo.ConvertTimeFromUtc(
-                DateTime.SpecifyKind(f.FeedingTime, DateTimeKind.Utc), timeZone).Date)
-            .ToDictionary(
-                g => g.Key.ToString("yyyy-MM-dd"),
-                g => new DailyFeedingInfo(g.Sum(f => f.AmountMl), g.Count()));
-    }
-
-    public async Task<FeedingLog?> GetLatestAsync(
-        Guid babyId, CancellationToken cancellationToken = default)
-    {
-        return await context.FeedingLogs
-            .AsNoTracking()
-            .Where(f => f.BabyId == babyId)
-            .OrderByDescending(f => f.FeedingTime)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
-    public async Task<List<DateTime>> GetRecentFeedingTimesAsync(
-        Guid babyId, int count, CancellationToken cancellationToken = default)
-    {
-        return await context.FeedingLogs
-            .AsNoTracking()
-            .Where(f => f.BabyId == babyId)
-            .OrderByDescending(f => f.FeedingTime)
-            .Take(count)
-            .Select(f => f.FeedingTime)
-            .ToListAsync(cancellationToken);
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#FEED#", ct);
     }
 }
