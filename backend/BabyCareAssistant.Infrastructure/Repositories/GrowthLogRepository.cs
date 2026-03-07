@@ -1,61 +1,46 @@
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
-using BabyCareAssistant.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class GrowthLogRepository(BabyCareAssistantDbContext dbContext) : IGrowthLogRepository
+public class GrowthLogRepository(IDynamoDbBaseRepository<GrowthLog> dynamoDbBaseRepository) : IGrowthLogRepository
 {
-    public async Task<List<GrowthLog>> GetAllAsync()
+    public async Task<List<GrowthLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await dbContext.GrowthLogs.ToListAsync();
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#GROW#", false, limit, cursorSk, ct);
     }
 
-    public async Task<GrowthLog?> GetByIdAsync(Guid id)
+    public async Task<GrowthLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
-        return await dbContext.GrowthLogs.FindAsync(id);
+        return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<GrowthLog> CreateAsync(GrowthLog growthLog)
+    public async Task<GrowthLog> CreateAsync(GrowthLog growthLog, CancellationToken ct)
     {
-        await dbContext.GrowthLogs.AddAsync(growthLog);
-        await dbContext.SaveChangesAsync();
-        return growthLog;
+        return await dynamoDbBaseRepository.CreateAsync(growthLog, ct);
     }
 
-    public async Task<GrowthLog?> UpdateAsync(GrowthLog growthLog)
+    public async Task<GrowthLog?> UpdateAsync(string babyId, string sk, GrowthLog item, CancellationToken ct)
     {
-        var existingGrowthLog = await dbContext.GrowthLogs.FindAsync(growthLog.Id);
-
-        if (existingGrowthLog == null)
+        var mutate = (GrowthLog log) =>
         {
-            return null;
-        } 
+            log.WeightKg = item.WeightKg;
+            log.HeightCm = item.HeightCm;
+            log.HeadCircumferenceCm = item.HeadCircumferenceCm;
+            log.Note = item.Note;
+            log.UpdatedAt = DateTime.UtcNow;
+        };
         
-        existingGrowthLog.DateMeasured = growthLog.DateMeasured;
-        existingGrowthLog.WeightKg = growthLog.WeightKg;
-        existingGrowthLog.HeightCm = growthLog.HeightCm;
-        existingGrowthLog.HeadCircumferenceCm = growthLog.HeadCircumferenceCm;
-        existingGrowthLog.Note = growthLog.Note;
-        
-        await dbContext.SaveChangesAsync();
-
-        return existingGrowthLog;
+        return await dynamoDbBaseRepository.UpdateAsync($"BABY#{babyId}", sk, mutate, ct);
+    }
+    
+    public async Task<bool> DeleteAsync(string babyId, string sk, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<GrowthLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        var existingGrowthLog = await dbContext.GrowthLogs.FindAsync(id);
-
-        if (existingGrowthLog == null)
-        {
-            return false;
-        }
-
-        dbContext.GrowthLogs.Remove(existingGrowthLog);
-        await dbContext.SaveChangesAsync();
-        
-        return true;
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#GROW#", ct);
     }
 }

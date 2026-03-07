@@ -4,13 +4,9 @@ namespace BabyCareAssistant.Application.Interfaces;
 
 public interface IBabyRepository
 {
-    Task<List<Baby>> GetAllAsync();
-    
-    Task<Baby?> GetByIdAsync(Guid id);
-    
-    Task<Baby> CreateAsync(Baby baby);
-    
-    Task<Baby?> UpdateAsync(Baby baby);
-    
-    Task<bool> DeleteAsync(Guid id);
+    Task<Baby?> GetByIdAsync(string babyId, CancellationToken ct);
+    Task<List<Baby>> GetByFamilyIdAsync(string familyId, CancellationToken ct);
+    Task<Baby> CreateAsync(Baby baby, CancellationToken ct);
+    Task<Baby?> UpdateAsync(string babyId, Baby item, CancellationToken ct);
+    Task<bool> DeleteAsync(string babyId, CancellationToken ct);
 }

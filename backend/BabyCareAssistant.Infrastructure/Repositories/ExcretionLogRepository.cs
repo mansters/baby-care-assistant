@@ -1,59 +1,44 @@
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
-using BabyCareAssistant.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class ExcretionLogRepository(BabyCareAssistantDbContext dbContext) : IExcretionLogRepository
+public class ExcretionLogRepository(IDynamoDbBaseRepository<ExcretionLog> dynamoDbBaseRepository) : IExcretionLogRepository
 {
-    public async Task<List<ExcretionLog>> GetAllAsync()
+    public async Task<List<ExcretionLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await dbContext.ExcretionLogs.ToListAsync();
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#EXCR#", false, limit, cursorSk, ct);
     }
 
-    public async Task<ExcretionLog?> GetByIdAsync(Guid id)
+    public async Task<ExcretionLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
-        return await dbContext.ExcretionLogs.FindAsync(id);
+        return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<ExcretionLog> CreateAsync(ExcretionLog excretionLog)
+    public async Task<ExcretionLog> CreateAsync(ExcretionLog excretionLog, CancellationToken ct)
     {
-        await dbContext.ExcretionLogs.AddAsync(excretionLog);
-        await dbContext.SaveChangesAsync();
-        return excretionLog;
+        return await dynamoDbBaseRepository.CreateAsync(excretionLog, ct);
     }
 
-    public async Task<ExcretionLog?> UpdateAsync(ExcretionLog excretionLog)
+    public async Task<ExcretionLog?> UpdateAsync(string babyId, string sk, ExcretionLog item, CancellationToken ct)
     {
-        var existingLog = await dbContext.ExcretionLogs.FindAsync(excretionLog.Id);
-
-        if (existingLog == null)
+        var mutate = (ExcretionLog log) =>
         {
-            return null;
-        }
+            log.Type = item.Type;
+            log.Notes = item.Notes;
+            log.UpdatedAt = DateTime.UtcNow;
+        };
         
-        existingLog.Time = excretionLog.Time;
-        existingLog.Type = excretionLog.Type;
-        existingLog.Notes = excretionLog.Notes;
-        
-        await dbContext.SaveChangesAsync();
-
-        return existingLog;
+        return await dynamoDbBaseRepository.UpdateAsync($"BABY#{babyId}", sk, mutate, ct);
+    }
+    
+    public async Task<bool> DeleteAsync(string babyId, string sk, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", sk, ct);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<ExcretionLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        var existingLog = await dbContext.ExcretionLogs.FindAsync(id);
-
-        if (existingLog == null)
-        {
-            return false;
-        }
-
-        dbContext.ExcretionLogs.Remove(existingLog);
-        await dbContext.SaveChangesAsync();
-        
-        return true;
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#EXCR#", ct);
     }
 }

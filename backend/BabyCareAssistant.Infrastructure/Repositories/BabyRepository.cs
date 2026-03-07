@@ -1,59 +1,72 @@
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
-using BabyCareAssistant.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using BabyCareAssistant.Infrastructure.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class BabyRepository(BabyCareAssistantDbContext dbContext): IBabyRepository
+public class BabyRepository(IDynamoDbBaseRepository<Baby> dynamoDbBaseRepository, IAmazonDynamoDB dynamoDbClient, IConfiguration configuration) : IBabyRepository
 {
-    public async Task<List<Baby>> GetAllAsync()
+    private readonly string _tableName = configuration["DynamoDb:TableName"] ?? "BabyCare";
+    private readonly string _gsiName = configuration["DynamoDb:GSI1Name"] ?? "GSI1";
+
+    public async Task<Baby?> GetByIdAsync(string babyId, CancellationToken ct)
     {
-        return await dbContext.Babies.ToListAsync();
+        return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", "META", ct);
     }
 
-    public async Task<Baby?> GetByIdAsync(Guid id)
+    public async Task<List<Baby>> GetByFamilyIdAsync(string familyId, CancellationToken ct)
     {
-        return await dbContext.Babies.FindAsync(id);
-    }
-
-    public async Task<Baby> CreateAsync(Baby baby)
-    {
-        await dbContext.Babies.AddAsync(baby);
-        await dbContext.SaveChangesAsync();
-        return baby;
-    }
-
-    public async Task<Baby?> UpdateAsync(Baby baby)
-    {
-        var existingBaby = await GetByIdAsync(baby.Id);
-
-        if (existingBaby == null)
+        var request = new QueryRequest
         {
-            return null;
-        }
-        
-        existingBaby.FirstName = baby.FirstName;
-        existingBaby.LastName = baby.LastName;
-        existingBaby.PreferredName = baby.PreferredName;
-        existingBaby.DateOfBirth = baby.DateOfBirth;
-        
-        await dbContext.SaveChangesAsync();
-        return existingBaby;
+            TableName = _tableName,
+            IndexName = _gsiName,
+            KeyConditionExpression = "GSI1PK = :gsi1pk AND begins_with(GSI1SK, :prefix)",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":gsi1pk", new AttributeValue { S = $"FAMILY#{familyId}" } },
+                { ":prefix", new AttributeValue { S = "BABY#" } }
+            }
+        };
+
+        var response = await dynamoDbClient.QueryAsync(request, ct);
+
+        return response.Items
+            .Select(DynamoDbMapper.ToEntity<Baby>)
+            .Where(x => x != null)
+            .ToList()!;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<Baby> CreateAsync(Baby baby, CancellationToken ct)
     {
-        var existingBaby = await GetByIdAsync(id);
-
-        if (existingBaby == null)
-        {
-            return false;
-        }
-
-        dbContext.Remove(existingBaby);
-        await dbContext.SaveChangesAsync();
+        baby.PK = $"BABY#{baby.BabyId}";
+        baby.SK = "META";
+        baby.GSI1PK = $"FAMILY#{baby.FamilyId}";
+        baby.GSI1SK = $"BABY#{baby.BabyId}";
+        baby.EntityType = nameof(Baby);
         
-        return true;
+        return await dynamoDbBaseRepository.CreateAsync(baby, ct);
+    }
+
+    public async Task<Baby?> UpdateAsync(string babyId, Baby item, CancellationToken ct)
+    {
+        var mutate = (Baby baby) =>
+        {
+            baby.FirstName = item.FirstName;
+            baby.LastName = item.LastName;
+            baby.PreferredName = item.PreferredName;
+            baby.DateOfBirth = item.DateOfBirth;
+            baby.TimeZone = item.TimeZone;
+            baby.UpdatedAt = DateTime.UtcNow;
+        };
+        
+        return await dynamoDbBaseRepository.UpdateAsync($"BABY#{babyId}", "META", mutate, ct);
+    }
+
+    public async Task<bool> DeleteAsync(string babyId, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", "META", ct);
     }
 }

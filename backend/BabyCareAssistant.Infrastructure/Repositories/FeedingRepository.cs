@@ -1,8 +1,6 @@
-using Amazon.DynamoDBv2;
-using BabyCareAssistant.Application.Features.FeedingLog.Dtos; // 我们暂用高阶的 DynamoDBContext 简化操作
+using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Entities;
-using Microsoft.Extensions.Configuration; 
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
