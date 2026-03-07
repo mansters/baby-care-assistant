@@ -6,10 +6,10 @@ namespace BabyCareAssistant.Application.Features.FeedingLog.Commands.CreateFeedi
 public record CreateFeedingLogDto
 {
     [Required]
-    public Guid BabyId { get; init; }
+    public string BabyId { get; init; } = string.Empty;
 
     [Required]
-    public DateTime FeedingTime { get; init; }
+    public DateTime LocalDateTime { get; init; }
 
 
 

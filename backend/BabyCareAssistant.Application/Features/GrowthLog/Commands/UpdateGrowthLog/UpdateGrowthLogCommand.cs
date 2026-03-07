@@ -6,27 +6,23 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowthLog;
 
-public record UpdateGrowthLogCommand(Guid Id, UpdateGrowthLogDto Dto) : IRequest<Result<GrowthLogDto>>;
+public record UpdateGrowthLogCommand(string BabyId, string Sk, UpdateGrowthLogDto Dto) : IRequest<Result<GrowthLogDto>>;
 
 internal sealed class UpdateGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository, IMapper mapper)
     : IRequestHandler<UpdateGrowthLogCommand, Result<GrowthLogDto>>
 {
     public async Task<Result<GrowthLogDto>> Handle(UpdateGrowthLogCommand request, CancellationToken cancellationToken)
     {
-        if (request.Id != request.Dto.Id)
+        if (request.BabyId != request.Dto.BabyId || request.Sk != request.Dto.SK)
+            return Result<GrowthLogDto>.Failure("IDs in URL do not match body.");
+
+        var updatedEntity = await growthLogRepository.UpdateAsync(request.BabyId, request.Sk, existingLog =>
         {
-            return Result<GrowthLogDto>.Failure("The ID in the URL does not match the ID in the request body.");
-        }
+            mapper.Map(request.Dto, existingLog);
+        }, cancellationToken);
 
-        var entity = mapper.Map<Domain.Entities.GrowthLog>(request.Dto);
-        var updatedEntity = await growthLogRepository.UpdateAsync(entity);
+        if (updatedEntity == null) return Result<GrowthLogDto>.Failure("Growth log not found");
+        return Result<GrowthLogDto>.Success(mapper.Map<GrowthLogDto>(updatedEntity));
 
-        if (updatedEntity == null)
-        {
-            return Result<GrowthLogDto>.Failure("Growth log not found");
-        }
-
-        var dto = mapper.Map<GrowthLogDto>(updatedEntity);
-        return Result<GrowthLogDto>.Success(dto);
     }
 }

@@ -6,10 +6,10 @@ namespace BabyCareAssistant.Application.Features.ExcretionLog.Commands.CreateExc
 public record CreateExcretionLogDto
 {
     [Required]
-    public Guid BabyId { get; init; }
+    public string BabyId { get; init; } = string.Empty;
 
     [Required]
-    public DateTime Time { get; init; }
+    public DateTime LocalDateTime { get; init; }
 
     [Required]
     public ExcretionType Type { get; init; }

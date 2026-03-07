@@ -6,14 +6,14 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetFeedingLogById;
 
-public record GetFeedingLogByIdQuery(Guid Id) : IRequest<Result<FeedingLogDto>>;
+public record GetFeedingLogByIdQuery(string BabyId, string Sk) : IRequest<Result<FeedingLogDto>>;
 
 internal sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRepository, IMapper mapper)
     : IRequestHandler<GetFeedingLogByIdQuery, Result<FeedingLogDto>>
 {
     public async Task<Result<FeedingLogDto>> Handle(GetFeedingLogByIdQuery request, CancellationToken cancellationToken)
     {
-        var log = await feedingRepository.GetByIdAsync(request.Id);
+        var log = await feedingRepository.GetByKeyAsync(request.BabyId, request.Sk, cancellationToken);
 
         if (log == null)
         {

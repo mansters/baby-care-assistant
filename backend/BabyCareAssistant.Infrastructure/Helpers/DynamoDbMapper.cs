@@ -9,12 +9,11 @@ public static class DynamoDbMapper
 {
     private static readonly JsonSerializerOptions Options = new()
     {
-        PropertyNamingPolicy = null, // 保持大写原样
+        PropertyNamingPolicy = null,
         Converters = { new JsonStringEnumConverter() },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    // 把 DynamoDB 的响应转成 C# 实体
     public static T? ToEntity<T>(Dictionary<string, AttributeValue>? item) where T : class
     {
         if (item == null || item.Count == 0) return null;
@@ -23,7 +22,6 @@ public static class DynamoDbMapper
         return JsonSerializer.Deserialize<T>(json, Options);
     }
 
-    // 把 C# 实体转成 DynamoDB 能认的 Dictionary
     public static Dictionary<string, AttributeValue> ToAttributeMap<T>(T entity) where T : class
     {
         var json = JsonSerializer.Serialize(entity, Options);

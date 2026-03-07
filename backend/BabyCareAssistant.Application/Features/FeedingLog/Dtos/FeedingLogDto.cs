@@ -4,9 +4,10 @@ namespace BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 
 public record FeedingLogDto
 {
-    public Guid Id { get; init; }
-    public Guid BabyId { get; init; }
-    public DateTime FeedingTime { get; init; }
+    public string BabyId { get; init; } = string.Empty;
+    public string SK { get; init; } = string.Empty;
+    public DateTime EventTimeUtc { get; init; }
+    public DateTime LocalDateTime { get; init; }
 
     public int? LeftBreastDurationMinutes { get; init; }
     public int? RightBreastDurationMinutes { get; init; }

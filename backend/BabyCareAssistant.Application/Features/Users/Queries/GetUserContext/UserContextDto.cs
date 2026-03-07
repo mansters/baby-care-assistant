@@ -12,7 +12,7 @@ public record UserContextDto
 
 public record UserProfileDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string CognitoSubjectId { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ public record UserProfileDto
 
 public record ContextFamilyDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public int Role { get; set; }
     public List<BabyDto> Babies { get; set; } = new();

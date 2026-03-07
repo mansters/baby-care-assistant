@@ -20,23 +20,14 @@ public class GrowthLogRepository(IDynamoDbBaseRepository<GrowthLog> dynamoDbBase
         return await dynamoDbBaseRepository.CreateAsync(growthLog, ct);
     }
 
-    public async Task<GrowthLog?> UpdateAsync(string babyId, string sk, GrowthLog item, CancellationToken ct)
+    public async Task<GrowthLog?> UpdateAsync(string babyId, string sk, Action<GrowthLog> mutate, CancellationToken ct)
     {
-        var mutate = (GrowthLog log) =>
-        {
-            log.WeightKg = item.WeightKg;
-            log.HeightCm = item.HeightCm;
-            log.HeadCircumferenceCm = item.HeadCircumferenceCm;
-            log.Note = item.Note;
-            log.UpdatedAt = DateTime.UtcNow;
-        };
-        
         return await dynamoDbBaseRepository.UpdateAsync($"BABY#{babyId}", sk, mutate, ct);
     }
     
-    public async Task<bool> DeleteAsync(string babyId, string sk, CancellationToken ct)
+    public async Task DeleteAsync(string babyId, string sk, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", sk, ct);
+        await dynamoDbBaseRepository.DeleteAsync($"BABY#{babyId}", sk, ct);
     }
 
     public async Task<GrowthLog?> GetLatestAsync(string babyId, CancellationToken ct)

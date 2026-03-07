@@ -12,7 +12,7 @@ public class LogController(ISender sender) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginatedLogResponse>> GetLogsAsync(
-        [FromQuery] Guid babyId,
+        [FromQuery] string babyId,
         [FromQuery] string? cursor,
         [FromQuery] int pageSize = 20,
         [FromQuery] LogType[]? types = null)

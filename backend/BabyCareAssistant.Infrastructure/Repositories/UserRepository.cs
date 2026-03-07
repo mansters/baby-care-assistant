@@ -21,7 +21,7 @@ public class UserRepository(
         return await userBaseRepository.GetByKeyAsync($"USER#{cognitoSubjectId}", "META", ct);
     }
 
-    public async Task<(User User, List<Family> Families, List<Baby> Babies)?> GetUserWithFamiliesAsync(string cognitoSubjectId, CancellationToken ct)
+    public async Task<(User User, List<FamilyMember> Members, List<Family> Families, List<Baby> Babies)?> GetUserWithFamiliesAsync(string cognitoSubjectId, CancellationToken ct)
     {
         var user = await GetByCognitoIdAsync(cognitoSubjectId, ct);
         if (user == null) return null;
@@ -87,7 +87,7 @@ public class UserRepository(
             allBabies.AddRange(babies!);
         }
 
-        return (user, families, allBabies);
+        return (user, familyMembers, families, allBabies);
     }
 
     public async Task<User> CreateAsync(User user, CancellationToken ct)

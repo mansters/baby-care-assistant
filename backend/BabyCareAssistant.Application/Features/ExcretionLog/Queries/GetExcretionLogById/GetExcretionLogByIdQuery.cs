@@ -6,14 +6,14 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogById;
 
-public record GetExcretionLogByIdQuery(Guid Id) : IRequest<Result<ExcretionLogDto>>;
+public record GetExcretionLogByIdQuery(string BabyId, string Sk) : IRequest<Result<ExcretionLogDto>>;
 
 internal sealed class GetExcretionLogByIdQueryHandler(IExcretionLogRepository excretionLogRepository, IMapper mapper)
     : IRequestHandler<GetExcretionLogByIdQuery, Result<ExcretionLogDto>>
 {
     public async Task<Result<ExcretionLogDto>> Handle(GetExcretionLogByIdQuery request, CancellationToken cancellationToken)
     {
-        var log = await excretionLogRepository.GetByIdAsync(request.Id);
+        var log = await excretionLogRepository.GetByKeyAsync(request.BabyId, request.Sk, cancellationToken);
 
         if (log == null)
         {

@@ -6,21 +6,15 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogById;
 
-public record GetGrowthLogByIdQuery(Guid Id) : IRequest<Result<GrowthLogDto>>;
+public record GetGrowthLogByIdQuery(string BabyId, string Sk) : IRequest<Result<GrowthLogDto>>;
 
 internal sealed class GetGrowthLogByIdQueryHandler(IGrowthLogRepository growthLogRepository, IMapper mapper)
     : IRequestHandler<GetGrowthLogByIdQuery, Result<GrowthLogDto>>
 {
     public async Task<Result<GrowthLogDto>> Handle(GetGrowthLogByIdQuery request, CancellationToken cancellationToken)
     {
-        var log = await growthLogRepository.GetByIdAsync(request.Id);
-
-        if (log == null)
-        {
-            return Result<GrowthLogDto>.Failure("Growth log not found");
-        }
-
-        var dto = mapper.Map<GrowthLogDto>(log);
-        return Result<GrowthLogDto>.Success(dto);
+        var log = await growthLogRepository.GetByKeyAsync(request.BabyId, request.Sk, cancellationToken);
+        if (log == null) return Result<GrowthLogDto>.Failure("Growth log not found");
+        return Result<GrowthLogDto>.Success(mapper.Map<GrowthLogDto>(log));
     }
 }

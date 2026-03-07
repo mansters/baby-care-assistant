@@ -6,7 +6,7 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.Baby.Commands.UpdateBaby;
 
-public record UpdateBabyCommand(Guid Id, UpdateBabyDto Dto) : IRequest<Result<BabyDto>>;
+public record UpdateBabyCommand(string Id, UpdateBabyDto Dto) : IRequest<Result<BabyDto>>;
 
 internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository, IMapper mapper)
     : IRequestHandler<UpdateBabyCommand, Result<BabyDto>>
@@ -19,7 +19,7 @@ internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository, I
         }
 
         var entity = mapper.Map<Domain.Entities.Baby>(request.Dto);
-        var updatedEntity = await babyRepository.UpdateAsync(entity);
+        var updatedEntity = await babyRepository.UpdateAsync(request.Id, entity, cancellationToken);
 
         if (updatedEntity == null)
         {

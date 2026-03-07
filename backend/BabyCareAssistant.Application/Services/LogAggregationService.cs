@@ -7,7 +7,7 @@ namespace BabyCareAssistant.Application.Services;
 public class LogAggregationService(IEnumerable<ILogSourceStrategy> strategies) : ILogAggregationService
 {
     public async Task<PaginatedLogResponse> GetLogsAsync(
-        Guid babyId, string? cursor, int pageSize, LogType[]? types,
+        string babyId, string? cursor, int pageSize, LogType[]? types,
         CancellationToken cancellationToken = default)
     {
         var cursorTime = DecodeCursorTime(cursor);

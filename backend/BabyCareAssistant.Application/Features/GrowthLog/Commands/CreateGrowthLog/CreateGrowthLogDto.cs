@@ -5,10 +5,10 @@ namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.CreateGrowth
 public record CreateGrowthLogDto
 {
     [Required]
-    public Guid BabyId { get; init; }
-
+    public string BabyId { get; init; } = string.Empty;
+    
     [Required]
-    public DateTime DateMeasured { get; init; }
+    public DateTime LocalDateTime { get; init; }
 
     [Required]
     [Range(0.01, 300)]

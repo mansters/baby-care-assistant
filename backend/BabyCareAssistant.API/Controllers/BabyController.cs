@@ -2,7 +2,7 @@ using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Features.Baby.Commands.CreateBaby;
 using BabyCareAssistant.Application.Features.Baby.Commands.UpdateBaby;
 using BabyCareAssistant.Application.Features.Baby.Commands.DeleteBaby;
-using BabyCareAssistant.Application.Features.Baby.Queries.GetAllBabies;
+using BabyCareAssistant.Application.Features.Baby.Queries.GetBabiesByFamilyId;
 using BabyCareAssistant.Application.Features.Baby.Queries.GetBabyById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +14,14 @@ namespace BabyCareAssistant.API.Controllers;
 public class BabyController(ISender sender) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BabyDto>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<BabyDto>>> GetByFamilyIdAsync([FromQuery] string familyId)
     {
-        var result = await sender.Send(new GetAllBabiesQuery());
+        var result = await sender.Send(new GetBabiesByFamilyIdQuery(familyId));
         return Ok(result.Value);
     }
 
-    [HttpGet("{id:guid}", Name = "GetByIdAsync")]
-    public async Task<ActionResult<BabyDto>> GetByIdAsync([FromRoute] Guid id)
+    [HttpGet("item", Name = "GetByIdAsync")]
+    public async Task<ActionResult<BabyDto>> GetByIdAsync([FromQuery] string id)
     {
         var result = await sender.Send(new GetBabyByIdQuery(id));
 
@@ -40,8 +40,8 @@ public class BabyController(ISender sender) : ControllerBase
         return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<BabyDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateBabyDto request)
+    [HttpPut("item")]
+    public async Task<ActionResult<BabyDto>> UpdateAsync([FromQuery] string id, [FromBody] UpdateBabyDto request)
     {
         var result = await sender.Send(new UpdateBabyCommand(id, request));
 
@@ -57,8 +57,8 @@ public class BabyController(ISender sender) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
+    [HttpDelete("item")]
+    public async Task<IActionResult> DeleteAsync([FromQuery] string id)
     {
         await sender.Send(new DeleteBabyCommand(id));
         return NoContent();

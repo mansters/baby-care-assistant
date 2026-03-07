@@ -5,7 +5,7 @@ namespace BabyCareAssistant.Application.Features.Baby.Commands.UpdateBaby;
 public record UpdateBabyDto
 {
     [Required]
-    public Guid Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 
     [Required]
     public string FirstName { get; init; } = string.Empty;

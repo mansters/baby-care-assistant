@@ -7,7 +7,7 @@ using MediatR;
 namespace BabyCareAssistant.Application.Features.Log.Queries.GetLogs;
 
 public record GetLogsQuery(
-    Guid BabyId,
+    string BabyId,
     string? Cursor,
     int PageSize,
     LogType[]? Types) : IRequest<Result<PaginatedLogResponse>>;

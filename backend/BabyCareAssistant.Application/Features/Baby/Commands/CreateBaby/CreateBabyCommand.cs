@@ -14,7 +14,8 @@ internal sealed class CreateBabyCommandHandler(IBabyRepository babyRepository, I
     public async Task<Result<BabyDto>> Handle(CreateBabyCommand request, CancellationToken cancellationToken)
     {
         var entity = mapper.Map<Domain.Entities.Baby>(request.Dto);
-        entity = await babyRepository.CreateAsync(entity);
+        entity.BabyId = Guid.NewGuid().ToString();
+        entity = await babyRepository.CreateAsync(entity, cancellationToken);
 
         var dto = mapper.Map<BabyDto>(entity);
         return Result<BabyDto>.Success(dto);

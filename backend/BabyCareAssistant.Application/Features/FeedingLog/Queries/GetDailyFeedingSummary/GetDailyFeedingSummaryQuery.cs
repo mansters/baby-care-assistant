@@ -5,7 +5,7 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetDailyFeedingSummary;
 
-public record GetDailyFeedingSummaryQuery(Guid BabyId, string TimeZoneId) : IRequest<Result<DailyFeedingSummaryDto>>;
+public record GetDailyFeedingSummaryQuery(string BabyId) : IRequest<Result<DailyFeedingSummaryDto>>;
 
 internal sealed class GetDailyFeedingSummaryQueryHandler(IFeedingRepository feedingRepository)
     : IRequestHandler<GetDailyFeedingSummaryQuery, Result<DailyFeedingSummaryDto>>
@@ -14,7 +14,7 @@ internal sealed class GetDailyFeedingSummaryQueryHandler(IFeedingRepository feed
         GetDailyFeedingSummaryQuery request, CancellationToken cancellationToken)
     {
         var dailyTotals = await feedingRepository.GetDailyFormulaTotalsAsync(
-            request.BabyId, request.TimeZoneId, cancellationToken);
+            request.BabyId, cancellationToken);
 
         return Result<DailyFeedingSummaryDto>.Success(
             new DailyFeedingSummaryDto { DailyTotals = dailyTotals });

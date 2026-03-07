@@ -8,15 +8,19 @@ namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.CreateGrowth
 
 public record CreateGrowthLogCommand(CreateGrowthLogDto Dto) : IRequest<Result<GrowthLogDto>>;
 
-internal sealed class CreateGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository, IMapper mapper)
+internal sealed class CreateGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository, IBabyRepository babyRepository, IMapper mapper)
     : IRequestHandler<CreateGrowthLogCommand, Result<GrowthLogDto>>
 {
     public async Task<Result<GrowthLogDto>> Handle(CreateGrowthLogCommand request, CancellationToken cancellationToken)
     {
-        var entity = mapper.Map<Domain.Entities.GrowthLog>(request.Dto);
-        entity = await growthLogRepository.CreateAsync(entity);
+        var baby = await babyRepository.GetByIdAsync(request.Dto.BabyId, cancellationToken);
+        if (baby == null) return Result<GrowthLogDto>.Failure("Baby not found");
 
-        var dto = mapper.Map<GrowthLogDto>(entity);
-        return Result<GrowthLogDto>.Success(dto);
+        var entity = mapper.Map<Domain.Entities.GrowthLog>(request.Dto);
+        entity.Initialize(request.Dto.BabyId, request.Dto.LocalDateTime, baby.TimeZone);
+
+        entity = await growthLogRepository.CreateAsync(entity, cancellationToken);
+        return Result<GrowthLogDto>.Success(mapper.Map<GrowthLogDto>(entity));
+
     }
 }

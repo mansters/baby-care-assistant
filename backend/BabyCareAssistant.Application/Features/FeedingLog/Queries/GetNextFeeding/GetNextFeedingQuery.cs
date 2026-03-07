@@ -5,7 +5,7 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetNextFeeding;
 
-public record GetNextFeedingQuery(Guid BabyId) : IRequest<Result<NextFeedingDto>>;
+public record GetNextFeedingQuery(string BabyId) : IRequest<Result<NextFeedingDto>>;
 
 internal sealed class GetNextFeedingQueryHandler(IFeedingRepository feedingRepository)
     : IRequestHandler<GetNextFeedingQuery, Result<NextFeedingDto>>
@@ -23,14 +23,14 @@ internal sealed class GetNextFeedingQueryHandler(IFeedingRepository feedingRepos
             return Result<NextFeedingDto>.Success(new NextFeedingDto(null, null));
         }
 
-        var recentTimes = await feedingRepository.GetRecentFeedingTimesAsync(
-            request.BabyId, RecentFeedingCount, cancellationToken);
+        var recentLogs = await feedingRepository.GetListByBabyIdAsync(
+            request.BabyId, null, RecentFeedingCount, cancellationToken);
 
         DateTime? nextFeedingTime = null;
 
-        if (recentTimes.Count >= 2)
+        if (recentLogs.Count >= 2)
         {
-            var sortedTimes = recentTimes.OrderBy(t => t).ToList();
+            var sortedTimes = recentLogs.Select(l => l.EventTimeUtc).OrderBy(t => t).ToList();
             var intervals = new List<double>();
 
             for (var i = 1; i < sortedTimes.Count; i++)
@@ -39,10 +39,10 @@ internal sealed class GetNextFeedingQueryHandler(IFeedingRepository feedingRepos
             }
 
             var averageIntervalMinutes = intervals.Average();
-            nextFeedingTime = latestFeeding.FeedingTime.AddMinutes(averageIntervalMinutes);
+            nextFeedingTime = latestFeeding.EventTimeUtc.AddMinutes(averageIntervalMinutes);
         }
 
         return Result<NextFeedingDto>.Success(
-            new NextFeedingDto(latestFeeding.FeedingTime, nextFeedingTime));
+            new NextFeedingDto(latestFeeding.EventTimeUtc, nextFeedingTime));
     }
 }

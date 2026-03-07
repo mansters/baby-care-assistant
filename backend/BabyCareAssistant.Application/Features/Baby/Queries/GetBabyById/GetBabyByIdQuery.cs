@@ -6,14 +6,14 @@ using MediatR;
 
 namespace BabyCareAssistant.Application.Features.Baby.Queries.GetBabyById;
 
-public record GetBabyByIdQuery(Guid Id) : IRequest<Result<BabyDto>>;
+public record GetBabyByIdQuery(string Id) : IRequest<Result<BabyDto>>;
 
 internal sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository, IMapper mapper)
     : IRequestHandler<GetBabyByIdQuery, Result<BabyDto>>
 {
     public async Task<Result<BabyDto>> Handle(GetBabyByIdQuery request, CancellationToken cancellationToken)
     {
-        var baby = await babyRepository.GetByIdAsync(request.Id);
+        var baby = await babyRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (baby == null)
         {

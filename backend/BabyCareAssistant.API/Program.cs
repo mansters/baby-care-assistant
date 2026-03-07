@@ -6,7 +6,6 @@ using BabyCareAssistant.API.Services;
 using BabyCareAssistant.Application.Common.Interfaces;
 using BabyCareAssistant.Application.Services;
 using BabyCareAssistant.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Amazon; 
 using Amazon.DynamoDBv2;
 using BabyCareAssistant.Infrastructure.Extensions;
@@ -28,7 +27,6 @@ builder.Services.AddCognitoAuthentication(builder.Configuration);
 builder.Services.AddDynamoDbInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped(typeof(IDynamoDbBaseRepository<>), typeof(DynamoDbBaseRepository<>));
 builder.Services.AddScoped<IFeedingRepository, FeedingRepository>();

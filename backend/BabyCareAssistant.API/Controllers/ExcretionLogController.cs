@@ -2,7 +2,7 @@ using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.CreateExcretionLog;
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcretionLog;
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.DeleteExcretionLog;
-using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetAllExcretionLogs;
+using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogsByBabyId;
 using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +14,17 @@ namespace BabyCareAssistant.API.Controllers;
 public class ExcretionLogController(ISender sender) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ExcretionLogDto>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<ExcretionLogDto>>> GetByBabyIdAsync(
+        [FromQuery] string babyId, [FromQuery] string? cursorSk, [FromQuery] int limit = 20)
     {
-        var result = await sender.Send(new GetAllExcretionLogsQuery());
+        var result = await sender.Send(new GetExcretionLogsByBabyIdQuery(babyId, cursorSk, limit));
         return Ok(result.Value);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ExcretionLogDto>> GetByIdAsync([FromRoute] Guid id)
+    [HttpGet("item", Name = "GetExcretionLogByIdAsync")]
+    public async Task<ActionResult<ExcretionLogDto>> GetByKeyAsync([FromQuery] string babyId, [FromQuery] string sk)
     {
-        var result = await sender.Send(new GetExcretionLogByIdQuery(id));
+        var result = await sender.Send(new GetExcretionLogByIdQuery(babyId, sk));
 
         if (!result.IsSuccess)
         {
@@ -37,13 +38,13 @@ public class ExcretionLogController(ISender sender) : ControllerBase
     public async Task<ActionResult<ExcretionLogDto>> CreateAsync([FromBody] CreateExcretionLogDto request)
     {
         var result = await sender.Send(new CreateExcretionLogCommand(request));
-        return CreatedAtRoute(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
+        return CreatedAtRoute("GetExcretionLogByIdAsync", new { babyId = result.Value!.BabyId, sk = result.Value.SK }, result.Value);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<ExcretionLogDto>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateExcretionLogDto request)
+    [HttpPut("item")]
+    public async Task<ActionResult<ExcretionLogDto>> UpdateAsync([FromQuery] string babyId, [FromQuery] string sk, [FromBody] UpdateExcretionLogDto request)
     {
-        var result = await sender.Send(new UpdateExcretionLogCommand(id, request));
+        var result = await sender.Send(new UpdateExcretionLogCommand(babyId, sk, request));
 
         if (!result.IsSuccess)
         {
@@ -57,10 +58,10 @@ public class ExcretionLogController(ISender sender) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
+    [HttpDelete("item")]
+    public async Task<IActionResult> DeleteAsync([FromQuery] string babyId, [FromQuery] string sk)
     {
-        await sender.Send(new DeleteExcretionLogCommand(id));
+        await sender.Send(new DeleteExcretionLogCommand(babyId, sk));
         return NoContent();
     }
 }

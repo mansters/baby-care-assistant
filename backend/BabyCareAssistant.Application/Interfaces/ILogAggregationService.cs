@@ -6,6 +6,6 @@ namespace BabyCareAssistant.Application.Interfaces;
 public interface ILogAggregationService
 {
     Task<PaginatedLogResponse> GetLogsAsync(
-        Guid babyId, string? cursor, int pageSize, LogType[]? types,
+        string babyId, string? cursor, int pageSize, LogType[]? types,
         CancellationToken cancellationToken = default);
 }

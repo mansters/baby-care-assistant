@@ -7,5 +7,5 @@ public interface ILogSourceStrategy
 {
     LogType LogType { get; }
     Task<IEnumerable<LogEntryDto>> GetLogsAsync(
-        Guid babyId, DateTime cursorTime, int count, CancellationToken cancellationToken = default);
+        string babyId, DateTime cursorTime, int count, CancellationToken cancellationToken = default);
 }

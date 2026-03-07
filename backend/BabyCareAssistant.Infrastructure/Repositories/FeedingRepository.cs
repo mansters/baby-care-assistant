@@ -43,8 +43,6 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
 
     public async Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(string babyId, CancellationToken ct)
     {
-        // 1. 获取所有的历史 FeedingLog
-        // 这里的 limit 传 int.MaxValue，因为我们要聚合全量数据
         var allLogs = await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, int.MaxValue, null, ct);
 
         var dailyTotals = new Dictionary<string, DailyFeedingInfo>();
@@ -53,20 +51,16 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
         {
             var date = log.LocalDate;
 
-            // 只需要统计配方奶 (Formula) 类型的总奶量
             if (log.Type == BabyCareAssistant.Domain.Enums.FeedingType.Bottle)
             {
                 if (!dailyTotals.ContainsKey(date))
                 {
-                    // 如果这一天还没出现过，直接 new 一个初始的 record
                     dailyTotals[date] = new DailyFeedingInfo(log.AmountMl, 1);
                 }
                 else
                 {
-                    // 如果已经出现过，说明这是一个 record
                     var current = dailyTotals[date];
                     
-                    // 用 C# 9 的 with 表达式，基于当前记录"克隆"出一个新对象并替换掉要改的值
                     dailyTotals[date] = current with 
                     { 
                         TotalMl = current.TotalMl + log.AmountMl,

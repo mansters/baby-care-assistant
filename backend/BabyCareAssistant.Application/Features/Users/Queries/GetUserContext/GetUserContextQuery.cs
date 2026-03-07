@@ -18,32 +18,44 @@ internal sealed class GetUserContextQueryHandler(ICurrentUserService currentUser
             return Result<UserContextDto>.Success(new UserContextDto { Status = "Unauthenticated" });
         }
 
-        var user = await userRepository.GetUserWithFamiliesAsync(cognitoSubjectId);
+        var userResult = await userRepository.GetUserWithFamiliesAsync(cognitoSubjectId, cancellationToken);
 
-        if (user == null) {
+        if (userResult == null) {
             return Result<UserContextDto>.Success(new UserContextDto { Status = "UserNotFound" });
         }
+
+        var u = userResult.Value.User;
+        var members = userResult.Value.Members;
+        var families = userResult.Value.Families;
+        var babies = userResult.Value.Babies;
 
         return Result<UserContextDto>.Success(new UserContextDto {
             Status = "Ready",
             UserProfile = new UserProfileDto {
-                Id = user.Id,
-                CognitoSubjectId = user.CognitoSubjectId,
-                Email = user.Email,
-                DisplayName = user.DisplayName,
+                Id = u.CognitoSubjectId,
+                CognitoSubjectId = u.CognitoSubjectId,
+                Email = u.Email,
+                DisplayName = u.DisplayName,
             },
-            Families = user.FamilyMemberships.Select(fm => new ContextFamilyDto {
-                Id = fm.Family.Id,
-                Name = fm.Family.Name,
-                Role = (int)fm.Role,
-                Babies = fm.Family.Babies.Select(b => new BabyDto {
-                    Id = b.Id,
-                    FirstName = b.FirstName,
-                    LastName = b.LastName,
-                    PreferredName = b.PreferredName,
-                    DateOfBirth = b.DateOfBirth
-                }).ToList()
-            }).ToList()
+            Families = members.Select(fm => {
+                var family = families.FirstOrDefault(f => f.PK == $"FAMILY#{fm.FamilyId}");
+                if (family == null) return null;
+
+                var fBabies = babies.Where(b => b.FamilyId == fm.FamilyId).ToList();
+
+                return new ContextFamilyDto {
+                    Id = family.PK.Replace("FAMILY#", ""),
+                    Name = family.Name,
+                    Role = (int)fm.Role,
+                    Babies = fBabies.Select(b => new BabyDto {
+                        Id = b.BabyId,
+                        FirstName = b.FirstName,
+                        LastName = b.LastName,
+                        PreferredName = b.PreferredName,
+                        DateOfBirth = b.DateOfBirth
+                    }).ToList()
+                };
+            }).Where(f => f != null).ToList()!
         });
 
     }

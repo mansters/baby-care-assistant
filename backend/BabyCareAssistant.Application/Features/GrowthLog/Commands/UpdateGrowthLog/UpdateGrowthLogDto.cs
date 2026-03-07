@@ -5,10 +5,13 @@ namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowth
 public record UpdateGrowthLogDto
 {
     [Required]
-    public Guid Id { get; init; }
+    public string BabyId { get; init; } = string.Empty;
 
     [Required]
-    public DateTime DateMeasured { get; init; }
+    public string SK { get; init; } = string.Empty;
+
+    [Required]
+    public DateTime LocalDateTime { get; init; }
 
     [Required]
     [Range(0.01, 300)]

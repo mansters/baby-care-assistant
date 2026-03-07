@@ -11,12 +11,7 @@ using BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowthLog;
 using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.CreateExcretionLog;
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcretionLog;
-using BabyCareAssistant.Application.Features.VaccineCatalog.Dtos;
-using BabyCareAssistant.Application.Features.VaccineCatalog.Commands.CreateVaccineCatalog;
-using BabyCareAssistant.Application.Features.VaccineCatalog.Commands.UpdateVaccineCatalog;
-using BabyCareAssistant.Application.Features.VaccinationRecord.Dtos;
-using BabyCareAssistant.Application.Features.VaccinationRecord.Commands.CreateVaccinationRecord;
-using BabyCareAssistant.Application.Features.VaccinationRecord.Commands.UpdateVaccinationRecord;
+
 using BabyCareAssistant.Domain.Entities;
 
 namespace BabyCareAssistant.Application.Mappings;
@@ -33,20 +28,14 @@ public class AutoMapperProfiles : Profile
         CreateMap<CreateFeedingLogDto, FeedingLog>();
         CreateMap<UpdateFeedingLogDto, FeedingLog>();
         
-        CreateMap<GrowthLog, GrowthLogDto>().ReverseMap();
+        CreateMap<GrowthLog, GrowthLogDto>()
+            .ReverseMap()
+            .ForMember(dest => dest.SK, opt => opt.MapFrom(src => src.SK));
         CreateMap<CreateGrowthLogDto, GrowthLog>();
         CreateMap<UpdateGrowthLogDto, GrowthLog>();
 
         CreateMap<ExcretionLog, ExcretionLogDto>().ReverseMap();
         CreateMap<CreateExcretionLogDto, ExcretionLog>();
         CreateMap<UpdateExcretionLogDto, ExcretionLog>();
-
-        CreateMap<VaccineCatalog, VaccineCatalogDto>().ReverseMap();
-        CreateMap<CreateVaccineCatalogDto, VaccineCatalog>();
-        CreateMap<UpdateVaccineCatalogDto, VaccineCatalog>();
-
-        CreateMap<VaccinationRecord, VaccinationRecordDto>().ReverseMap();
-        CreateMap<CreateVaccinationRecordDto, VaccinationRecord>();
-        CreateMap<UpdateVaccinationRecordDto, VaccinationRecord>();
     }
 }
