@@ -49,4 +49,5 @@ export interface DailyFeedingSummaryDto {
 export interface NextFeedingDto {
   lastFeedingTime: string | null;
   nextFeedingTime: string | null;
+  predictedAmountMl: number | null;
 }

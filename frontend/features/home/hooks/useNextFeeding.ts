@@ -8,6 +8,7 @@ import { formatLocalDate } from '@/lib/utils/datetime';
 interface UseNextFeedingReturn {
   lastFeedingDisplay: string | null;
   nextFeedingDisplay: string | null;
+  predictedAmountMl: number | null;
   loading: boolean;
 }
 
@@ -15,6 +16,7 @@ export function useNextFeeding(babyId: string): UseNextFeedingReturn {
   const { timeZoneId } = useTimezone();
   const [lastFeedingDisplay, setLastFeedingDisplay] = useState<string | null>(null);
   const [nextFeedingDisplay, setNextFeedingDisplay] = useState<string | null>(null);
+  const [predictedAmountMl, setPredictedAmountMl] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export function useNextFeeding(babyId: string): UseNextFeedingReturn {
               ? formatLocalDate(result.nextFeedingTime, 'HH:mm', timeZoneId)
               : null
           );
+          setPredictedAmountMl(result.predictedAmountMl ?? null);
         }
       } catch (error) {
         console.error('Failed to fetch next feeding:', error);
@@ -51,5 +54,5 @@ export function useNextFeeding(babyId: string): UseNextFeedingReturn {
     };
   }, [babyId, timeZoneId]);
 
-  return { lastFeedingDisplay, nextFeedingDisplay, loading };
+  return { lastFeedingDisplay, nextFeedingDisplay, predictedAmountMl, loading };
 }

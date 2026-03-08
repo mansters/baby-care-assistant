@@ -61,10 +61,7 @@ export default function EditGrowthClient({
   };
 
   const formInitialData: Partial<GrowthFormValues> = {
-    startTime: utcToLocalDate(
-      initialData.localDateTime || initialData.eventTimeUtc,
-      timeZoneId,
-    ),
+    startTime: utcToLocalDate(initialData.eventTimeUtc, timeZoneId),
     weightKg: initialData.weightKg,
     heightCm: initialData.heightCm ?? undefined,
     headCircumferenceCm: initialData.headCircumferenceCm ?? undefined,

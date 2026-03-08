@@ -13,4 +13,6 @@ public interface IGrowthLogRepository
     Task<GrowthLog?> UpdateAsync(string babyId, string sk, Action<GrowthLog> mutate, CancellationToken ct);
     
     Task DeleteAsync(string babyId, string sk, CancellationToken ct);
+    
+    Task<GrowthLog?> GetLatestAsync(string babyId, CancellationToken ct);
 }

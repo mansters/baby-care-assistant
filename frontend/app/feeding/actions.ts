@@ -10,7 +10,7 @@ import { toUtcIsoString } from '@/lib/utils/datetime';
 export async function createFeedingLog(data: FeedingFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateFeedingLogRequest = {
         babyId,
-        localDateTime: toUtcIsoString(new Date(data.startTime)),
+        eventTimeUtc: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
@@ -28,7 +28,7 @@ export async function updateFeedingLog(sk: string, data: FeedingFormValues, baby
     const request: UpdateFeedingLogRequest = {
         sk,
         babyId,
-        localDateTime: toUtcIsoString(new Date(data.startTime)),
+        eventTimeUtc: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,

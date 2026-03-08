@@ -9,7 +9,7 @@ public record CreateExcretionLogDto
     public string BabyId { get; init; } = string.Empty;
 
     [Required]
-    public DateTime LocalDateTime { get; init; }
+    public DateTime EventTimeUtc { get; init; }
 
     [Required]
     public ExcretionType Type { get; init; }

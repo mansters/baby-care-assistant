@@ -1,13 +1,17 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
+using BabyCareAssistant.Domain.Services;
 using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetNextFeeding;
 
 public record GetNextFeedingQuery(string BabyId) : IRequest<Result<NextFeedingDto>>;
 
-internal sealed class GetNextFeedingQueryHandler(IFeedingRepository feedingRepository)
+internal sealed class GetNextFeedingQueryHandler(
+    IFeedingRepository feedingRepository,
+    IGrowthLogRepository growthLogRepository,
+    FeedingPredictionService predictionService)
     : IRequestHandler<GetNextFeedingQuery, Result<NextFeedingDto>>
 {
     private const int RecentFeedingCount = 10;
@@ -17,32 +21,28 @@ internal sealed class GetNextFeedingQueryHandler(IFeedingRepository feedingRepos
     {
         var latestFeeding = await feedingRepository.GetLatestAsync(
             request.BabyId, cancellationToken);
+            
+        var latestGrowth = await growthLogRepository.GetLatestAsync(
+            request.BabyId, cancellationToken);
 
         if (latestFeeding == null)
         {
-            return Result<NextFeedingDto>.Success(new NextFeedingDto(null, null));
+            // If no feedings at all, predict based on growth weight fallback 
+            // per the Tier 3 algorithm
+            var prediction = predictionService.PredictNextFeeding(new List<BabyCareAssistant.Domain.Entities.FeedingLog>(), latestGrowth);
+            return Result<NextFeedingDto>.Success(new NextFeedingDto(null, prediction.NextFeedingTime, prediction.NextAmountMl));
         }
 
         var recentLogs = await feedingRepository.GetListByBabyIdAsync(
             request.BabyId, null, RecentFeedingCount, cancellationToken);
 
-        DateTime? nextFeedingTime = null;
-
-        if (recentLogs.Count >= 2)
-        {
-            var sortedTimes = recentLogs.Select(l => l.EventTimeUtc).OrderBy(t => t).ToList();
-            var intervals = new List<double>();
-
-            for (var i = 1; i < sortedTimes.Count; i++)
-            {
-                intervals.Add((sortedTimes[i] - sortedTimes[i - 1]).TotalMinutes);
-            }
-
-            var averageIntervalMinutes = intervals.Average();
-            nextFeedingTime = latestFeeding.EventTimeUtc.AddMinutes(averageIntervalMinutes);
-        }
+        // Calculate prediction using the domain service
+        var predictionResult = predictionService.PredictNextFeeding(recentLogs, latestGrowth);
 
         return Result<NextFeedingDto>.Success(
-            new NextFeedingDto(latestFeeding.EventTimeUtc, nextFeedingTime));
+            new NextFeedingDto(
+                latestFeeding.EventTimeUtc, 
+                predictionResult.NextFeedingTime, 
+                predictionResult.NextAmountMl));
     }
 }

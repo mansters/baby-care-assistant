@@ -17,7 +17,7 @@ internal sealed class CreateGrowthLogCommandHandler(IGrowthLogRepository growthL
         if (baby == null) return Result<GrowthLogDto>.Failure("Baby not found");
 
         var entity = mapper.Map<Domain.Entities.GrowthLog>(request.Dto);
-        entity.Initialize(request.Dto.BabyId, request.Dto.LocalDateTime, baby.TimeZone);
+        entity.Initialize(request.Dto.BabyId, request.Dto.EventTimeUtc, baby.TimeZone);
 
         entity = await growthLogRepository.CreateAsync(entity, cancellationToken);
         return Result<GrowthLogDto>.Success(mapper.Map<GrowthLogDto>(entity));

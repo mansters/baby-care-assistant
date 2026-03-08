@@ -38,7 +38,7 @@ builder.Services.AddScoped<ILogSourceStrategy, FeedingLogStrategy>();
 builder.Services.AddScoped<ILogSourceStrategy, GrowthLogStrategy>();
 builder.Services.AddScoped<ILogAggregationService, LogAggregationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
+builder.Services.AddScoped<BabyCareAssistant.Domain.Services.FeedingPredictionService>();
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BabyCareAssistant.Application.Common.Result>());

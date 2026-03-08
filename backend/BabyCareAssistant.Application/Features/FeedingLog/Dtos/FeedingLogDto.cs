@@ -7,7 +7,6 @@ public record FeedingLogDto
     public string BabyId { get; init; } = string.Empty;
     public string SK { get; init; } = string.Empty;
     public DateTime EventTimeUtc { get; init; }
-    public DateTime LocalDateTime { get; init; }
 
     public int? LeftBreastDurationMinutes { get; init; }
     public int? RightBreastDurationMinutes { get; init; }

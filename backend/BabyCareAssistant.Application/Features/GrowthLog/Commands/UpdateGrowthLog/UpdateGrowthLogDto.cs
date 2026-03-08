@@ -11,7 +11,7 @@ public record UpdateGrowthLogDto
     public string SK { get; init; } = string.Empty;
 
     [Required]
-    public DateTime LocalDateTime { get; init; }
+    public DateTime EventTimeUtc { get; init; }
 
     [Required]
     [Range(0.01, 300)]

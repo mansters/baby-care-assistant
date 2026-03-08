@@ -56,10 +56,7 @@ export default function EditFeedingClient({
   };
 
   const formInitialData: Partial<FeedingFormValues> = {
-    startTime: utcToLocalDate(
-      initialData.localDateTime || initialData.eventTimeUtc,
-      timeZoneId,
-    ),
+    startTime: utcToLocalDate(initialData.eventTimeUtc, timeZoneId),
     type: initialData.type === "Breast" ? "Nursing" : "Bottle",
     leftDuration: initialData.leftBreastDurationMinutes || 0,
     rightDuration: initialData.rightBreastDurationMinutes || 0,

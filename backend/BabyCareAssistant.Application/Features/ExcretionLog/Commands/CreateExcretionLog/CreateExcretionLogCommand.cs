@@ -20,7 +20,7 @@ internal sealed class CreateExcretionLogCommandHandler(IExcretionLogRepository e
         }
 
         var entity = mapper.Map<Domain.Entities.ExcretionLog>(request.Dto);
-        entity.Initialize(request.Dto.BabyId, request.Dto.LocalDateTime, baby.TimeZone);
+        entity.Initialize(request.Dto.BabyId, request.Dto.EventTimeUtc, baby.TimeZone);
         
         entity = await excretionLogRepository.CreateAsync(entity, cancellationToken);
 

@@ -1,3 +1,3 @@
 namespace BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 
-public record NextFeedingDto(DateTime? LastFeedingTime, DateTime? NextFeedingTime);
+public record NextFeedingDto(DateTime? LastFeedingTime, DateTime? NextFeedingTime, double? PredictedAmountMl = null);

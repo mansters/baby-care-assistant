@@ -9,7 +9,6 @@ export interface FeedingLog {
   babyId: string;
   feedingTime?: string; // Legacy
   eventTimeUtc: string;
-  localDateTime: string;
 
   type: FeedingType;
   amountMl: number;
@@ -20,7 +19,7 @@ export interface FeedingLog {
 
 export interface CreateFeedingLogRequest {
   babyId: string; 
-  localDateTime: string;
+  eventTimeUtc: string;
 
   type: FeedingType;
   amountMl: number;
@@ -38,7 +37,6 @@ export interface GrowthLog {
   babyId: string;
   dateMeasured?: string; // Legacy
   eventTimeUtc: string;
-  localDateTime: string;
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;
@@ -47,7 +45,7 @@ export interface GrowthLog {
 
 export interface CreateGrowthLogRequest {
   babyId: string;
-  localDateTime: string;
+  eventTimeUtc: string;
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;

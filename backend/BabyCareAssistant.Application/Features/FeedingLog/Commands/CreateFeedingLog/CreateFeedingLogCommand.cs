@@ -20,7 +20,7 @@ internal sealed class CreateFeedingLogCommandHandler(IFeedingRepository feedingR
         }
 
         var entity = mapper.Map<Domain.Entities.FeedingLog>(request.Dto);
-        entity.Initialize(request.Dto.BabyId, request.Dto.LocalDateTime, baby.TimeZone);
+        entity.Initialize(request.Dto.BabyId, request.Dto.EventTimeUtc, baby.TimeZone);
         
         entity = await feedingRepository.CreateAsync(entity, cancellationToken);
 

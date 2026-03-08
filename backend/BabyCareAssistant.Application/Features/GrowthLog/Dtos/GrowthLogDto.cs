@@ -5,7 +5,6 @@ public record GrowthLogDto
     public string BabyId { get; init; } = string.Empty;
     public string SK { get; init; } = string.Empty;
     public DateTime EventTimeUtc { get; init; }
-    public DateTime LocalDateTime { get; init; }
     
     public decimal WeightKg { get; init; }
     public decimal? HeightCm { get; init; }

@@ -9,7 +9,7 @@ public record CreateFeedingLogDto
     public string BabyId { get; init; } = string.Empty;
 
     [Required]
-    public DateTime LocalDateTime { get; init; }
+    public DateTime EventTimeUtc { get; init; }
 
 
 

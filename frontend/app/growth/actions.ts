@@ -10,7 +10,7 @@ import { toUtcIsoString } from '@/lib/utils/datetime';
 export async function createGrowthLog(data: GrowthFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateGrowthLogRequest = {
         babyId,
-        localDateTime: toUtcIsoString(new Date(data.startTime)),
+        eventTimeUtc: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,
@@ -25,7 +25,7 @@ export async function updateGrowthLog(sk: string, data: GrowthFormValues, babyId
     const request: UpdateGrowthLogRequest = {
         sk,
         babyId,
-        localDateTime: toUtcIsoString(new Date(data.startTime)),
+        eventTimeUtc: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,

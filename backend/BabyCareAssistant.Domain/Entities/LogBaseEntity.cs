@@ -13,7 +13,7 @@ public abstract class LogBaseEntity : DynamoBaseEntity
     
     protected abstract string LogPrefix { get; }
 
-    public void Initialize(string babyId, DateTime localDateTime, string babyTimeZone)
+    public void Initialize(string babyId, DateTime eventTimeUtc, string babyTimeZone)
     {
         if (string.IsNullOrWhiteSpace(babyId))
         {
@@ -26,8 +26,12 @@ public abstract class LogBaseEntity : DynamoBaseEntity
         }
         
         var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(babyTimeZone);
-        var unspecifiedLocalTime = DateTime.SpecifyKind(localDateTime, DateTimeKind.Unspecified);
-        var utcTime = TimeZoneInfo.ConvertTimeToUtc(unspecifiedLocalTime, timeZoneInfo);
+        
+        // Treat incoming eventTime as absolute UTC
+        var utcTime = DateTime.SpecifyKind(eventTimeUtc, DateTimeKind.Utc);
+        
+        // Calculate the local time based on the baby's timezone for accurate representation
+        var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, timeZoneInfo);
         
         BabyId = babyId;
         PK = $"BABY#{babyId}";
@@ -36,6 +40,7 @@ public abstract class LogBaseEntity : DynamoBaseEntity
         var suffix = Ulid.NewUlid().ToString()[^6..];
         SK = $"LOG#{LogPrefix}#{utcTime:yyyy-MM-ddTHH:mm:ss.fffZ}#{suffix}";
 
+        // Store the correct calculated local bounds
         LocalDate = localDateTime.ToString("yyyy-MM-dd");
         LocalTime = localDateTime.ToString("HH:mm:ss");
         TimeZone = babyTimeZone;

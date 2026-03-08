@@ -12,7 +12,7 @@ public record UpdateFeedingLogDto
     public string SK { get; init; } = string.Empty;
 
     [Required]
-    public DateTime LocalDateTime { get; init; }
+    public DateTime EventTimeUtc { get; init; }
 
 
 
