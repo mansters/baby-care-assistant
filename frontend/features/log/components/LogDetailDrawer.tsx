@@ -40,16 +40,16 @@ export default function LogDetailDrawer({
   const handleUpdate = () => {
     if (!entry || !strategy) return;
     onClose();
-    router.push(strategy.getUpdatePath(entry.babyId, entry.sk));
+    router.push(strategy.getUpdatePath(entry.details.babyId, entry.details.sk));
   };
 
   const handleDeleteConfirm = async () => {
     if (!entry || !strategy) return;
     setDeleting(true);
     try {
-      await strategy.deleteEntry(entry.babyId, entry.sk);
+      await strategy.deleteEntry(entry.details.babyId, entry.details.sk);
       setDeleteDialogOpen(false);
-      onDeleted(entry.sk);
+      onDeleted(entry.id);
     } catch (error) {
       console.error("Failed to delete log entry:", error);
     } finally {

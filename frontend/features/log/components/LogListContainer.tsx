@@ -77,8 +77,8 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
   }, []);
 
   const handleDeleted = useCallback(
-    (sk: string) => {
-      setLogs((prev: LogEntry[]) => prev.filter((l) => l.sk !== sk));
+    (id: string) => {
+      setLogs((prev: LogEntry[]) => prev.filter((l) => l.id !== id));
       setSelectedLog(null);
     },
     [setLogs],
@@ -112,7 +112,7 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
             feedingInfo={showFormulaTotals ? dailyTotals[dateKey] : undefined}
           >
             {entries.map((entry) => (
-              <LogItem key={entry.sk} entry={entry} onSelect={setSelectedLog} />
+              <LogItem key={entry.id} entry={entry} onSelect={setSelectedLog} />
             ))}
           </LogGroup>
         ))}

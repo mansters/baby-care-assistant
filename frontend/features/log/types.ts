@@ -7,14 +7,22 @@ export enum LogType {
   Growth = "Growth",
 }
 
-export interface FeedingDetails {
+export interface BaseLogDetails {
+  babyId: string;
+  sk: string;
+  eventTimeUtc: string;
+  localDate: string;
+  localTime: string;
+}
+
+export interface FeedingDetails extends BaseLogDetails {
   type: string;
   leftBreastDurationMinutes?: number;
   rightBreastDurationMinutes?: number;
   amountMl: number;
 }
 
-export interface GrowthDetails {
+export interface GrowthDetails extends BaseLogDetails {
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;
@@ -23,8 +31,7 @@ export interface GrowthDetails {
 export type LogDetails = FeedingDetails | GrowthDetails;
 
 export interface LogEntry {
-  sk: string;
-  babyId: string;
+  id: string;
   startTime: string;
   type: LogType;
   note?: string;
