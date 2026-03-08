@@ -1,9 +1,17 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useOptimistic,
+  useTransition,
+} from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import CircularProgress from "@mui/material/CircularProgress";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { format } from "date-fns";
 import {
   getLocalDateKey,
@@ -15,6 +23,7 @@ import { useTimezone } from "@/lib/contexts/timezone.context";
 import { useLogList } from "@/features/log/hooks/useLogList";
 import { useDailyFeedingSummary } from "@/features/log/hooks/useDailyFeedingSummary";
 import { LogEntry } from "@/features/log/types";
+import { getDrawerRenderer } from "@/features/log/strategies/registry";
 import LogFilterBar from "./LogFilterBar";
 import LogGroup from "./LogGroup";
 import LogItem from "./LogItem";
@@ -24,6 +33,8 @@ interface LogListContainerProps {
   babyId: string;
 }
 
+type OptimisticLogEntry = LogEntry & { pending?: "deleting" };
+
 function getDateLabel(dateStr: string, timeZoneId: string): string {
   if (isTodayInZone(dateStr, timeZoneId)) return "TODAY";
   if (isYesterdayInZone(dateStr, timeZoneId)) return "YESTERDAY";
@@ -32,10 +43,10 @@ function getDateLabel(dateStr: string, timeZoneId: string): string {
 }
 
 function groupByDate(
-  logs: LogEntry[],
+  logs: OptimisticLogEntry[],
   timeZoneId: string,
-): Map<string, LogEntry[]> {
-  const groups = new Map<string, LogEntry[]>();
+): Map<string, OptimisticLogEntry[]> {
+  const groups = new Map<string, OptimisticLogEntry[]>();
   for (const log of logs) {
     const dateKey = getLocalDateKey(log.startTime, timeZoneId);
     const existing = groups.get(dateKey);
@@ -63,10 +74,25 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
   const { dailyTotals } = useDailyFeedingSummary(babyId);
 
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    severity: "success" | "error";
+  } | null>(null);
+
+  const [optimisticLogs, markAsDeleting] = useOptimistic<
+    OptimisticLogEntry[],
+    string
+  >(logs, (currentLogs, deletingId) =>
+    currentLogs.map((log) =>
+      log.id === deletingId ? { ...log, pending: "deleting" as const } : log,
+    ),
+  );
+
+  const [, startTransition] = useTransition();
 
   const grouped = useMemo(
-    () => groupByDate(logs, timeZoneId),
-    [logs, timeZoneId],
+    () => groupByDate(optimisticLogs, timeZoneId),
+    [optimisticLogs, timeZoneId],
   );
 
   const showFormulaTotals =
@@ -76,12 +102,26 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
     setSelectedLog(null);
   }, []);
 
-  const handleDeleted = useCallback(
-    (id: string) => {
-      setLogs((prev: LogEntry[]) => prev.filter((l) => l.id !== id));
-      setSelectedLog(null);
+  const handleDelete = useCallback(
+    (entry: LogEntry) => {
+      const strategy = getDrawerRenderer(entry.type, entry.details);
+
+      startTransition(async () => {
+        markAsDeleting(entry.id);
+
+        try {
+          await strategy.deleteEntry(entry.details.babyId, entry.details.sk);
+          setLogs((prev: LogEntry[]) => prev.filter((l) => l.id !== entry.id));
+          setSnackbar({ message: "Deleted successfully", severity: "success" });
+        } catch {
+          setSnackbar({
+            message: "Failed to delete, please try again",
+            severity: "error",
+          });
+        }
+      });
     },
-    [setLogs],
+    [setLogs, markAsDeleting, startTransition],
   );
 
   return (
@@ -112,7 +152,12 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
             feedingInfo={showFormulaTotals ? dailyTotals[dateKey] : undefined}
           >
             {entries.map((entry) => (
-              <LogItem key={entry.id} entry={entry} onSelect={setSelectedLog} />
+              <LogItem
+                key={entry.id}
+                entry={entry}
+                pending={entry.pending}
+                onSelect={setSelectedLog}
+              />
             ))}
           </LogGroup>
         ))}
@@ -135,8 +180,23 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
       <LogDetailDrawer
         entry={selectedLog}
         onClose={handleDrawerClose}
-        onDeleted={handleDeleted}
+        onDelete={handleDelete}
       />
+
+      <Snackbar
+        open={!!snackbar}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity={snackbar?.severity || "success"}
+          onClose={() => setSnackbar(null)}
+          sx={{ width: "100%" }}
+        >
+          {snackbar?.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

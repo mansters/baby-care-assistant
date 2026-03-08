@@ -15,18 +15,17 @@ import { useTimezone } from "@/lib/contexts/timezone.context";
 interface LogDetailDrawerProps {
   entry: LogEntry | null;
   onClose: () => void;
-  onDeleted: (id: string) => void;
+  onDelete: (entry: LogEntry) => void;
 }
 
 export default function LogDetailDrawer({
   entry,
   onClose,
-  onDeleted,
+  onDelete,
 }: LogDetailDrawerProps) {
   const router = useRouter();
   const { timeZoneId } = useTimezone();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const strategy = entry ? getDrawerRenderer(entry.type, entry.details) : null;
   const featureKey = strategy?.getFeatureKey();
@@ -43,18 +42,11 @@ export default function LogDetailDrawer({
     router.push(strategy.getUpdatePath(entry.details.babyId, entry.details.sk));
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!entry || !strategy) return;
-    setDeleting(true);
-    try {
-      await strategy.deleteEntry(entry.details.babyId, entry.details.sk);
-      setDeleteDialogOpen(false);
-      onDeleted(entry.id);
-    } catch (error) {
-      console.error("Failed to delete log entry:", error);
-    } finally {
-      setDeleting(false);
-    }
+  const handleDeleteConfirm = () => {
+    if (!entry) return;
+    setDeleteDialogOpen(false);
+    onClose();
+    onDelete(entry);
   };
 
   return (
@@ -159,7 +151,7 @@ export default function LogDetailDrawer({
 
       <DeleteConfirmDialog
         open={deleteDialogOpen}
-        loading={deleting}
+        loading={false}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={handleDeleteConfirm}
       />
