@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { LogEntry, LogType, PaginatedLogResponse } from '@/features/log/types';
-import { LogService } from '@/lib/services/log/log.service';
-import { apiClient } from '@/lib/api-client';
-
-const logService = new LogService(apiClient);
+import { fetchLogs as fetchLogsAction } from '@/app/logs/actions';
 
 export type LogFilter = 'all' | LogType;
 
@@ -37,7 +34,7 @@ export function useLogList(babyId: string): UseLogListReturn {
 
       try {
         const types = activeFilter === 'all' ? undefined : [activeFilter as LogType];
-        const response: PaginatedLogResponse = await logService.getLogs(
+        const response: PaginatedLogResponse = await fetchLogsAction(
           babyId,
           cursorVal,
           20,
@@ -91,3 +88,4 @@ export function useLogList(babyId: string): UseLogListReturn {
 
   return { logs, loading, hasMore, activeFilter, setActiveFilter, sentinelRef, setLogs };
 }
+

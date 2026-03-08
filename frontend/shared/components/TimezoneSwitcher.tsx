@@ -33,7 +33,7 @@ export default function TimezoneSwitcher({
         onClick={handleToggle}
         aria-label={`Switch to ${next.label} timezone`}
         title={`${current.label} → Click to switch to ${next.label}`}
-        className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer text-xl hover:shadow-lg active:scale-95 transition-all"
+        className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer text-xl hover:shadow-lg active:scale-95 transition-all"
       >
         {current.flag}
       </button>

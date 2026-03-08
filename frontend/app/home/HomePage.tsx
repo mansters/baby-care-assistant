@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   Avatar,
-  IconButton,
   Container,
   Stack,
   Grid,
@@ -13,7 +12,8 @@ import {
   Alert,
   Fab,
 } from "@mui/material";
-import { differenceInMonths, differenceInDays } from "date-fns";
+import { differenceInMonths, differenceInDays, format } from "date-fns";
+import { TZDate } from "@date-fns/tz";
 import { FiTrendingUp, FiAward } from "react-icons/fi";
 import { IoMdMoon } from "react-icons/io";
 import { MdBabyChangingStation } from "react-icons/md";
@@ -23,14 +23,18 @@ import { BabyDto } from "@/lib/services/user";
 import FeatureCard from "./FeatureCard";
 import WavySeparator from "@/components/WavySeparator";
 import { FeatureTheme } from "@/lib/theme";
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import TimezoneSwitcher from "@/shared/components/TimezoneSwitcher";
 import useToastFromParams from "@/shared/hooks/useParamsMessage";
-import { useNextFeeding } from "@/features/home/hooks/useNextFeeding";
-import { useLatestGrowth } from "@/features/home/hooks/useLatestGrowth";
+import type { NextFeedingDto } from "@/lib/services/feeding/feeding.service";
+import type { GrowthLog } from "@/lib/types";
+import { formatLocalDate } from "@/lib/utils/datetime";
+import { useTimezone } from "@/lib/contexts/timezone.context";
 
 interface HomePageProps {
   baby: BabyDto;
+  nextFeedingData: NextFeedingDto | null;
+  latestGrowth: GrowthLog | null;
 }
 
 function formatBabyAge(dateOfBirth: string): string {
@@ -49,15 +53,70 @@ function getBabyDisplayName(baby: BabyDto): string {
   return baby.preferredName || baby.firstName;
 }
 
-export default function HomePage({ baby }: HomePageProps) {
+function formatGrowthWording(
+  latestGrowth: GrowthLog | null,
+  babyTimeZone?: string,
+): string | null {
+  if (!latestGrowth) return null;
+
+  const dataString = `${latestGrowth.weightKg}kg${latestGrowth.heightCm ? ` / ${latestGrowth.heightCm}cm` : ""}`;
+  const timeZoneToUse = babyTimeZone || "Pacific/Auckland";
+
+  if (!latestGrowth.localDate) {
+    return dataString;
+  }
+
+  const recordDate = new TZDate(
+    `${latestGrowth.localDate}T00:00:00`,
+    timeZoneToUse,
+  );
+  const today = new TZDate(new Date(), timeZoneToUse);
+  const startOfToday = new TZDate(
+    `${format(today, "yyyy-MM-dd")}T00:00:00`,
+    timeZoneToUse,
+  );
+  const diffDays = differenceInDays(startOfToday, recordDate);
+
+  if (diffDays === 0) return `Today: ${dataString}`;
+  if (diffDays === 1) return `Yesterday: ${dataString}`;
+  if (diffDays <= 15) return `${diffDays} days ago: ${dataString}`;
+  return `${format(recordDate, "dd MMM")}: ${dataString}`;
+}
+
+export default function HomePage({
+  baby,
+  nextFeedingData,
+  latestGrowth,
+}: HomePageProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { timeZoneId } = useTimezone();
   const babyAge = formatBabyAge(baby.dateOfBirth);
   const babyName = getBabyDisplayName(baby);
 
   const notification = useToastFromParams();
-  const { lastFeedingDisplay, nextFeedingDisplay } = useNextFeeding(baby.id);
-  const { latestGrowthWording } = useLatestGrowth(baby.id, baby.timeZone);
+
+  const lastFeedingDisplay = useMemo(() => {
+    if (!nextFeedingData?.lastFeedingTime) return null;
+    return formatLocalDate(
+      nextFeedingData.lastFeedingTime,
+      "HH:mm",
+      timeZoneId,
+    );
+  }, [nextFeedingData, timeZoneId]);
+
+  const nextFeedingDisplay = useMemo(() => {
+    if (!nextFeedingData?.nextFeedingTime) return null;
+    return formatLocalDate(
+      nextFeedingData.nextFeedingTime,
+      "HH:mm",
+      timeZoneId,
+    );
+  }, [nextFeedingData, timeZoneId]);
+
+  const latestGrowthWording = useMemo(
+    () => formatGrowthWording(latestGrowth, baby.timeZone),
+    [latestGrowth, baby.timeZone],
+  );
 
   const features = [
     {
@@ -166,15 +225,19 @@ export default function HomePage({ baby }: HomePageProps) {
           </Stack>
 
           <Stack direction="row" spacing={1}>
-            <IconButton
+            <Box
               sx={{
                 backgroundColor: "rgba(255,255,255,0.2)",
                 color: "#FFFFFF",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "&:hover": { backgroundColor: "rgba(255,255,255,0.3)" },
               }}
             >
               <TimezoneSwitcher variant="inline" />
-            </IconButton>
+            </Box>
           </Stack>
         </Stack>
       </Box>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { feedingService } from '@/lib/services/feeding/feeding.service.client';
+import { fetchDailyFeedingSummary } from '@/app/logs/actions';
 import { useTimezone } from '@/lib/contexts/timezone.context';
 import type { DailyFeedingInfo } from '@/lib/services/feeding/feeding.service';
 
@@ -20,7 +20,7 @@ export function useDailyFeedingSummary(babyId: string): UseDailyFeedingSummaryRe
 
     async function fetchSummary() {
       try {
-        const result = await feedingService.getDailyFeedingSummary(babyId, timeZoneId);
+        const result = await fetchDailyFeedingSummary(babyId, timeZoneId);
         if (!cancelled) {
           setDailyTotals(result.dailyTotals);
         }

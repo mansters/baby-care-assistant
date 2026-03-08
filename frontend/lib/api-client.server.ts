@@ -115,5 +115,5 @@ export function createServerApiClient(config: ApiClientConfig): ServerApiClient 
 }
 
 export const serverApiClient = createServerApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280',
+  baseUrl: process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280',
 });

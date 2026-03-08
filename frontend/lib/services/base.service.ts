@@ -5,7 +5,7 @@ export abstract class BaseService {
 
   constructor(client: IApiClient, basePath: string) {
     this.api = client.create({
-      baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api/${basePath}`,
+      baseUrl: `${process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5280'}/api/${basePath}`,
     });
   }
 }
