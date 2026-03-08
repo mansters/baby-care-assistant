@@ -38,6 +38,38 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
             .ToList()!;
     }
 
+    public async Task<List<T>> GetListBeforeAsync(string pk, string skPrefix, DateTime maxTime, int limit, CancellationToken ct)
+    {
+        var minSk = skPrefix;
+        
+        // Prevent overflow if maxTime is DateTime.MaxValue and local timezone is GMT-x
+        var maxTimeUtcStr = maxTime == DateTime.MaxValue 
+            ? "9999-12-31T23:59:59.999Z" 
+            : maxTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            
+        var maxSk = $"{skPrefix}{maxTimeUtcStr}";
+
+        var request = new Amazon.DynamoDBv2.Model.QueryRequest
+        {
+            TableName = _tableName,
+            KeyConditionExpression = "PK = :pk AND SK BETWEEN :minSk AND :maxSk",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":pk", new AttributeValue { S = pk } },
+                { ":minSk", new AttributeValue { S = minSk } },
+                { ":maxSk", new AttributeValue { S = maxSk } }
+            },
+            ScanIndexForward = false,
+            Limit = limit
+        };
+
+        var response = await client.QueryAsync(request, ct);
+
+        return response.Items.Select(Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>)
+            .Where(x => x != null)
+            .ToList()!;
+    }
+
     public async Task<T?> GetLatestAsync(string pk, string skPrefix, CancellationToken ct)
     {
         var rawItems = await GetListResponseAsync(pk, skPrefix, false, 1, null, ct);

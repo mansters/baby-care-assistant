@@ -10,6 +10,11 @@ public class ExcretionLogRepository(IDynamoDbBaseRepository<ExcretionLog> dynamo
         return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#EXCR#", false, limit, cursorSk, ct);
     }
 
+    public async Task<List<ExcretionLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#EXCR#", maxTime, limit, ct);
+    }
+
     public async Task<ExcretionLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
         return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);

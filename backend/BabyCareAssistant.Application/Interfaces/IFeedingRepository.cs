@@ -6,6 +6,7 @@ namespace BabyCareAssistant.Application.Interfaces;
 public interface IFeedingRepository
 {
     Task<List<FeedingLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct);
+    Task<List<FeedingLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct);
     
     Task<FeedingLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct);
     

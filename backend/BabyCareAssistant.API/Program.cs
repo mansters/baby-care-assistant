@@ -36,6 +36,7 @@ builder.Services.AddScoped<IExcretionLogRepository, ExcretionLogRepository>();
 
 builder.Services.AddScoped<ILogSourceStrategy, FeedingLogStrategy>();
 builder.Services.AddScoped<ILogSourceStrategy, GrowthLogStrategy>();
+builder.Services.AddScoped<ILogSourceStrategy, ExcretionLogStrategy>();
 builder.Services.AddScoped<ILogAggregationService, LogAggregationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<BabyCareAssistant.Domain.Services.FeedingPredictionService>();

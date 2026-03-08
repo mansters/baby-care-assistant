@@ -20,7 +20,7 @@ export class FeedingLogRenderer
   }
 
   getIcon(details: FeedingDetails): ReactNode {
-    if (details.feedingType === "Breast") {
+    if (details.type === "Breast") {
       return <FaPersonBreastfeeding size={18} />;
     }
 
@@ -33,13 +33,13 @@ export class FeedingLogRenderer
 
   renderContent(): string {
     const {
-      feedingType,
+      type,
       leftBreastDurationMinutes,
       rightBreastDurationMinutes,
       amountMl,
     } = this.details;
 
-    if (feedingType === "Breast") {
+    if (type === "Breast") {
       const parts: string[] = [];
       if (leftBreastDurationMinutes != null)
         parts.push(`L: ${leftBreastDurationMinutes}min`);
@@ -48,15 +48,15 @@ export class FeedingLogRenderer
       return parts.join(" | ");
     }
 
-    if (feedingType === "Bottle") {
+    if (type === "Bottle") {
       return `${amountMl}ml Formula`;
     }
 
-    return `${amountMl}ml ${feedingType}`;
+    return `${amountMl}ml ${type}`;
   }
 
   getDrawerIcon(details: FeedingDetails): ReactNode {
-    if (details.feedingType === "Breast") {
+    if (details.type === "Breast") {
       return <FaPersonBreastfeeding size={40} color="#ffffff" />;
     }
     return <TbBabyBottle size={40} color="#ffffff" />;
@@ -64,13 +64,13 @@ export class FeedingLogRenderer
 
   getPrimaryInfo(): string {
     const {
-      feedingType,
+      type,
       leftBreastDurationMinutes,
       rightBreastDurationMinutes,
       amountMl,
     } = this.details;
 
-    if (feedingType === "Breast") {
+    if (type === "Breast") {
       const total =
         (leftBreastDurationMinutes || 0) + (rightBreastDurationMinutes || 0);
       return `${total} min`;
@@ -81,13 +81,13 @@ export class FeedingLogRenderer
 
   getSecondaryInfo(): string {
     const {
-      feedingType,
+      type,
       leftBreastDurationMinutes,
       rightBreastDurationMinutes,
       amountMl,
     } = this.details;
 
-    if (feedingType === "Breast") {
+    if (type === "Breast") {
       const parts: string[] = [];
       if (leftBreastDurationMinutes != null)
         parts.push(`L: ${leftBreastDurationMinutes}m`);

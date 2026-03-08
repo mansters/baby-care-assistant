@@ -10,6 +10,11 @@ public class GrowthLogRepository(IDynamoDbBaseRepository<GrowthLog> dynamoDbBase
         return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#GROW#", false, limit, cursorSk, ct);
     }
 
+    public async Task<List<GrowthLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#GROW#", maxTime, limit, ct);
+    }
+
     public async Task<GrowthLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
         return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);

@@ -8,7 +8,7 @@ export enum LogType {
 }
 
 export interface FeedingDetails {
-  feedingType: string;
+  type: string;
   leftBreastDurationMinutes?: number;
   rightBreastDurationMinutes?: number;
   amountMl: number;

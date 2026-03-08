@@ -7,6 +7,7 @@ public interface IDynamoDbBaseRepository<T> where T : DynamoBaseEntity
 {
     Task<T?> GetByKeyAsync(string pk, string sk, CancellationToken ct);
     Task<List<T>> GetListAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct);
+    Task<List<T>> GetListBeforeAsync(string pk, string skPrefix, DateTime maxTime, int limit, CancellationToken ct);
     Task<T?> GetLatestAsync(string pk, string skPrefix, CancellationToken ct);
     Task<T> CreateAsync(T entity, CancellationToken ct);
     Task<T?> UpdateAsync(string pk, string sk, Action<T> mutate, CancellationToken ct);

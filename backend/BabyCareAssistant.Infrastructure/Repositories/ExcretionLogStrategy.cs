@@ -1,36 +1,34 @@
 using BabyCareAssistant.Application.Features.Log.Dtos;
+using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Enums;
-using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 
 namespace BabyCareAssistant.Infrastructure.Repositories;
 
-public class GrowthLogStrategy(IGrowthLogRepository repository) : ILogSourceStrategy
+public class ExcretionLogStrategy(IExcretionLogRepository repository) : ILogSourceStrategy
 {
-    public LogType LogType => LogType.Growth;
+    public LogType LogType => LogType.Diaper;
 
     public async Task<IEnumerable<LogEntryDto>> GetLogsAsync(
         string babyId, DateTime cursorTime, int count, CancellationToken cancellationToken = default)
     {
         var logs = await repository.GetListBeforeAsync(babyId, cursorTime, count, cancellationToken);
-
+        
         return logs.Select(log => new LogEntryDto
         {
             Id = log.SK,
             StartTime = log.EventTimeUtc,
-            Type = LogType.Growth,
-            Note = log.Note,
-            Details = new GrowthLogDto
+            Type = LogType.Diaper,
+            Note = log.Notes,
+            Details = new ExcretionLogDto
             {
                 BabyId = log.BabyId,
                 SK = log.SK,
                 EventTimeUtc = log.EventTimeUtc,
                 LocalDate = log.LocalDate,
                 LocalTime = log.LocalTime,
-                WeightKg = log.WeightKg,
-                HeightCm = log.HeightCm,
-                HeadCircumferenceCm = log.HeadCircumferenceCm,
-                Note = log.Note
+                Type = log.Type,
+                Notes = log.Notes
             }
         });
     }

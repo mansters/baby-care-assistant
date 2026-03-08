@@ -12,6 +12,11 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
         return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, limit, cursorSk, ct);
     }
 
+    public async Task<List<FeedingLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
+    {
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#FEED#", maxTime, limit, ct);
+    }
+
     public async Task<FeedingLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
     {
         return await dynamoDbBaseRepository.GetByKeyAsync($"BABY#{babyId}", sk, ct);

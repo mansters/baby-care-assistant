@@ -20,24 +20,24 @@ export function useLatestGrowth(babyId: string, babyTimeZone?: string): UseLates
     if (!latestGrowth) return null;
 
     const dataString = `${latestGrowth.weightKg}kg${latestGrowth.heightCm ? ` / ${latestGrowth.heightCm}cm` : ""}`;
-    const timeZoneToUse = babyTimeZone || 'Pacific/Auckland'; // fallback
+    const timeZoneToUse = babyTimeZone || 'Pacific/Auckland';
     
     if (!latestGrowth.localDate) {
       return dataString;
     }
 
-    // Parse the record's local date exactly at midnight in the baby's local timezone
     const recordDate = new TZDate(`${latestGrowth.localDate}T00:00:00`, timeZoneToUse);
     const today = new TZDate(new Date(), timeZoneToUse);
 
-    // Ensure we are comparing midnight to midnight to count exactly calendar days
     const startOfToday = new TZDate(`${format(today, 'yyyy-MM-dd')}T00:00:00`, timeZoneToUse);
     const diffDays = differenceInDays(startOfToday, recordDate);
 
     if (diffDays === 0) {
         return `Today: ${dataString}`;
+    } else if (diffDays === 1) {
+        return `Yesterday: ${dataString}`;
     } else if (diffDays <= 15) {
-        return diffDays === 1 ? `1 day ago: ${dataString}` : `${diffDays} days ago: ${dataString}`;
+        return `${diffDays} days ago: ${dataString}`;
     } else {
         return `${format(recordDate, 'dd MMM')}: ${dataString}`;
     }
