@@ -9,12 +9,12 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
 
     public async Task<List<FeedingLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, limit, cursorSk, ct);
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#", false, limit, cursorSk, ct, "FeedingLog");
     }
 
     public async Task<List<FeedingLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#FEED#", maxTime, limit, ct);
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#", maxTime, limit, ct, "FeedingLog");
     }
 
     public async Task<FeedingLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
@@ -48,7 +48,7 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
 
     public async Task<Dictionary<string, DailyFeedingInfo>> GetDailyFormulaTotalsAsync(string babyId, CancellationToken ct)
     {
-        var allLogs = await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#FEED#", false, int.MaxValue, null, ct);
+        var allLogs = await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#", false, int.MaxValue, null, ct, "FeedingLog");
 
         var dailyTotals = new Dictionary<string, DailyFeedingInfo>();
 
@@ -81,6 +81,6 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
 
     public async Task<FeedingLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#FEED#", ct);
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#", ct, "FeedingLog");
     }
 }

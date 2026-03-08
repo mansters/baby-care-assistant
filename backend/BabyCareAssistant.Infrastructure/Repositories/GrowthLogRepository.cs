@@ -7,12 +7,12 @@ public class GrowthLogRepository(IDynamoDbBaseRepository<GrowthLog> dynamoDbBase
 {
     public async Task<List<GrowthLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#GROW#", false, limit, cursorSk, ct);
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#", false, limit, cursorSk, ct, "GrowthLog");
     }
 
     public async Task<List<GrowthLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#GROW#", maxTime, limit, ct);
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#", maxTime, limit, ct, "GrowthLog");
     }
 
     public async Task<GrowthLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
@@ -37,6 +37,6 @@ public class GrowthLogRepository(IDynamoDbBaseRepository<GrowthLog> dynamoDbBase
 
     public async Task<GrowthLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#GROW#", ct);
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#", ct, "GrowthLog");
     }
 }

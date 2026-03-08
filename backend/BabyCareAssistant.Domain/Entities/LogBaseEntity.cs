@@ -38,7 +38,7 @@ public abstract class LogBaseEntity : DynamoBaseEntity
         EventTimeUtc = utcTime;
 
         var suffix = Ulid.NewUlid().ToString()[^6..];
-        SK = $"LOG#{LogPrefix}#{utcTime:yyyy-MM-ddTHH:mm:ss.fffZ}#{suffix}";
+        SK = $"LOG#{utcTime:yyyy-MM-ddTHH:mm:ss.fffZ}#{LogPrefix}#{suffix}";
 
         // Store the correct calculated local bounds
         LocalDate = localDateTime.ToString("yyyy-MM-dd");

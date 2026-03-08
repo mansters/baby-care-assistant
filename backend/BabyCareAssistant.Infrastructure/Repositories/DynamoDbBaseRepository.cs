@@ -29,16 +29,16 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
         return Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>(response.Item);
     }
 
-    public async Task<List<T>> GetListAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct)
+    public async Task<List<T>> GetListAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct, string? entityTypeFilter = null)
     {
-        var rawItems = await GetListResponseAsync(pk, skPrefix, ascending, limit, cursor, ct);
+        var rawItems = await GetListResponseAsync(pk, skPrefix, ascending, limit, cursor, ct, entityTypeFilter);
         
         return rawItems.Select(Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>)
             .Where(x => x != null)
             .ToList()!;
     }
 
-    public async Task<List<T>> GetListBeforeAsync(string pk, string skPrefix, DateTime maxTime, int limit, CancellationToken ct)
+    public async Task<List<T>> GetListBeforeAsync(string pk, string skPrefix, DateTime maxTime, int limit, CancellationToken ct, string? entityTypeFilter = null)
     {
         var minSk = skPrefix;
         
@@ -48,6 +48,8 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
             : maxTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             
         var maxSk = $"{skPrefix}{maxTimeUtcStr}";
+
+        var readLimit = entityTypeFilter != null ? limit * 5 : limit;
 
         var request = new Amazon.DynamoDBv2.Model.QueryRequest
         {
@@ -60,19 +62,28 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
                 { ":maxSk", new AttributeValue { S = maxSk } }
             },
             ScanIndexForward = false,
-            Limit = limit
+            Limit = readLimit
         };
+
+        if (!string.IsNullOrEmpty(entityTypeFilter))
+        {
+            request.FilterExpression = "EntityType = :entityType";
+            request.ExpressionAttributeValues[":entityType"] = new AttributeValue { S = entityTypeFilter };
+        }
 
         var response = await client.QueryAsync(request, ct);
 
-        return response.Items.Select(Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>)
+        var results = response.Items.Select(Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>)
             .Where(x => x != null)
             .ToList()!;
+
+        return results.Take(limit).ToList();
     }
 
-    public async Task<T?> GetLatestAsync(string pk, string skPrefix, CancellationToken ct)
+    public async Task<T?> GetLatestAsync(string pk, string skPrefix, CancellationToken ct, string? entityTypeFilter = null)
     {
-        var rawItems = await GetListResponseAsync(pk, skPrefix, false, 1, null, ct);
+        var readLimit = entityTypeFilter != null ? 50 : 1;
+        var rawItems = await GetListResponseAsync(pk, skPrefix, false, readLimit, null, ct, entityTypeFilter);
 
         var latestRawItem = rawItems.FirstOrDefault();
 
@@ -81,8 +92,10 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
         return Infrastructure.Helpers.DynamoDbMapper.ToEntity<T>(latestRawItem);
     }
 
-    private async Task<List<Dictionary<string, AttributeValue>>> GetListResponseAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct)
+    private async Task<List<Dictionary<string, AttributeValue>>> GetListResponseAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct, string? entityTypeFilter = null)
     {
+        var readLimit = entityTypeFilter != null ? limit * 5 : limit;
+
         var request = new Amazon.DynamoDBv2.Model.QueryRequest
         {
             TableName = _tableName,
@@ -93,8 +106,14 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
                 { ":skPrefix", new AttributeValue { S = skPrefix } }
             },
             ScanIndexForward = ascending,
-            Limit = limit
+            Limit = readLimit
         };
+
+        if (!string.IsNullOrEmpty(entityTypeFilter))
+        {
+            request.FilterExpression = "EntityType = :entityType";
+            request.ExpressionAttributeValues[":entityType"] = new AttributeValue { S = entityTypeFilter };
+        }
 
         if (!string.IsNullOrEmpty(cursor))
         {

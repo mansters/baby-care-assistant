@@ -7,12 +7,12 @@ public class ExcretionLogRepository(IDynamoDbBaseRepository<ExcretionLog> dynamo
 {
     public async Task<List<ExcretionLog>> GetListByBabyIdAsync(string babyId, string? cursorSk, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#EXCR#", false, limit, cursorSk, ct);
+        return await dynamoDbBaseRepository.GetListAsync($"BABY#{babyId}", "LOG#", false, limit, cursorSk, ct, "ExcretionLog");
     }
 
     public async Task<List<ExcretionLog>> GetListBeforeAsync(string babyId, DateTime maxTime, int limit, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#EXCR#", maxTime, limit, ct);
+        return await dynamoDbBaseRepository.GetListBeforeAsync($"BABY#{babyId}", "LOG#", maxTime, limit, ct, "ExcretionLog");
     }
 
     public async Task<ExcretionLog?> GetByKeyAsync(string babyId, string sk, CancellationToken ct)
@@ -44,6 +44,6 @@ public class ExcretionLogRepository(IDynamoDbBaseRepository<ExcretionLog> dynamo
 
     public async Task<ExcretionLog?> GetLatestAsync(string babyId, CancellationToken ct)
     {
-        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#EXCR#", ct);
+        return await dynamoDbBaseRepository.GetLatestAsync($"BABY#{babyId}", "LOG#", ct, "ExcretionLog");
     }
 }

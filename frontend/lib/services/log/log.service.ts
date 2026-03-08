@@ -18,7 +18,7 @@ export class LogService extends BaseService {
     params.set('limit', String(pageSize));
 
     if (cursorSk) {
-      params.set('cursorSk', cursorSk);
+      params.set('cursor', cursorSk);
     }
 
     if (types && types.length > 0) {

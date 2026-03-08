@@ -41,7 +41,12 @@ export function useLogList(babyId: string): UseLogListReturn {
           types
         );
 
-        setLogs((prev) => (reset ? response.items : [...prev, ...response.items]));
+        setLogs((prev) => {
+          if (reset) return response.items;
+          const existingIds = new Set(prev.map((l) => l.id));
+          const newItems = response.items.filter((item) => !existingIds.has(item.id));
+          return [...prev, ...newItems];
+        });
         setCursor(response.nextCursor);
         setHasMore(response.nextCursor !== null);
       } catch (error) {
