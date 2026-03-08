@@ -11,13 +11,14 @@ import {
   Grid,
   Snackbar,
   Alert,
+  Fab,
 } from "@mui/material";
 import { differenceInMonths, differenceInDays } from "date-fns";
 import { FiTrendingUp, FiAward } from "react-icons/fi";
 import { IoMdMoon } from "react-icons/io";
 import { MdBabyChangingStation } from "react-icons/md";
 import { TbBabyBottle } from "react-icons/tb";
-import { FaSyringe } from "react-icons/fa";
+import { FaSyringe, FaListUl } from "react-icons/fa";
 import { BabyDto } from "@/lib/services/user";
 import FeatureCard from "./FeatureCard";
 import WavySeparator from "@/components/WavySeparator";
@@ -202,6 +203,24 @@ export default function HomePage({ baby }: HomePageProps) {
       </Container>
 
       {notification}
+
+      <Fab
+        color="primary"
+        aria-label="logs"
+        onClick={() => router.push("/logs")}
+        sx={{
+          position: "fixed",
+          bottom: 32,
+          right: 24,
+          backgroundColor: "#786dce",
+          "&:hover": {
+            backgroundColor: "#5a52a3",
+          },
+          boxShadow: 3,
+        }}
+      >
+        <FaListUl size={20} color="#FFFFFF" />
+      </Fab>
     </Box>
   );
 }
