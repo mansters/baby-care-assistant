@@ -94,7 +94,7 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
 
     private async Task<List<Dictionary<string, AttributeValue>>> GetListResponseAsync(string pk, string skPrefix, bool ascending, int limit, string? cursor, CancellationToken ct, string? entityTypeFilter = null)
     {
-        var readLimit = entityTypeFilter != null ? limit * 5 : limit;
+        var readLimit = entityTypeFilter != null ? Math.Max(limit * 5, 50) : limit;
 
         var request = new Amazon.DynamoDBv2.Model.QueryRequest
         {
@@ -124,9 +124,26 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
             };
         }
 
-        var response = await client.QueryAsync(request, ct);
+        // When filtering, paginate until we collect enough results
+        if (entityTypeFilter != null)
+        {
+            var allItems = new List<Dictionary<string, AttributeValue>>();
+            do
+            {
+                var response = await client.QueryAsync(request, ct);
+                allItems.AddRange(response.Items);
 
-        return response.Items;
+                if (allItems.Count >= limit || response.LastEvaluatedKey == null || response.LastEvaluatedKey.Count == 0)
+                    break;
+
+                request.ExclusiveStartKey = response.LastEvaluatedKey;
+            } while (true);
+
+            return allItems;
+        }
+
+        var singleResponse = await client.QueryAsync(request, ct);
+        return singleResponse.Items;
     }
 
     public async Task<T> CreateAsync(T entity, CancellationToken ct)
