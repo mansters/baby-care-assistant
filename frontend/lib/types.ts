@@ -37,6 +37,7 @@ export interface GrowthLog {
   babyId: string;
   dateMeasured?: string; // Legacy
   eventTimeUtc: string;
+  localDate: string;
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;

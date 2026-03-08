@@ -4,6 +4,7 @@ export interface BabyDto {
   lastName: string;
   preferredName?: string;
   dateOfBirth: string;
+  timeZone: string;
 }
 
 export interface ContextFamilyDto {

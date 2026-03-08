@@ -26,6 +26,7 @@ import React, { useEffect, useState } from "react";
 import TimezoneSwitcher from "@/shared/components/TimezoneSwitcher";
 import useToastFromParams from "@/shared/hooks/useParamsMessage";
 import { useNextFeeding } from "@/features/home/hooks/useNextFeeding";
+import { useLatestGrowth } from "@/features/home/hooks/useLatestGrowth";
 
 interface HomePageProps {
   baby: BabyDto;
@@ -55,8 +56,17 @@ export default function HomePage({ baby }: HomePageProps) {
 
   const notification = useToastFromParams();
   const { lastFeedingDisplay, nextFeedingDisplay } = useNextFeeding(baby.id);
+  const { latestGrowthWording } = useLatestGrowth(baby.id, baby.timeZone);
 
   const features = [
+    {
+      icon: <FiTrendingUp />,
+      title: "Growth",
+      subtitle: latestGrowthWording || undefined,
+      backgroundColor: "#E8F5E9",
+      iconColor: "#66BB6A",
+      href: "/growth/new",
+    },
     {
       icon: <TbBabyBottle />,
       title: "Feeding",
@@ -66,46 +76,38 @@ export default function HomePage({ baby }: HomePageProps) {
       iconColor: FeatureTheme.feeding.primary,
       href: "/feeding/new",
     },
-    {
-      icon: <IoMdMoon />,
-      title: "Sleep",
-      subtitle: "1h 20min",
-      backgroundColor: "#E5F4FF",
-      iconColor: "#4ECDC4",
-      href: "/sleep",
-    },
-    {
-      icon: <MdBabyChangingStation />,
-      title: "Diaper",
-      subtitle: "30 min ago",
-      backgroundColor: "#FFF3E0",
-      iconColor: "#FFB347",
-      href: "/diaper",
-    },
-    {
-      icon: <FiTrendingUp />,
-      title: "Growth",
-      subtitle: "6.5kg / 62cm",
-      backgroundColor: "#E8F5E9",
-      iconColor: "#66BB6A",
-      href: "/growth/new",
-    },
-    {
-      icon: <FaSyringe />,
-      title: "Vaccine",
-      subtitle: "Next: Mar 15",
-      backgroundColor: "#EDE7F6",
-      iconColor: "#786dce",
-      href: "/vaccine",
-    },
-    {
-      icon: <FiAward />,
-      title: "Milestone",
-      subtitle: "Roll over ✓",
-      backgroundColor: "#FCE4EC",
-      iconColor: "#E91E63",
-      href: "/milestone",
-    },
+    // {
+    //   icon: <IoMdMoon />,
+    //   title: "Sleep",
+    //   subtitle: "1h 20min",
+    //   backgroundColor: "#E5F4FF",
+    //   iconColor: "#4ECDC4",
+    //   href: "/sleep",
+    // },
+    // {
+    //   icon: <MdBabyChangingStation />,
+    //   title: "Diaper",
+    //   subtitle: "30 min ago",
+    //   backgroundColor: "#FFF3E0",
+    //   iconColor: "#FFB347",
+    //   href: "/diaper",
+    // },
+    // {
+    //   icon: <FaSyringe />,
+    //   title: "Vaccine",
+    //   subtitle: "Next: Mar 15",
+    //   backgroundColor: "#EDE7F6",
+    //   iconColor: "#786dce",
+    //   href: "/vaccine",
+    // },
+    // {
+    //   icon: <FiAward />,
+    //   title: "Milestone",
+    //   subtitle: "Roll over ✓",
+    //   backgroundColor: "#FCE4EC",
+    //   iconColor: "#E91E63",
+    //   href: "/milestone",
+    // },
   ];
 
   return (
