@@ -64,12 +64,12 @@ public class DynamoDbBaseRepository<T>(IAmazonDynamoDB client, IConfiguration co
             Limit = limit
         };
 
-        if (string.IsNullOrEmpty(cursor))
+        if (!string.IsNullOrEmpty(cursor))
         {
             request.ExclusiveStartKey = new Dictionary<string, AttributeValue>
             {
                 { "PK", new AttributeValue { S = pk } },
-                { "SK", new AttributeValue { S = skPrefix } }
+                { "SK", new AttributeValue { S = cursor } }
             };
         }
 
