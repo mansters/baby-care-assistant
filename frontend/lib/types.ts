@@ -5,9 +5,11 @@ export enum FeedingType {
 }
 
 export interface FeedingLog {
-  id: string;
+  sk: string;
   babyId: string;
-  feedingTime: string;    
+  feedingTime?: string; // Legacy
+  eventTimeUtc: string;
+  localDateTime: string;
 
   type: FeedingType;
   amountMl: number;
@@ -18,7 +20,7 @@ export interface FeedingLog {
 
 export interface CreateFeedingLogRequest {
   babyId: string; 
-  feedingTime: string;
+  localDateTime: string;
 
   type: FeedingType;
   amountMl: number;
@@ -28,13 +30,15 @@ export interface CreateFeedingLogRequest {
 }
 
 export interface UpdateFeedingLogRequest extends CreateFeedingLogRequest {
-  id: string;
+  sk: string;
 }
 
 export interface GrowthLog {
-  id: string;
+  sk: string;
   babyId: string;
-  dateMeasured: string;
+  dateMeasured?: string; // Legacy
+  eventTimeUtc: string;
+  localDateTime: string;
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;
@@ -43,7 +47,7 @@ export interface GrowthLog {
 
 export interface CreateGrowthLogRequest {
   babyId: string;
-  dateMeasured: string;
+  localDateTime: string;
   weightKg: number;
   heightCm?: number;
   headCircumferenceCm?: number;
@@ -51,14 +55,15 @@ export interface CreateGrowthLogRequest {
 }
 
 export interface UpdateGrowthLogRequest extends CreateGrowthLogRequest {
-  id: string;
+  sk: string;
 }
 
 export interface Baby {
-  id: string;
+  babyId: string;
   name: string;
   dateOfBirth: string;
   gender?: string;
+  timeZone?: string;
 }
 
 export interface CreateBabyRequest {
@@ -68,5 +73,5 @@ export interface CreateBabyRequest {
 }
 
 export interface UpdateBabyRequest extends CreateBabyRequest {
-  id: string;
+  babyId: string;
 }

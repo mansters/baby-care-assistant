@@ -59,11 +59,11 @@ export class GrowthLogRenderer
     return parts.join(" • ") || "Growth Record";
   }
 
-  getUpdatePath(id: string): string {
-    return `/growth/${id}`;
+  getUpdatePath(babyId: string, sk: string): string {
+    return `/growth/edit?babyId=${babyId}&sk=${encodeURIComponent(sk)}`;
   }
 
-  async deleteEntry(id: string): Promise<void> {
-    await deleteGrowthLog(id);
+  async deleteEntry(babyId: string, sk: string): Promise<void> {
+    await deleteGrowthLog(babyId, sk);
   }
 }

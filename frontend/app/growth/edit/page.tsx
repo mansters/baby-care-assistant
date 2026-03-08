@@ -3,12 +3,14 @@ import { growthService } from "@/lib/services/growth/growth.service.server";
 import EditGrowthClient from "./EditGrowthClient";
 
 interface EditGrowthPageProps {
-  params: Promise<{ id: string }>;
+  searchParams: Promise<{ babyId: string; sk: string }>;
 }
 
-export default async function EditGrowthPage({ params }: EditGrowthPageProps) {
-  const { id } = await params;
-  const log = await growthService.getById(id);
+export default async function EditGrowthPage({
+  searchParams,
+}: EditGrowthPageProps) {
+  const { babyId, sk } = await searchParams;
+  const log = await growthService.getById(babyId, sk);
 
   if (!log) {
     return <div>Error: Growth log not found.</div>;

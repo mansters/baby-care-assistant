@@ -7,23 +7,24 @@ export class GrowthService extends BaseService {
     super(client, 'GrowthLog');
   }
 
-  getAll(): Promise<GrowthLog[]> {
-    return this.api.get('/');
+  getAll(babyId: string, cursorSk?: string, limit: number = 20): Promise<GrowthLog[]> {
+    const cursorParam = cursorSk ? `&cursorSk=${encodeURIComponent(cursorSk)}` : '';
+    return this.api.get(`/?babyId=${babyId}${cursorParam}&limit=${limit}`);
   }
 
-  getById(id: string): Promise<GrowthLog> {
-    return this.api.get(`/${id}`);
+  getById(babyId: string, sk: string): Promise<GrowthLog> {
+    return this.api.get(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`);
   }
 
   create(data: CreateGrowthLogRequest): Promise<GrowthLog> {
     return this.api.post('/', data);
   }
 
-  update(id: string, data: UpdateGrowthLogRequest): Promise<GrowthLog> {
-    return this.api.put(`/${id}`, data);
+  update(babyId: string, sk: string, data: UpdateGrowthLogRequest): Promise<GrowthLog> {
+    return this.api.put(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`, data);
   }
 
-  delete(id: string): Promise<void> {
-    return this.api.delete(`/${id}`);
+  delete(babyId: string, sk: string): Promise<void> {
+    return this.api.delete(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`);
   }
 }

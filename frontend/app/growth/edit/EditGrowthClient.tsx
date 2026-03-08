@@ -37,7 +37,7 @@ export default function EditGrowthClient({
         startTime: localToUtc(data.startTime, timeZoneId),
       };
       await updateGrowthLog(
-        initialData.id,
+        initialData.sk,
         utcData,
         initialData.babyId,
         "/logs",
@@ -61,7 +61,10 @@ export default function EditGrowthClient({
   };
 
   const formInitialData: Partial<GrowthFormValues> = {
-    startTime: utcToLocalDate(initialData.dateMeasured, timeZoneId),
+    startTime: utcToLocalDate(
+      initialData.localDateTime || initialData.eventTimeUtc,
+      timeZoneId,
+    ),
     weightKg: initialData.weightKg,
     heightCm: initialData.heightCm ?? undefined,
     headCircumferenceCm: initialData.headCircumferenceCm ?? undefined,

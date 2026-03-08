@@ -36,7 +36,7 @@ export default function EditFeedingClient({
         ...data,
         startTime: localToUtc(data.startTime, timeZoneId),
       };
-      await updateFeedingLog(initialData.id, utcData, initialData.babyId);
+      await updateFeedingLog(initialData.sk, utcData, initialData.babyId);
     } catch (error) {
       if (isRedirectError(error)) {
         throw error;
@@ -56,7 +56,10 @@ export default function EditFeedingClient({
   };
 
   const formInitialData: Partial<FeedingFormValues> = {
-    startTime: utcToLocalDate(initialData.feedingTime, timeZoneId),
+    startTime: utcToLocalDate(
+      initialData.localDateTime || initialData.eventTimeUtc,
+      timeZoneId,
+    ),
     type: initialData.type === "Breast" ? "Nursing" : "Bottle",
     leftDuration: initialData.leftBreastDurationMinutes || 0,
     rightDuration: initialData.rightBreastDurationMinutes || 0,

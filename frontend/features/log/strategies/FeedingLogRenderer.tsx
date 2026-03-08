@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
-import { TbBabyBottle } from 'react-icons/tb';
-import { FaPersonBreastfeeding } from 'react-icons/fa6';
-import { ILogRendererStrategy, ILogDrawerStrategy, FeedingDetails } from '@/features/log/types';
-import { deleteFeedingLog } from '@/app/feeding/actions';
+import { ReactNode } from "react";
+import { TbBabyBottle } from "react-icons/tb";
+import { FaPersonBreastfeeding } from "react-icons/fa6";
+import {
+  ILogRendererStrategy,
+  ILogDrawerStrategy,
+  FeedingDetails,
+} from "@/features/log/types";
+import { deleteFeedingLog } from "@/app/feeding/actions";
 
-export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrategy {
+export class FeedingLogRenderer
+  implements ILogRendererStrategy, ILogDrawerStrategy
+{
   private details: FeedingDetails;
 
   constructor(details: FeedingDetails) {
@@ -14,7 +20,7 @@ export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrat
   }
 
   getIcon(details: FeedingDetails): ReactNode {
-    if (details.feedingType === 'Breast') {
+    if (details.feedingType === "Breast") {
       return <FaPersonBreastfeeding size={18} />;
     }
 
@@ -22,20 +28,27 @@ export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrat
   }
 
   getFeatureKey(): string {
-    return 'feeding';
+    return "feeding";
   }
 
   renderContent(): string {
-    const { feedingType, leftBreastDurationMinutes, rightBreastDurationMinutes, amountMl } = this.details;
+    const {
+      feedingType,
+      leftBreastDurationMinutes,
+      rightBreastDurationMinutes,
+      amountMl,
+    } = this.details;
 
-    if (feedingType === 'Breast') {
+    if (feedingType === "Breast") {
       const parts: string[] = [];
-      if (leftBreastDurationMinutes != null) parts.push(`L: ${leftBreastDurationMinutes}min`);
-      if (rightBreastDurationMinutes != null) parts.push(`R: ${rightBreastDurationMinutes}min`);
-      return parts.join(' | ');
+      if (leftBreastDurationMinutes != null)
+        parts.push(`L: ${leftBreastDurationMinutes}min`);
+      if (rightBreastDurationMinutes != null)
+        parts.push(`R: ${rightBreastDurationMinutes}min`);
+      return parts.join(" | ");
     }
 
-    if (feedingType === 'Bottle') {
+    if (feedingType === "Bottle") {
       return `${amountMl}ml Formula`;
     }
 
@@ -43,17 +56,23 @@ export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrat
   }
 
   getDrawerIcon(details: FeedingDetails): ReactNode {
-    if (details.feedingType === 'Breast') {
+    if (details.feedingType === "Breast") {
       return <FaPersonBreastfeeding size={40} color="#ffffff" />;
     }
     return <TbBabyBottle size={40} color="#ffffff" />;
   }
 
   getPrimaryInfo(): string {
-    const { feedingType, leftBreastDurationMinutes, rightBreastDurationMinutes, amountMl } = this.details;
+    const {
+      feedingType,
+      leftBreastDurationMinutes,
+      rightBreastDurationMinutes,
+      amountMl,
+    } = this.details;
 
-    if (feedingType === 'Breast') {
-      const total = (leftBreastDurationMinutes || 0) + (rightBreastDurationMinutes || 0);
+    if (feedingType === "Breast") {
+      const total =
+        (leftBreastDurationMinutes || 0) + (rightBreastDurationMinutes || 0);
       return `${total} min`;
     }
 
@@ -61,23 +80,30 @@ export class FeedingLogRenderer implements ILogRendererStrategy, ILogDrawerStrat
   }
 
   getSecondaryInfo(): string {
-    const { feedingType, leftBreastDurationMinutes, rightBreastDurationMinutes, amountMl } = this.details;
+    const {
+      feedingType,
+      leftBreastDurationMinutes,
+      rightBreastDurationMinutes,
+      amountMl,
+    } = this.details;
 
-    if (feedingType === 'Breast') {
+    if (feedingType === "Breast") {
       const parts: string[] = [];
-      if (leftBreastDurationMinutes != null) parts.push(`L: ${leftBreastDurationMinutes}m`);
-      if (rightBreastDurationMinutes != null) parts.push(`R: ${rightBreastDurationMinutes}m`);
-      return `Nursing • ${parts.join(' | ')}`;
+      if (leftBreastDurationMinutes != null)
+        parts.push(`L: ${leftBreastDurationMinutes}m`);
+      if (rightBreastDurationMinutes != null)
+        parts.push(`R: ${rightBreastDurationMinutes}m`);
+      return `Nursing • ${parts.join(" | ")}`;
     }
 
     return `Bottle • ${amountMl}ml Formula`;
   }
 
-  getUpdatePath(id: string): string {
-    return `/feeding/${id}`;
+  getUpdatePath(babyId: string, sk: string): string {
+    return `/feeding/edit?babyId=${babyId}&sk=${encodeURIComponent(sk)}`;
   }
 
-  async deleteEntry(id: string): Promise<void> {
-    await deleteFeedingLog(id);
+  async deleteEntry(babyId: string, sk: string): Promise<void> {
+    await deleteFeedingLog(babyId, sk);
   }
 }

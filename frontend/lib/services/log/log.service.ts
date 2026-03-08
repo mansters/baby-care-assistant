@@ -9,16 +9,16 @@ export class LogService extends BaseService {
 
   getLogs(
     babyId: string,
-    cursor?: string | null,
+    cursorSk?: string | null,
     pageSize: number = 20,
     types?: LogType[]
   ): Promise<PaginatedLogResponse> {
     const params = new URLSearchParams();
     params.set('babyId', babyId);
-    params.set('pageSize', String(pageSize));
+    params.set('limit', String(pageSize));
 
-    if (cursor) {
-      params.set('cursor', cursor);
+    if (cursorSk) {
+      params.set('cursorSk', cursorSk);
     }
 
     if (types && types.length > 0) {

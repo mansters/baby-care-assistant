@@ -10,7 +10,7 @@ import { toUtcIsoString } from '@/lib/utils/datetime';
 export async function createGrowthLog(data: GrowthFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateGrowthLogRequest = {
         babyId,
-        dateMeasured: toUtcIsoString(new Date(data.startTime)),
+        localDateTime: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,
@@ -21,22 +21,20 @@ export async function createGrowthLog(data: GrowthFormValues, babyId: string, re
     redirect(buildRedirectUrl(redirectTo, { type: 'success', message: 'Growth log saved successfully' }));
 }
 
-export async function updateGrowthLog(id: string, data: GrowthFormValues, babyId: string, redirectTo = '/home') {
+export async function updateGrowthLog(sk: string, data: GrowthFormValues, babyId: string, redirectTo = '/home') {
     const request: UpdateGrowthLogRequest = {
-        id,
+        sk,
         babyId,
-        dateMeasured: toUtcIsoString(new Date(data.startTime)),
+        localDateTime: toUtcIsoString(new Date(data.startTime)),
         weightKg: data.weightKg,
         heightCm: data.heightCm ?? undefined,
         headCircumferenceCm: data.headCircumferenceCm ?? undefined,
         note: data.note || undefined,
     };
-
-    await growthService.update(id, request);
+    await growthService.update(babyId, sk, request);
     redirect(buildRedirectUrl(redirectTo, { type: 'success', message: 'Growth log updated successfully' }));
 }
-
-export async function deleteGrowthLog(id: string) {
-    await growthService.delete(id);
+export async function deleteGrowthLog(babyId: string, sk: string) {
+    await growthService.delete(babyId, sk);
 }
 

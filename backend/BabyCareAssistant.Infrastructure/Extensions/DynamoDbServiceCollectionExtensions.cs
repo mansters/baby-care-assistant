@@ -10,23 +10,28 @@ public static class DynamoDbServiceCollectionExtensions
     public static IServiceCollection AddDynamoDbInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var region = configuration["DynamoDb:Region"]
-                     ?? configuration["AWS:Region"];
+        var awsOptions = configuration.GetAWSOptions();
+        services.AddDefaultAWSOptions(awsOptions);
 
-        if (string.IsNullOrWhiteSpace(region))
+        var useLocal = bool.TryParse(configuration["DynamoDb:UseLocal"], out var parsed) && parsed;
+        if (useLocal)
         {
-            throw new InvalidOperationException("Missing DynamoDB region. Set DynamoDb:Region (or AWS:Region).\"");
-        }
-
-        services.AddSingleton<IAmazonDynamoDB>(_ =>
-        {
-            var clientConfig = new AmazonDynamoDBConfig
+            var serviceUrl = configuration["DynamoDb:Endpoint"] ?? "http://localhost:8000";
+            var region = configuration["AWS:Region"] ?? "ap-northeast-1";
+            services.AddSingleton<IAmazonDynamoDB>(_ =>
             {
-                RegionEndpoint = RegionEndpoint.GetBySystemName(region!)
-            };
-
-            return new AmazonDynamoDBClient(clientConfig);
-        });
+                var clientConfig = new AmazonDynamoDBConfig
+                {
+                    ServiceURL = serviceUrl,
+                    AuthenticationRegion = region
+                };
+                return new AmazonDynamoDBClient("dummy", "secret", clientConfig);
+            });
+        }
+        else
+        {
+            services.AddAWSService<IAmazonDynamoDB>();
+        }
 
         return services;
     }

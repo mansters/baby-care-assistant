@@ -23,7 +23,8 @@ export interface GrowthDetails {
 export type LogDetails = FeedingDetails | GrowthDetails;
 
 export interface LogEntry {
-  id: string;
+  sk: string;
+  babyId: string;
   startTime: string;
   type: LogType;
   note?: string;
@@ -46,6 +47,6 @@ export interface ILogDrawerStrategy {
   getPrimaryInfo(details: LogDetails): string;
   getSecondaryInfo(details: LogDetails): string;
   getFeatureKey(): string;
-  getUpdatePath(id: string): string;
-  deleteEntry(id: string): Promise<void>;
+  getUpdatePath(babyId: string, sk: string): string;
+  deleteEntry(babyId: string, sk: string): Promise<void>;
 }

@@ -7,24 +7,25 @@ export class FeedingService extends BaseService {
     super(client, 'feeding');
   }
 
-  getAll(): Promise<FeedingLog[]> {
-    return this.api.get('/');
+  getAll(babyId: string, cursorSk?: string, limit: number = 20): Promise<FeedingLog[]> {
+    const cursorParam = cursorSk ? `&cursorSk=${encodeURIComponent(cursorSk)}` : '';
+    return this.api.get(`/?babyId=${babyId}${cursorParam}&limit=${limit}`);
   }
 
-  getById(id: string): Promise<FeedingLog> {
-    return this.api.get(`/${id}`);
+  getById(babyId: string, sk: string): Promise<FeedingLog> {
+    return this.api.get(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`);
   }
 
   create(data: CreateFeedingLogRequest): Promise<FeedingLog> {
     return this.api.post('/', data);
   }
 
-  update(id: string, data: UpdateFeedingLogRequest): Promise<FeedingLog> {
-    return this.api.put(`/${id}`, data);
+  update(babyId: string, sk: string, data: UpdateFeedingLogRequest): Promise<FeedingLog> {
+    return this.api.put(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`, data);
   }
 
-  delete(id: string): Promise<void> {
-    return this.api.delete(`/${id}`);
+  delete(babyId: string, sk: string): Promise<void> {
+    return this.api.delete(`/item?babyId=${babyId}&sk=${encodeURIComponent(sk)}`);
   }
 
   getDailyFeedingSummary(babyId: string, timeZoneId: string = 'Asia/Shanghai'): Promise<DailyFeedingSummaryDto> {

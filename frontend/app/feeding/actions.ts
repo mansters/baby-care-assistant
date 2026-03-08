@@ -10,7 +10,7 @@ import { toUtcIsoString } from '@/lib/utils/datetime';
 export async function createFeedingLog(data: FeedingFormValues, babyId: string, redirectTo = '/home') {
     const request: CreateFeedingLogRequest = {
         babyId,
-        feedingTime: toUtcIsoString(new Date(data.startTime)),
+        localDateTime: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
@@ -24,11 +24,11 @@ export async function createFeedingLog(data: FeedingFormValues, babyId: string, 
     redirect(buildRedirectUrl(redirectTo, { type: 'success', message: 'Feeding log saved successfully' }));
 }
 
-export async function updateFeedingLog(id: string, data: FeedingFormValues, babyId: string, redirectTo = '/home') {
+export async function updateFeedingLog(sk: string, data: FeedingFormValues, babyId: string, redirectTo = '/home') {
     const request: UpdateFeedingLogRequest = {
-        id,
+        sk,
         babyId,
-        feedingTime: toUtcIsoString(new Date(data.startTime)),
+        localDateTime: toUtcIsoString(new Date(data.startTime)),
         type: data.type === 'Nursing' ? FeedingType.Breast : FeedingType.Bottle,
         amountMl: data.amountMl || 0,
         leftBreastDurationMinutes: data.leftDuration || 0,
@@ -37,12 +37,10 @@ export async function updateFeedingLog(id: string, data: FeedingFormValues, baby
     };
 
     console.log("Updating feeding log:", JSON.stringify(request));
-
-    await feedingService.update(id, request);
+    await feedingService.update(babyId, sk, request);
     redirect(buildRedirectUrl(redirectTo, { type: 'success', message: 'Feeding log updated successfully' }));
 }
-
-export async function deleteFeedingLog(id: string) {
-    await feedingService.delete(id);
+export async function deleteFeedingLog(babyId: string, sk: string) {
+    await feedingService.delete(babyId, sk);
 }
 
