@@ -12,6 +12,8 @@ using BabyCareAssistant.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -59,11 +61,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // 生产环境可以移除 CORS，因为后端不再暴露给浏览器
+    app.UseCors("AllowFrontend");
 }
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
