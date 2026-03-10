@@ -13,7 +13,7 @@ namespace BabyCareAssistant.Infrastructure.Repositories;
 
 public class LogQueryRepository(IAmazonDynamoDB dynamoDb, IConfiguration config) : ILogQueryRepository
 {
-    private readonly string _tableName = config["DynamoDb:TableName"] ?? "BabyCareTable";
+    private readonly string _tableName = config["DynamoDb:TableName"] ?? "BabyCare";
 
     private static readonly Dictionary<string, LogType> EntityTypeToLogType = new()
     {

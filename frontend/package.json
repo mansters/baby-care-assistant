@@ -12,7 +12,7 @@
     "@aws-amplify/adapter-nextjs": "^1.7.1",
     "@aws-amplify/ui-react": "^6.13.2",
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-sdk/credential-provider-node": "^3.972.19",
+    "@aws-sdk/credential-provider-env": "^3.972.17",
     "@aws-sdk/signature-v4": "^3.370.0",
     "@date-fns/tz": "^1.4.1",
     "@date-io/date-fns": "^3.2.1",

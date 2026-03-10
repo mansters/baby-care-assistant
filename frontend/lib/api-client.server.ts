@@ -2,7 +2,7 @@ import { fetchAuthSession } from 'aws-amplify/auth/server';
 import { runWithAmplifyServerContext } from '@/lib/amplify-server-utils';
 import { cookies } from 'next/headers';
 import { SignatureV4 } from "@aws-sdk/signature-v4";
-import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import { fromEnv } from "@aws-sdk/credential-provider-env";
 import { HttpRequest } from "@smithy/protocol-http";
 import { Sha256 } from "@aws-crypto/sha256-js";
 
@@ -88,22 +88,18 @@ class ServerApiClient {
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      try {
-        const signer = new SignatureV4({
-          credentials: defaultProvider(),
-          region: region,
-          service: 'lambda',
-          sha256: Sha256,
-        });
+      const signer = new SignatureV4({
+        credentials: fromEnv(),
+        region: region,
+        service: 'lambda',
+        sha256: Sha256,
+      });
 
-        const signedRequest = await signer.sign(request);
-        
-        // Merge the signed headers back (which includes Authorization, x-amz-date, and potentially x-amz-security-token)
-        for (const [key, value] of Object.entries(signedRequest.headers)) {
-          headers.set(key, value);
-        }
-      } catch (error) {
-        console.error('Failed to sign request with AWS SigV4:', error);
+      const signedRequest = await signer.sign(request);
+
+      // Merge the signed headers back (which includes Authorization, x-amz-date, and potentially x-amz-security-token)
+      for (const [key, value] of Object.entries(signedRequest.headers)) {
+        headers.set(key, value as string);
       }
     }
 
