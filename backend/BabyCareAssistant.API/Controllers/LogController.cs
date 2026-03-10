@@ -2,12 +2,14 @@ using BabyCareAssistant.Application.Features.Log.Dtos;
 using BabyCareAssistant.Application.Features.Log.Queries.GetLogs;
 using BabyCareAssistant.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
+[Authorize]
 public class LogController(ISender sender) : ControllerBase
 {
     [HttpGet]

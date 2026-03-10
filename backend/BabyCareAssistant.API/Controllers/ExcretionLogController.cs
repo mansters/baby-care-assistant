@@ -5,12 +5,14 @@ using BabyCareAssistant.Application.Features.ExcretionLog.Commands.DeleteExcreti
 using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogsByBabyId;
 using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ExcretionLogController(ISender sender) : ControllerBase
 {
     [HttpGet]

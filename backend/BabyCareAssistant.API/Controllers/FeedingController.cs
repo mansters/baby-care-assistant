@@ -7,12 +7,14 @@ using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetFeedingLogByI
 using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetDailyFeedingSummary;
 using BabyCareAssistant.Application.Features.FeedingLog.Queries.GetNextFeeding;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
+[Authorize]
 public class FeedingController(ISender sender) : ControllerBase
 {
     [HttpGet]

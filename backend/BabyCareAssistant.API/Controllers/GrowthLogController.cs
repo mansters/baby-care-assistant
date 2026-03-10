@@ -5,12 +5,14 @@ using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 using BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogById;
 using BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogsByBabyId;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("/api/[controller]")]
 [ApiController]
+[Authorize]
 public class GrowthLogController(ISender sender) : ControllerBase
 {
     [HttpGet]

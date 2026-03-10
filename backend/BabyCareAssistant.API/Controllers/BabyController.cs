@@ -5,12 +5,14 @@ using BabyCareAssistant.Application.Features.Baby.Commands.DeleteBaby;
 using BabyCareAssistant.Application.Features.Baby.Queries.GetBabiesByFamilyId;
 using BabyCareAssistant.Application.Features.Baby.Queries.GetBabyById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BabyCareAssistant.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class BabyController(ISender sender) : ControllerBase
 {
     [HttpGet]
