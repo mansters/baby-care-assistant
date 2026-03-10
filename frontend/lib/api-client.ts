@@ -1,4 +1,8 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
+import { SignatureV4 } from "@aws-sdk/signature-v4";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import { HttpRequest } from "@smithy/protocol-http";
+import { Sha256 } from "@aws-crypto/sha256-js";
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -32,7 +36,7 @@ class ApiClient {
     return `${this.baseUrl}${normalizedPath}`;
   }
 
-  private async buildHeaders(customHeaders?: HeadersInit): Promise<Headers> {
+  private async buildHeaders(path: string, method: string, customHeaders?: HeadersInit, body?: unknown): Promise<Headers> {
     const headers = new Headers({
       'Content-Type': 'application/json',
       ...this.defaultHeaders,
@@ -46,22 +50,62 @@ class ApiClient {
     }
 
     const token = await this.getAuthToken();
-
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    // Determine if the URL is an AWS Lambda Function URL
+    const url = new URL(this.buildUrl(path));
+    if (url.hostname.includes('lambda-url')) {
+      const regionMatch = url.hostname.match(/\.lambda-url\.([a-z0-9-]+)\.on\.aws/);
+      const region = regionMatch ? regionMatch[1] : process.env.AWS_REGION || 'ap-northeast-1';
+
+      const plainHeaders: Record<string, string> = {
+        host: url.hostname,
+      };
+      headers.forEach((value, key) => {
+        plainHeaders[key] = value;
+      });
+
+      const request = new HttpRequest({
+        method: method,
+        hostname: url.hostname,
+        path: url.pathname,
+        query: Object.fromEntries(url.searchParams.entries()),
+        headers: plainHeaders,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+
+      try {
+        const signer = new SignatureV4({
+          credentials: defaultProvider(),
+          region: region,
+          service: 'lambda',
+          sha256: Sha256,
+        });
+
+        const signedRequest = await signer.sign(request);
+        
+        for (const [key, value] of Object.entries(signedRequest.headers)) {
+          headers.set(key, value);
+        }
+      } catch (error) {
+        console.error('Failed to sign request with AWS SigV4:', error);
+      }
     }
 
     return headers;
   }
 
   async fetch<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
-    const { body, headers: customHeaders, ...restOptions } = options;
+    const { body, headers: customHeaders, method = 'GET', ...restOptions } = options;
     
     const url = this.buildUrl(path);
-    const headers = await this.buildHeaders(customHeaders);
+    const headers = await this.buildHeaders(path, method, customHeaders, body);
 
     const response = await fetch(url, {
       ...restOptions,
+      method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
     });
