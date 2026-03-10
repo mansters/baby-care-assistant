@@ -52,6 +52,7 @@ class ApiClient {
     const token = await this.getAuthToken();
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
+      headers.set('X-Amz-Bearer', `Bearer ${token}`);
     }
 
     // Determine if the URL is an AWS Lambda Function URL

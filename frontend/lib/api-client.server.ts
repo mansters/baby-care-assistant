@@ -58,7 +58,10 @@ class ServerApiClient {
 
     const token = await this.getAuthToken();
     if (token) {
+      // Set standard Authorization for non-AWS endpoints
       headers.set('Authorization', `Bearer ${token}`);
+      // Also set a custom header to bypass SigV4 overwrite
+      headers.set('X-Amz-Bearer', `Bearer ${token}`);
     }
 
     // Determine if the URL is an AWS Lambda Function URL
