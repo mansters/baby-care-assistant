@@ -10,7 +10,7 @@ namespace BabyCareAssistant.Infrastructure.Repositories;
 public class BabyRepository(IDynamoDbBaseRepository<Baby> dynamoDbBaseRepository, IAmazonDynamoDB dynamoDbClient, IConfiguration configuration) : IBabyRepository
 {
     private readonly string _tableName = configuration["DynamoDb:TableName"] ?? "BabyCare";
-    private readonly string _gsiName = configuration["DynamoDb:GSI1Name"] ?? "GSI1";
+    private readonly string _gsiName = configuration["DynamoDb:GSI1Name"] ?? "GSI1PK-GSI1SK-index";
 
     public async Task<Baby?> GetByIdAsync(string babyId, CancellationToken ct)
     {
