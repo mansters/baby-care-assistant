@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.ExcretionLog.Commands.CreateExcretionLog;
 
-public record CreateExcretionLogCommand(CreateExcretionLogDto Dto) : IRequest<Result<ExcretionLogDto>>;
+public record CreateExcretionLogCommand(CreateExcretionLogDto Dto) ;
 
-internal sealed class CreateExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository, IBabyRepository babyRepository)
-    : IRequestHandler<CreateExcretionLogCommand, Result<ExcretionLogDto>>
+public sealed class CreateExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository, IBabyRepository babyRepository)
 {
     public async Task<Result<ExcretionLogDto>> Handle(CreateExcretionLogCommand request, CancellationToken cancellationToken)
     {

@@ -7,6 +7,9 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>8aacd240-f68f-42fa-a170-1575e0a4a60c</UserSecretsId>
         <PublishAot>true</PublishAot>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <StripSymbols>false</StripSymbols>
+        <AssemblyName>bootstrap</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

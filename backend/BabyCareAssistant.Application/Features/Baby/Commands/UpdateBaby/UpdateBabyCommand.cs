@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.Baby.Commands.UpdateBaby;
 
-public record UpdateBabyCommand(string Id, UpdateBabyDto Dto) : IRequest<Result<BabyDto>>;
+public record UpdateBabyCommand(string Id, UpdateBabyDto Dto) ;
 
-internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository)
-    : IRequestHandler<UpdateBabyCommand, Result<BabyDto>>
+public sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository)
 {
     public async Task<Result<BabyDto>> Handle(UpdateBabyCommand request, CancellationToken cancellationToken)
     {

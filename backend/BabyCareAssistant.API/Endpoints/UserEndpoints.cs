@@ -1,5 +1,4 @@
 using BabyCareAssistant.Application.Features.Users.Queries.GetUserContext;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,9 +11,9 @@ public static class UserEndpoints
     {
         var group = app.MapGroup("api/Users").RequireAuthorization();
 
-        group.MapGet("me/context", async (ISender sender) =>
+        group.MapGet("me/context", async (GetUserContextQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetUserContextQuery());
+            var result = await handler.Handle(new GetUserContextQuery(), default);
             return Results.Ok(result.Value);
         });
     }

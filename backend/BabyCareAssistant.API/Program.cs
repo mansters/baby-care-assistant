@@ -31,6 +31,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddCognitoAuthentication(builder.Configuration);
+builder.Services.AddAuthorization();
 builder.Services.AddDynamoDbInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
@@ -48,7 +49,6 @@ builder.Services.AddScoped<BabyCareAssistant.Domain.Services.FeedingPredictionSe
 
 
 builder.Services.AddApplicationServices();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddEndpointsApiExplorer();
 

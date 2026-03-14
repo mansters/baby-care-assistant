@@ -1,14 +1,12 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetDailyFeedingSummary;
 
-public record GetDailyFeedingSummaryQuery(string BabyId) : IRequest<Result<DailyFeedingSummaryDto>>;
+public record GetDailyFeedingSummaryQuery(string BabyId) ;
 
-internal sealed class GetDailyFeedingSummaryQueryHandler(IFeedingRepository feedingRepository)
-    : IRequestHandler<GetDailyFeedingSummaryQuery, Result<DailyFeedingSummaryDto>>
+public sealed class GetDailyFeedingSummaryQueryHandler(IFeedingRepository feedingRepository)
 {
     public async Task<Result<DailyFeedingSummaryDto>> Handle(
         GetDailyFeedingSummaryQuery request, CancellationToken cancellationToken)

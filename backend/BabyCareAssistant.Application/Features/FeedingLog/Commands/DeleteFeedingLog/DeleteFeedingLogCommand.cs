@@ -1,13 +1,11 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Commands.DeleteFeedingLog;
 
-public record DeleteFeedingLogCommand(string BabyId, string Sk) : IRequest<Result>;
+public record DeleteFeedingLogCommand(string BabyId, string Sk) ;
 
-internal sealed class DeleteFeedingLogCommandHandler(IFeedingRepository feedingRepository)
-    : IRequestHandler<DeleteFeedingLogCommand, Result>
+public sealed class DeleteFeedingLogCommandHandler(IFeedingRepository feedingRepository)
 {
     public async Task<Result> Handle(DeleteFeedingLogCommand request, CancellationToken cancellationToken)
     {

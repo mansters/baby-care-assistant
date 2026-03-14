@@ -15,7 +15,6 @@ using BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowthLog;
 using BabyCareAssistant.Application.Features.Log.Dtos;
 using BabyCareAssistant.Application.Features.Users.Queries.GetUserContext;
 using BabyCareAssistant.Domain.Enums;
-using MediatR;
 
 namespace BabyCareAssistant.API.Infrastructure;
 
@@ -29,8 +28,6 @@ namespace BabyCareAssistant.API.Infrastructure;
         typeof(JsonStringEnumConverter<FamilyRole>)
     ]
 )]
-[JsonSerializable(typeof(Unit))]
-[JsonSerializable(typeof(Result<Unit>))]
 
 // Baby
 [JsonSerializable(typeof(BabyDto))]
@@ -87,6 +84,10 @@ namespace BabyCareAssistant.API.Infrastructure;
 [JsonSerializable(typeof(LogType))]
 [JsonSerializable(typeof(FamilyRole))]
 [JsonSerializable(typeof(string))]
+
+// AWS Lambda Types
+[JsonSerializable(typeof(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyRequest))]
+[JsonSerializable(typeof(Amazon.Lambda.APIGatewayEvents.APIGatewayHttpApiV2ProxyResponse))]
 
 public partial class ApiJsonSerializerContext : JsonSerializerContext
 {

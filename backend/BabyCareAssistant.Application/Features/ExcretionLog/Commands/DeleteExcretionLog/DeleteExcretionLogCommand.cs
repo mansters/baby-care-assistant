@@ -1,13 +1,11 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.ExcretionLog.Commands.DeleteExcretionLog;
 
-public record DeleteExcretionLogCommand(string BabyId, string Sk) : IRequest<Result>;
+public record DeleteExcretionLogCommand(string BabyId, string Sk) ;
 
-internal sealed class DeleteExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository)
-    : IRequestHandler<DeleteExcretionLogCommand, Result>
+public sealed class DeleteExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository)
 {
     public async Task<Result> Handle(DeleteExcretionLogCommand request, CancellationToken cancellationToken)
     {

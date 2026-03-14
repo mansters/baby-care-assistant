@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.Baby.Queries.GetBabyById;
 
-public record GetBabyByIdQuery(string Id) : IRequest<Result<BabyDto>>;
+public record GetBabyByIdQuery(string Id) ;
 
-internal sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository)
-    : IRequestHandler<GetBabyByIdQuery, Result<BabyDto>>
+public sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository)
 {
     public async Task<Result<BabyDto>> Handle(GetBabyByIdQuery request, CancellationToken cancellationToken)
     {

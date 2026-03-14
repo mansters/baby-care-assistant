@@ -1,13 +1,11 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.DeleteGrowthLog;
 
-public record DeleteGrowthLogCommand(string BabyId, string Sk) : IRequest<Result>;
+public record DeleteGrowthLogCommand(string BabyId, string Sk) ;
 
-internal sealed class DeleteGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository)
-    : IRequestHandler<DeleteGrowthLogCommand, Result>
+public sealed class DeleteGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository)
 {
     public async Task<Result> Handle(DeleteGrowthLogCommand request, CancellationToken cancellationToken)
     {

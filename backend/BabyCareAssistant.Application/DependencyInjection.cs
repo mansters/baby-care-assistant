@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using MediatR;
+
 using System.Collections.Generic;
 using BabyCareAssistant.Application.Common;
 
@@ -50,41 +50,41 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        // Baby Handlers
-        services.AddTransient<IRequestHandler<CreateBabyCommand, Result<BabyDto>>, CreateBabyCommandHandler>();
-        services.AddTransient<IRequestHandler<UpdateBabyCommand, Result<BabyDto>>, UpdateBabyCommandHandler>();
-        services.AddTransient<IRequestHandler<DeleteBabyCommand, Result>, DeleteBabyCommandHandler>();
-        services.AddTransient<IRequestHandler<GetBabyByIdQuery, Result<BabyDto>>, GetBabyByIdQueryHandler>();
-        services.AddTransient<IRequestHandler<GetBabiesByFamilyIdQuery, Result<List<BabyDto>>>, GetBabiesByFamilyIdQueryHandler>();
+        // Baby Services
+        services.AddTransient<CreateBabyCommandHandler>();
+        services.AddTransient<UpdateBabyCommandHandler>();
+        services.AddTransient<DeleteBabyCommandHandler>();
+        services.AddTransient<GetBabyByIdQueryHandler>();
+        services.AddTransient<GetBabiesByFamilyIdQueryHandler>();
 
-        // FeedingLog Handlers
-        services.AddTransient<IRequestHandler<CreateFeedingLogCommand, Result<FeedingLogDto>>, CreateFeedingLogCommandHandler>();
-        services.AddTransient<IRequestHandler<UpdateFeedingLogCommand, Result<FeedingLogDto>>, UpdateFeedingLogCommandHandler>();
-        services.AddTransient<IRequestHandler<DeleteFeedingLogCommand, Result>, DeleteFeedingLogCommandHandler>();
-        services.AddTransient<IRequestHandler<GetFeedingLogByIdQuery, Result<FeedingLogDto>>, GetFeedingLogByIdQueryHandler>();
-        services.AddTransient<IRequestHandler<GetNextFeedingQuery, Result<NextFeedingDto>>, GetNextFeedingQueryHandler>();
-        services.AddTransient<IRequestHandler<GetFeedingLogsByBabyIdQuery, Result<List<FeedingLogDto>>>, GetFeedingLogsByBabyIdQueryHandler>();
-        services.AddTransient<IRequestHandler<GetDailyFeedingSummaryQuery, Result<DailyFeedingSummaryDto>>, GetDailyFeedingSummaryQueryHandler>();
+        // FeedingLog Services
+        services.AddTransient<CreateFeedingLogCommandHandler>();
+        services.AddTransient<UpdateFeedingLogCommandHandler>();
+        services.AddTransient<DeleteFeedingLogCommandHandler>();
+        services.AddTransient<GetFeedingLogByIdQueryHandler>();
+        services.AddTransient<GetNextFeedingQueryHandler>();
+        services.AddTransient<GetFeedingLogsByBabyIdQueryHandler>();
+        services.AddTransient<GetDailyFeedingSummaryQueryHandler>();
 
-        // GrowthLog Handlers
-        services.AddTransient<IRequestHandler<CreateGrowthLogCommand, Result<GrowthLogDto>>, CreateGrowthLogCommandHandler>();
-        services.AddTransient<IRequestHandler<UpdateGrowthLogCommand, Result<GrowthLogDto>>, UpdateGrowthLogCommandHandler>();
-        services.AddTransient<IRequestHandler<DeleteGrowthLogCommand, Result>, DeleteGrowthLogCommandHandler>();
-        services.AddTransient<IRequestHandler<GetGrowthLogByIdQuery, Result<GrowthLogDto>>, GetGrowthLogByIdQueryHandler>();
-        services.AddTransient<IRequestHandler<GetGrowthLogsByBabyIdQuery, Result<List<GrowthLogDto>>>, GetGrowthLogsByBabyIdQueryHandler>();
+        // GrowthLog Services
+        services.AddTransient<CreateGrowthLogCommandHandler>();
+        services.AddTransient<UpdateGrowthLogCommandHandler>();
+        services.AddTransient<DeleteGrowthLogCommandHandler>();
+        services.AddTransient<GetGrowthLogByIdQueryHandler>();
+        services.AddTransient<GetGrowthLogsByBabyIdQueryHandler>();
 
-        // ExcretionLog Handlers
-        services.AddTransient<IRequestHandler<CreateExcretionLogCommand, Result<ExcretionLogDto>>, CreateExcretionLogCommandHandler>();
-        services.AddTransient<IRequestHandler<UpdateExcretionLogCommand, Result<ExcretionLogDto>>, UpdateExcretionLogCommandHandler>();
-        services.AddTransient<IRequestHandler<DeleteExcretionLogCommand, Result>, DeleteExcretionLogCommandHandler>();
-        services.AddTransient<IRequestHandler<GetExcretionLogByIdQuery, Result<ExcretionLogDto>>, GetExcretionLogByIdQueryHandler>();
-        services.AddTransient<IRequestHandler<GetExcretionLogsByBabyIdQuery, Result<List<ExcretionLogDto>>>, GetExcretionLogsByBabyIdQueryHandler>();
+        // ExcretionLog Services
+        services.AddTransient<CreateExcretionLogCommandHandler>();
+        services.AddTransient<UpdateExcretionLogCommandHandler>();
+        services.AddTransient<DeleteExcretionLogCommandHandler>();
+        services.AddTransient<GetExcretionLogByIdQueryHandler>();
+        services.AddTransient<GetExcretionLogsByBabyIdQueryHandler>();
 
         // Users
-        services.AddTransient<IRequestHandler<GetUserContextQuery, Result<UserContextDto>>, GetUserContextQueryHandler>();
+        services.AddTransient<GetUserContextQueryHandler>();
 
         // Logs
-        services.AddTransient<IRequestHandler<GetLogsQuery, Result<PaginatedLogResponse>>, GetLogsQueryHandler>();
+        services.AddTransient<GetLogsQueryHandler>();
 
         return services;
     }

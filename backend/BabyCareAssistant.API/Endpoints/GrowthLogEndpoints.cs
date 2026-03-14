@@ -4,7 +4,6 @@ using BabyCareAssistant.Application.Features.GrowthLog.Commands.UpdateGrowthLog;
 using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 using BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogById;
 using BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogsByBabyId;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -18,33 +17,33 @@ public static class GrowthLogEndpoints
     {
         var group = app.MapGroup("api/GrowthLog").RequireAuthorization();
 
-        group.MapGet("", async ([FromQuery] string babyId, [FromQuery] string? cursorSk, [FromQuery] int? limit, ISender sender) =>
+        group.MapGet("", async ([FromQuery] string babyId, [FromQuery] string? cursorSk, [FromQuery] int? limit, GetGrowthLogsByBabyIdQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetGrowthLogsByBabyIdQuery(babyId, cursorSk, limit ?? 20));
+            var result = await handler.Handle(new GetGrowthLogsByBabyIdQuery(babyId, cursorSk, limit ?? 20), default);
             return Results.Ok(result.Value);
         });
 
-        group.MapGet("item", async ([FromQuery] string babyId, [FromQuery] string sk, ISender sender) =>
+        group.MapGet("item", async ([FromQuery] string babyId, [FromQuery] string sk, GetGrowthLogByIdQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetGrowthLogByIdQuery(babyId, sk));
+            var result = await handler.Handle(new GetGrowthLogByIdQuery(babyId, sk), default);
             return result.IsSuccess ? Results.Ok(result.Value) : Results.NotFound(result.Error);
         }).WithName("GetGrowthLogByIdAsync");
 
-        group.MapPost("", async ([FromBody] CreateGrowthLogDto request, ISender sender) =>
+        group.MapPost("", async ([FromBody] CreateGrowthLogDto request, CreateGrowthLogCommandHandler handler) =>
         {
-            var result = await sender.Send(new CreateGrowthLogCommand(request));
+            var result = await handler.Handle(new CreateGrowthLogCommand(request), default);
             return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
         });
 
-        group.MapPut("item", async ([FromQuery] string babyId, [FromQuery] string sk, [FromBody] UpdateGrowthLogDto request, ISender sender) =>
+        group.MapPut("item", async ([FromQuery] string babyId, [FromQuery] string sk, [FromBody] UpdateGrowthLogDto request, UpdateGrowthLogCommandHandler handler) =>
         {
-            var result = await sender.Send(new UpdateGrowthLogCommand(babyId, sk, request));
+            var result = await handler.Handle(new UpdateGrowthLogCommand(babyId, sk, request), default);
             return result.IsSuccess ? Results.Ok(result.Value) : Results.BadRequest(result.Error);
         });
 
-        group.MapDelete("item", async ([FromQuery] string babyId, [FromQuery] string sk, ISender sender) =>
+        group.MapDelete("item", async ([FromQuery] string babyId, [FromQuery] string sk, DeleteGrowthLogCommandHandler handler) =>
         {
-            var result = await sender.Send(new DeleteGrowthLogCommand(babyId, sk));
+            var result = await handler.Handle(new DeleteGrowthLogCommand(babyId, sk), default);
             return result.IsSuccess ? Results.NoContent() : Results.BadRequest(result.Error);
         });
     }

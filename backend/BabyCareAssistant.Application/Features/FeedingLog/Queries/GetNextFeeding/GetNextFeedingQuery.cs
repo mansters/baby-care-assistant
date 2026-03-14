@@ -2,17 +2,15 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Domain.Services;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetNextFeeding;
 
-public record GetNextFeedingQuery(string BabyId) : IRequest<Result<NextFeedingDto>>;
+public record GetNextFeedingQuery(string BabyId) ;
 
-internal sealed class GetNextFeedingQueryHandler(
+public sealed class GetNextFeedingQueryHandler(
     IFeedingRepository feedingRepository,
     IGrowthLogRepository growthLogRepository,
     FeedingPredictionService predictionService)
-    : IRequestHandler<GetNextFeedingQuery, Result<NextFeedingDto>>
 {
     private const int RecentFeedingCount = 10;
 

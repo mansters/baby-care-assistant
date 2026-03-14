@@ -1,0 +1,27 @@
+FROM debian:bullseye-slim AS build
+
+# Install Native AOT prerequisites for Debian 11 (GLIBC 2.31, compatible with AL2023)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       clang zlib1g-dev llvm-dev wget ca-certificates libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install .NET 10 SDK
+RUN wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh \
+    && chmod +x ./dotnet-install.sh \
+    && ./dotnet-install.sh --channel 10.0 --install-dir /usr/share/dotnet \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+
+WORKDIR /src
+COPY . .
+
+# Remove global.json so it doesn't strictly lock the preview SDK version
+RUN rm -f global.json
+
+WORKDIR /src/BabyCareAssistant.API
+# Publish the Native AOT payload for linux-arm64 natively against Bullseye GLIBC 2.31
+RUN dotnet publish -c Release -r linux-arm64 --self-contained -o /app/publish
+
+# Export phase: we only want the generated files
+FROM scratch
+COPY --from=build /app/publish /

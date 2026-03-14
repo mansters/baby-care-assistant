@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogById;
 
-public record GetGrowthLogByIdQuery(string BabyId, string Sk) : IRequest<Result<GrowthLogDto>>;
+public record GetGrowthLogByIdQuery(string BabyId, string Sk) ;
 
-internal sealed class GetGrowthLogByIdQueryHandler(IGrowthLogRepository growthLogRepository)
-    : IRequestHandler<GetGrowthLogByIdQuery, Result<GrowthLogDto>>
+public sealed class GetGrowthLogByIdQueryHandler(IGrowthLogRepository growthLogRepository)
 {
     public async Task<Result<GrowthLogDto>> Handle(GetGrowthLogByIdQuery request, CancellationToken cancellationToken)
     {

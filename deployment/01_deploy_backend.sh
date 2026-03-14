@@ -20,12 +20,35 @@ export AWS_REGION=${AWS_REGION:-ap-northeast-1}
 
 cd "$SCRIPT_DIR/../backend/BabyCareAssistant.API"
 
-dotnet lambda deploy-function ${LAMBDA_FUNCTION_NAME} \
-  --function-role ${LAMBDA_EXECUTION_ROLE_NAME} \
-  --function-handler BabyCareAssistant.API \
-  --function-runtime dotnet8 \
-  --function-memory-size ${LAMBDA_MEMORY_SIZE:-512} \
-  --function-timeout ${LAMBDA_TIMEOUT:-30} \
+echo "Building Native AOT deployment package via Docker..."
+DOCKER_BUILDKIT=1 docker build --platform linux/arm64 -f ../Dockerfile.aot --output type=local,dest=./out ..
+
+echo "Zipping the Native AOT bootstrap..."
+cd out
+rm -f deploy.zip
+# Zip the bootstrap executable
+zip deploy.zip bootstrap
+
+echo "Deploying to AWS Lambda using AWS CLI..."
+aws lambda update-function-code \
+  --function-name ${LAMBDA_FUNCTION_NAME} \
+  --zip-file fileb://deploy.zip \
+  --region ${AWS_REGION} > /dev/null
+
+echo "Waiting for function code update to complete..."
+aws lambda wait function-updated \
+  --function-name ${LAMBDA_FUNCTION_NAME} \
   --region ${AWS_REGION}
+
+echo "Updating function configuration for provided.al2023..."
+aws lambda update-function-configuration \
+  --function-name ${LAMBDA_FUNCTION_NAME} \
+  --handler bootstrap \
+  --runtime provided.al2023 \
+  --region ${AWS_REGION} > /dev/null
+
+rm deploy.zip
+cd ../../../../../
+
 
 echo "Deployment finished."

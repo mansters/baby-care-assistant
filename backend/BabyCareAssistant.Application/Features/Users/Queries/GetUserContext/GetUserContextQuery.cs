@@ -2,14 +2,12 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Common.Interfaces;
 using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.Users.Queries.GetUserContext;
 
-public record GetUserContextQuery : IRequest<Result<UserContextDto>>;
+public record GetUserContextQuery ;
 
-internal sealed class GetUserContextQueryHandler(ICurrentUserService currentUserService, IUserRepository userRepository) : IRequestHandler<GetUserContextQuery, Result<UserContextDto>>
-{
+public sealed class GetUserContextQueryHandler(ICurrentUserService currentUserService, IUserRepository userRepository) {
     public async Task<Result<UserContextDto>> Handle(GetUserContextQuery request, CancellationToken cancellationToken)
     {
         var cognitoSubjectId = currentUserService.CognitoSubjectId;

@@ -4,7 +4,6 @@ using BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcreti
 using BabyCareAssistant.Application.Features.ExcretionLog.Commands.DeleteExcretionLog;
 using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogsByBabyId;
 using BabyCareAssistant.Application.Features.ExcretionLog.Queries.GetExcretionLogById;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -18,28 +17,28 @@ public static class ExcretionLogEndpoints
     {
         var group = app.MapGroup("api/ExcretionLog").RequireAuthorization();
 
-        group.MapGet("", async ([FromQuery] string babyId, [FromQuery] string? cursorSk, [FromQuery] int? limit, ISender sender) =>
+        group.MapGet("", async ([FromQuery] string babyId, [FromQuery] string? cursorSk, [FromQuery] int? limit, GetExcretionLogsByBabyIdQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetExcretionLogsByBabyIdQuery(babyId, cursorSk, limit ?? 20));
+            var result = await handler.Handle(new GetExcretionLogsByBabyIdQuery(babyId, cursorSk, limit ?? 20), default);
             return Results.Ok(result.Value);
         });
 
-        group.MapGet("item", async ([FromQuery] string babyId, [FromQuery] string sk, ISender sender) =>
+        group.MapGet("item", async ([FromQuery] string babyId, [FromQuery] string sk, GetExcretionLogByIdQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetExcretionLogByIdQuery(babyId, sk));
+            var result = await handler.Handle(new GetExcretionLogByIdQuery(babyId, sk), default);
             if (!result.IsSuccess) return Results.NotFound();
             return Results.Ok(result.Value);
         }).WithName("GetExcretionLogByIdAsync");
 
-        group.MapPost("", async ([FromBody] CreateExcretionLogDto request, ISender sender) =>
+        group.MapPost("", async ([FromBody] CreateExcretionLogDto request, CreateExcretionLogCommandHandler handler) =>
         {
-            var result = await sender.Send(new CreateExcretionLogCommand(request));
+            var result = await handler.Handle(new CreateExcretionLogCommand(request), default);
             return Results.CreatedAtRoute("GetExcretionLogByIdAsync", new { babyId = result.Value!.BabyId, sk = result.Value.SK }, result.Value);
         });
 
-        group.MapPut("item", async ([FromQuery] string babyId, [FromQuery] string sk, [FromBody] UpdateExcretionLogDto request, ISender sender) =>
+        group.MapPut("item", async ([FromQuery] string babyId, [FromQuery] string sk, [FromBody] UpdateExcretionLogDto request, UpdateExcretionLogCommandHandler handler) =>
         {
-            var result = await sender.Send(new UpdateExcretionLogCommand(babyId, sk, request));
+            var result = await handler.Handle(new UpdateExcretionLogCommand(babyId, sk, request), default);
             if (!result.IsSuccess)
             {
                 if (result.Error == "The ID in the URL does not match the ID in the request body.")
@@ -51,9 +50,9 @@ public static class ExcretionLogEndpoints
             return Results.Ok(result.Value);
         });
 
-        group.MapDelete("item", async ([FromQuery] string babyId, [FromQuery] string sk, ISender sender) =>
+        group.MapDelete("item", async ([FromQuery] string babyId, [FromQuery] string sk, DeleteExcretionLogCommandHandler handler) =>
         {
-            await sender.Send(new DeleteExcretionLogCommand(babyId, sk));
+            await handler.Handle(new DeleteExcretionLogCommand(babyId, sk), default);
             return Results.NoContent();
         });
     }

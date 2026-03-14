@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.GrowthLog.Commands.CreateGrowthLog;
 
-public record CreateGrowthLogCommand(CreateGrowthLogDto Dto) : IRequest<Result<GrowthLogDto>>;
+public record CreateGrowthLogCommand(CreateGrowthLogDto Dto) ;
 
-internal sealed class CreateGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository, IBabyRepository babyRepository)
-    : IRequestHandler<CreateGrowthLogCommand, Result<GrowthLogDto>>
+public sealed class CreateGrowthLogCommandHandler(IGrowthLogRepository growthLogRepository, IBabyRepository babyRepository)
 {
     public async Task<Result<GrowthLogDto>> Handle(CreateGrowthLogCommand request, CancellationToken cancellationToken)
     {

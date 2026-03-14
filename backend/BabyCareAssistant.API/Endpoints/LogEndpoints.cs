@@ -1,7 +1,6 @@
 using BabyCareAssistant.Application.Features.Log.Dtos;
 using BabyCareAssistant.Application.Features.Log.Queries.GetLogs;
 using BabyCareAssistant.Domain.Enums;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -20,9 +19,9 @@ public static class LogEndpoints
             [FromQuery] string? cursor,
             [FromQuery] int? pageSize,
             [FromQuery] LogType[]? types,
-            ISender sender) =>
+            GetLogsQueryHandler handler) =>
         {
-            var result = await sender.Send(new GetLogsQuery(babyId, cursor, pageSize ?? 20, types));
+            var result = await handler.Handle(new GetLogsQuery(babyId, cursor, pageSize ?? 20, types), default);
             return Results.Ok(result.Value);
         });
     }

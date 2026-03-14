@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.FeedingLog.Commands.UpdateFeedingLog;
 
-public record UpdateFeedingLogCommand(string BabyId, string Sk, UpdateFeedingLogDto Dto) : IRequest<Result<FeedingLogDto>>;
+public record UpdateFeedingLogCommand(string BabyId, string Sk, UpdateFeedingLogDto Dto) ;
 
-internal sealed class UpdateFeedingLogCommandHandler(IFeedingRepository feedingRepository)
-    : IRequestHandler<UpdateFeedingLogCommand, Result<FeedingLogDto>>
+public sealed class UpdateFeedingLogCommandHandler(IFeedingRepository feedingRepository)
 {
     public async Task<Result<FeedingLogDto>> Handle(UpdateFeedingLogCommand request, CancellationToken cancellationToken)
     {

@@ -2,13 +2,11 @@ using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
-using MediatR;
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetFeedingLogById;
 
-public record GetFeedingLogByIdQuery(string BabyId, string Sk) : IRequest<Result<FeedingLogDto>>;
+public record GetFeedingLogByIdQuery(string BabyId, string Sk) ;
 
-internal sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRepository)
-    : IRequestHandler<GetFeedingLogByIdQuery, Result<FeedingLogDto>>
+public sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRepository)
 {
     public async Task<Result<FeedingLogDto>> Handle(GetFeedingLogByIdQuery request, CancellationToken cancellationToken)
     {

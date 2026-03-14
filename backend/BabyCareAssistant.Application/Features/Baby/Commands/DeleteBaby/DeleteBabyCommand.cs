@@ -1,13 +1,11 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Interfaces;
-using MediatR;
 
 namespace BabyCareAssistant.Application.Features.Baby.Commands.DeleteBaby;
 
-public record DeleteBabyCommand(string Id) : IRequest<Result>;
+public record DeleteBabyCommand(string Id) ;
 
-internal sealed class DeleteBabyCommandHandler(IBabyRepository babyRepository)
-    : IRequestHandler<DeleteBabyCommand, Result>
+public sealed class DeleteBabyCommandHandler(IBabyRepository babyRepository)
 {
     public async Task<Result> Handle(DeleteBabyCommand request, CancellationToken cancellationToken)
     {
