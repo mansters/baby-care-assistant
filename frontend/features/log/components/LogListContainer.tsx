@@ -128,7 +128,7 @@ export default function LogListContainer({ babyId }: LogListContainerProps) {
     <div className="flex flex-col h-screen bg-[#f9fafb]">
       <div className="flex items-center px-4 py-3 bg-white shadow-sm flex-shrink-0">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/home")}
           className="p-1 -ml-1 mr-2"
           aria-label="Back"
         >
