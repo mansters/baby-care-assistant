@@ -1,14 +1,13 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.FeedingLog.Queries.GetFeedingLogById;
 
 public record GetFeedingLogByIdQuery(string BabyId, string Sk) : IRequest<Result<FeedingLogDto>>;
 
-internal sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRepository, IMapper mapper)
+internal sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRepository)
     : IRequestHandler<GetFeedingLogByIdQuery, Result<FeedingLogDto>>
 {
     public async Task<Result<FeedingLogDto>> Handle(GetFeedingLogByIdQuery request, CancellationToken cancellationToken)
@@ -20,7 +19,7 @@ internal sealed class GetFeedingLogByIdQueryHandler(IFeedingRepository feedingRe
             return Result<FeedingLogDto>.Failure("Feeding log not found");
         }
 
-        var dto = mapper.Map<FeedingLogDto>(log);
+        var dto = log.ToDto();
         return Result<FeedingLogDto>.Success(dto);
     }
 }

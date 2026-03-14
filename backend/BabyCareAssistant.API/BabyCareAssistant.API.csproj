@@ -1,19 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-      <UserSecretsId>8aacd240-f68f-42fa-a170-1575e0a4a60c</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>8aacd240-f68f-42fa-a170-1575e0a4a60c</UserSecretsId>
+        <PublishAot>true</PublishAot>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.7.0" />
-        <PackageReference Include="AutoMapper" Version="16.0.0" />
         <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.15" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -7,24 +7,32 @@ namespace BabyCareAssistant.Infrastructure.Helpers;
 
 public static class DynamoDbMapper
 {
-    private static readonly JsonSerializerOptions Options = new()
-    {
-        PropertyNamingPolicy = null,
-        Converters = { new JsonStringEnumConverter() },
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-
     public static T? ToEntity<T>(Dictionary<string, AttributeValue>? item) where T : class
     {
         if (item == null || item.Count == 0) return null;
         var doc = Document.FromAttributeMap(item);
         var json = doc.ToJson();
-        return JsonSerializer.Deserialize<T>(json, Options);
+        
+        var typeInfo = DynamoDbJsonSerializerContext.Default.GetTypeInfo(typeof(T)) as System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>;
+        if (typeInfo == null)
+        {
+            return JsonSerializer.Deserialize<T>(json, DynamoDbJsonSerializerContext.Default.Options);
+        }
+        return JsonSerializer.Deserialize(json, typeInfo);
     }
 
     public static Dictionary<string, AttributeValue> ToAttributeMap<T>(T entity) where T : class
     {
-        var json = JsonSerializer.Serialize(entity, Options);
+        var typeInfo = DynamoDbJsonSerializerContext.Default.GetTypeInfo(typeof(T)) as System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>;
+        string json;
+        if (typeInfo == null)
+        {
+            json = JsonSerializer.Serialize(entity, DynamoDbJsonSerializerContext.Default.Options);
+        }
+        else
+        {
+            json = JsonSerializer.Serialize(entity, typeInfo);
+        }
         var doc = Document.FromJson(json);
         return doc.ToAttributeMap();
     }

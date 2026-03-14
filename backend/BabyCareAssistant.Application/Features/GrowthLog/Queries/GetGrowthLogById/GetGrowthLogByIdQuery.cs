@@ -1,20 +1,19 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.GrowthLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.GrowthLog.Queries.GetGrowthLogById;
 
 public record GetGrowthLogByIdQuery(string BabyId, string Sk) : IRequest<Result<GrowthLogDto>>;
 
-internal sealed class GetGrowthLogByIdQueryHandler(IGrowthLogRepository growthLogRepository, IMapper mapper)
+internal sealed class GetGrowthLogByIdQueryHandler(IGrowthLogRepository growthLogRepository)
     : IRequestHandler<GetGrowthLogByIdQuery, Result<GrowthLogDto>>
 {
     public async Task<Result<GrowthLogDto>> Handle(GetGrowthLogByIdQuery request, CancellationToken cancellationToken)
     {
         var log = await growthLogRepository.GetByKeyAsync(request.BabyId, request.Sk, cancellationToken);
         if (log == null) return Result<GrowthLogDto>.Failure("Growth log not found");
-        return Result<GrowthLogDto>.Success(mapper.Map<GrowthLogDto>(log));
+        return Result<GrowthLogDto>.Success(log.ToDto());
     }
 }

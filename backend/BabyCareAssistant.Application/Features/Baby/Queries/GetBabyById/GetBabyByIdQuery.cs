@@ -1,14 +1,13 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.Baby.Queries.GetBabyById;
 
 public record GetBabyByIdQuery(string Id) : IRequest<Result<BabyDto>>;
 
-internal sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository, IMapper mapper)
+internal sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository)
     : IRequestHandler<GetBabyByIdQuery, Result<BabyDto>>
 {
     public async Task<Result<BabyDto>> Handle(GetBabyByIdQuery request, CancellationToken cancellationToken)
@@ -20,7 +19,7 @@ internal sealed class GetBabyByIdQueryHandler(IBabyRepository babyRepository, IM
             return Result<BabyDto>.Failure("Baby not found");
         }
 
-        var dto = mapper.Map<BabyDto>(baby);
+        var dto = baby.ToDto();
         return Result<BabyDto>.Success(dto);
     }
 }

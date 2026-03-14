@@ -1,14 +1,13 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.ExcretionLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.ExcretionLog.Commands.UpdateExcretionLog;
 
 public record UpdateExcretionLogCommand(string BabyId, string Sk, UpdateExcretionLogDto Dto) : IRequest<Result<ExcretionLogDto>>;
 
-internal sealed class UpdateExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository, IMapper mapper)
+internal sealed class UpdateExcretionLogCommandHandler(IExcretionLogRepository excretionLogRepository)
     : IRequestHandler<UpdateExcretionLogCommand, Result<ExcretionLogDto>>
 {
     public async Task<Result<ExcretionLogDto>> Handle(UpdateExcretionLogCommand request, CancellationToken cancellationToken)
@@ -19,15 +18,12 @@ internal sealed class UpdateExcretionLogCommandHandler(IExcretionLogRepository e
         }
 
         var existingLog = await excretionLogRepository.GetByKeyAsync(request.BabyId, request.Sk, cancellationToken);
-        if (existingLog == null)
-        {
-            return Result<ExcretionLogDto>.Failure("Excretion log not found");
-        }
+        if (existingLog == null) return Result<ExcretionLogDto>.Failure("Excretion log not found");
 
-        mapper.Map(request.Dto, existingLog);
+        request.Dto.UpdateEntity(existingLog);
         var updatedLog = await excretionLogRepository.UpdateAsync(request.BabyId, request.Sk, existingLog, cancellationToken);
 
-        var dto = mapper.Map<ExcretionLogDto>(updatedLog);
-        return Result<ExcretionLogDto>.Success(dto);
+        if (updatedLog == null) return Result<ExcretionLogDto>.Failure("Excretion log not found");
+        return Result<ExcretionLogDto>.Success(updatedLog.ToDto());
     }
 }

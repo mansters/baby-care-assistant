@@ -1,14 +1,13 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.Baby.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.Baby.Commands.UpdateBaby;
 
 public record UpdateBabyCommand(string Id, UpdateBabyDto Dto) : IRequest<Result<BabyDto>>;
 
-internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository, IMapper mapper)
+internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository)
     : IRequestHandler<UpdateBabyCommand, Result<BabyDto>>
 {
     public async Task<Result<BabyDto>> Handle(UpdateBabyCommand request, CancellationToken cancellationToken)
@@ -18,7 +17,8 @@ internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository, I
             return Result<BabyDto>.Failure("The ID in the URL does not match the ID in the request body.");
         }
 
-        var entity = mapper.Map<Domain.Entities.Baby>(request.Dto);
+        var entity = new Domain.Entities.Baby();
+        request.Dto.UpdateEntity(entity);
         var updatedEntity = await babyRepository.UpdateAsync(request.Id, entity, cancellationToken);
 
         if (updatedEntity == null)
@@ -26,7 +26,7 @@ internal sealed class UpdateBabyCommandHandler(IBabyRepository babyRepository, I
             return Result<BabyDto>.Failure("Baby not found");
         }
 
-        var dto = mapper.Map<BabyDto>(updatedEntity);
+        var dto = updatedEntity.ToDto();
         return Result<BabyDto>.Success(dto);
     }
 }

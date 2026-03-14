@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
 using BabyCareAssistant.Application.Interfaces;
 using BabyCareAssistant.Application.Mappings;
+using BabyCareAssistant.API.Endpoints;
 using BabyCareAssistant.API.Extensions;
 using BabyCareAssistant.API.Services;
+using BabyCareAssistant.Application;
 using BabyCareAssistant.Application.Common.Interfaces;
 using BabyCareAssistant.Application.Services;
 using BabyCareAssistant.Infrastructure.Repositories;
@@ -12,7 +14,10 @@ using BabyCareAssistant.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi, options =>
+{
+    options.Serializer = new Amazon.Lambda.Serialization.SystemTextJson.SourceGeneratorLambdaJsonSerializer<BabyCareAssistant.API.Infrastructure.ApiJsonSerializerContext>();
+});
 
 builder.Services.AddCors(options =>
 {
@@ -41,27 +46,26 @@ builder.Services.AddScoped<ILogQueryRepository, LogQueryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<BabyCareAssistant.Domain.Services.FeedingPredictionService>();
 
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BabyCareAssistant.Application.Common.Result>());
+
+builder.Services.AddApplicationServices();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+// Web API Controllers are being replaced by Minimal APIs for AOT Support.
+// Note: JSON source generated context is configured globally within Lambda Serializer 
+// and also locally below using HttpJsonOptions.
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, BabyCareAssistant.API.Infrastructure.ApiJsonSerializerContext.Default);
+});
+
 
 var app = builder.Build();
 
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    
     // 生产环境可以移除 CORS，因为后端不再暴露给浏览器
     app.UseCors("AllowFrontend");
 }
@@ -72,6 +76,11 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapUserEndpoints();
+app.MapBabyEndpoints();
+app.MapExcretionLogEndpoints();
+app.MapFeedingLogEndpoints();
+app.MapGrowthLogEndpoints();
+app.MapLogEndpoints();
 
 app.Run();

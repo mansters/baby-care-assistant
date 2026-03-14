@@ -1,14 +1,13 @@
 using BabyCareAssistant.Application.Common;
 using BabyCareAssistant.Application.Features.FeedingLog.Dtos;
 using BabyCareAssistant.Application.Interfaces;
-using AutoMapper;
+using BabyCareAssistant.Application.Mappings;
 using MediatR;
-
 namespace BabyCareAssistant.Application.Features.FeedingLog.Commands.CreateFeedingLog;
 
 public record CreateFeedingLogCommand(CreateFeedingLogDto Dto) : IRequest<Result<FeedingLogDto>>;
 
-internal sealed class CreateFeedingLogCommandHandler(IFeedingRepository feedingRepository, IBabyRepository babyRepository, IMapper mapper)
+internal sealed class CreateFeedingLogCommandHandler(IFeedingRepository feedingRepository, IBabyRepository babyRepository)
     : IRequestHandler<CreateFeedingLogCommand, Result<FeedingLogDto>>
 {
     public async Task<Result<FeedingLogDto>> Handle(CreateFeedingLogCommand request, CancellationToken cancellationToken)
@@ -19,12 +18,12 @@ internal sealed class CreateFeedingLogCommandHandler(IFeedingRepository feedingR
             return Result<FeedingLogDto>.Failure("Baby not found");
         }
 
-        var entity = mapper.Map<Domain.Entities.FeedingLog>(request.Dto);
+        var entity = request.Dto.ToEntity();
         entity.Initialize(request.Dto.BabyId, request.Dto.EventTimeUtc, baby.TimeZone);
         
         entity = await feedingRepository.CreateAsync(entity, cancellationToken);
 
-        var dto = mapper.Map<FeedingLogDto>(entity);
+        var dto = entity.ToDto();
         return Result<FeedingLogDto>.Success(dto);
     }
 }
