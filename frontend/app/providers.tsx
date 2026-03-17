@@ -3,7 +3,7 @@
 import { Amplify } from "aws-amplify";
 import { Hub } from "aws-amplify/utils";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { amplifyConfig } from "@/lib/amplify-config";
 import { TimezoneProvider } from "@/lib/contexts/timezone.context";
 import TimezoneSwitcher from "@/shared/components/TimezoneSwitcher";
@@ -12,6 +12,7 @@ Amplify.configure(amplifyConfig, { ssr: true });
 
 export default function Providers({ children }: React.PropsWithChildren) {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = Hub.listen("auth", ({ payload }) => {
@@ -36,7 +37,7 @@ export default function Providers({ children }: React.PropsWithChildren) {
 
   return (
     <TimezoneProvider>
-      <TimezoneSwitcher />
+      {["/home", "/logs"].includes(pathname) && <TimezoneSwitcher />}
       {children}
     </TimezoneProvider>
   );
