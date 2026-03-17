@@ -30,6 +30,7 @@ public static class GrowthLogMappingExtensions
 
     public static void UpdateEntity(this UpdateGrowthLogDto dto, GrowthLog entity)
     {
+        entity.UpdateTime(dto.EventTimeUtc);
         if (dto.WeightKg.HasValue) entity.WeightKg = dto.WeightKg.Value;
         if (dto.HeightCm.HasValue) entity.HeightCm = dto.HeightCm.Value;
         if (dto.HeadCircumferenceCm.HasValue) entity.HeadCircumferenceCm = dto.HeadCircumferenceCm.Value;

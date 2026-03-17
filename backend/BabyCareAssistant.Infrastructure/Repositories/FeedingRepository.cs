@@ -31,6 +31,10 @@ public class FeedingRepository(IDynamoDbBaseRepository<FeedingLog> dynamoDbBaseR
     {
         var mutate = (FeedingLog log) =>
         {
+            log.EventTimeUtc = item.EventTimeUtc;
+            log.SK = item.SK;
+            log.LocalDate = item.LocalDate;
+            log.LocalTime = item.LocalTime;
             log.AmountMl = item.AmountMl;
             log.LeftBreastDurationMinutes = item.LeftBreastDurationMinutes;
             log.RightBreastDurationMinutes = item.RightBreastDurationMinutes;

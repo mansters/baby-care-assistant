@@ -60,7 +60,7 @@ export default function EditFeedingClient({
     type: initialData.type === "Breast" ? "Nursing" : "Bottle",
     leftDuration: initialData.leftBreastDurationMinutes || 0,
     rightDuration: initialData.rightBreastDurationMinutes || 0,
-    amountMl: initialData.amountMl || 0,
+    amountMl: initialData.amountMl,
     note: initialData.note || "",
   };
 

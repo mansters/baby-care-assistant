@@ -32,6 +32,7 @@ public static class FeedingLogMappingExtensions
 
     public static void UpdateEntity(this UpdateFeedingLogDto dto, FeedingLog entity)
     {
+        entity.UpdateTime(dto.EventTimeUtc);
         if (dto.Type.HasValue) entity.Type = dto.Type.Value;
         entity.AmountMl = dto.AmountMl;
         if (dto.LeftBreastDurationMinutes.HasValue) entity.LeftBreastDurationMinutes = dto.LeftBreastDurationMinutes.Value;

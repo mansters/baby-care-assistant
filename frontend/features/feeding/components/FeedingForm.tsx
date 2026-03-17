@@ -35,7 +35,7 @@ export default function FeedingForm({
         type: "Bottle",
         leftDuration: 0,
         rightDuration: 0,
-        amountMl: 0,
+        // amountMl: ,
         note: "",
         ...initialData,
         startTime: initialData?.startTime

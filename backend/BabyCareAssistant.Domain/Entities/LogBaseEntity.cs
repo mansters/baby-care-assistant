@@ -47,4 +47,22 @@ public abstract class LogBaseEntity : DynamoBaseEntity
 
         EntityType = GetType().Name;
     }
+
+    public void UpdateTime(DateTime newEventTimeUtc)
+    {
+        var utcTime = DateTime.SpecifyKind(newEventTimeUtc, DateTimeKind.Utc);
+        if (utcTime == EventTimeUtc) return;
+
+        // Preserve the existing ULID suffix from the old SK
+        var oldSuffix = SK.Split('#').Last();
+
+        EventTimeUtc = utcTime;
+        SK = $"LOG#{utcTime:yyyy-MM-ddTHH:mm:ss.fffZ}#{LogPrefix}#{oldSuffix}";
+
+        // Recalculate local time fields based on the baby's timezone
+        var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeZone);
+        var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, timeZoneInfo);
+        LocalDate = localDateTime.ToString("yyyy-MM-dd");
+        LocalTime = localDateTime.ToString("HH:mm:ss");
+    }
 }

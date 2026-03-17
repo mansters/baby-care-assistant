@@ -29,6 +29,10 @@ public class ExcretionLogRepository(IDynamoDbBaseRepository<ExcretionLog> dynamo
     {
         var mutate = (ExcretionLog log) =>
         {
+            log.EventTimeUtc = item.EventTimeUtc;
+            log.SK = item.SK;
+            log.LocalDate = item.LocalDate;
+            log.LocalTime = item.LocalTime;
             log.Type = item.Type;
             log.Notes = item.Notes;
             log.UpdatedAt = DateTime.UtcNow;

@@ -26,6 +26,7 @@ public static class ExcretionLogMappingExtensions
 
     public static void UpdateEntity(this UpdateExcretionLogDto dto, ExcretionLog entity)
     {
+        entity.UpdateTime(dto.EventTimeUtc);
         entity.Type = dto.Type;
         if (dto.Notes != null) entity.Notes = dto.Notes;
     }
