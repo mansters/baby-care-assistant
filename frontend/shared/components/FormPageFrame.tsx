@@ -24,7 +24,7 @@ export default function FormPageFrame({
   children,
 }: FormPageFrameProps) {
   return (
-    <div className="flex flex-col h-screen w-full">
+    <div className="flex flex-col h-dvh w-full">
 
       <Box
         component="header"
@@ -53,7 +53,7 @@ export default function FormPageFrame({
 
 
       {(onSave || formId) && (
-        <div className="shrink-0 pt-[25px] px-6 pb-6 bg-white border-t border-[var(--gray-border)]">
+        <div className="shrink-0 pt-[25px] px-6 pb-6 bg-white border-t border-[var(--gray-border)] safe-area-bottom">
           <Button
             onClick={onSave}
             type={formId ? "submit" : "button"}

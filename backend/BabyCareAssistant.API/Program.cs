@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "http://192.168.1.65:3000", "https://linnie-clamorous-jurnee.ngrok-free.dev")
+            policy.WithOrigins("http://localhost:3000", "http://192.168.1.70:3000", "https://linnie-clamorous-jurnee.ngrok-free.dev")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

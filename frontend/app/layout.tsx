@@ -1,8 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import ThemeRegistry from "./ThemeRegistry";
 import Providers from "./providers";
 import React from "react";
+
+export const viewport: Viewport = {
+    viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
     title: "BabyCare Assistant",
