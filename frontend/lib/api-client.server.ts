@@ -106,9 +106,22 @@ class ServerApiClient {
     return headers;
   }
 
+  getLogTitle(path: string, options: RequestOptions = {}): string {
+    const base = `[API] ${options.method}: ${path}`;
+
+    if (!['POST', 'PUT', 'PATCH'].includes(options.method as string)) {
+      return base;
+    }
+
+    return `${base} ${JSON.stringify(options.body)}`;
+  }
+
   async fetch<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
     const { body, headers: customHeaders, method = 'GET', ...restOptions } = options;
-    
+
+    const logTitle = this.getLogTitle(path, options);
+    console.time(logTitle);
+
     const url = this.buildUrl(path);
     const headers = await this.buildHeaders(path, method, customHeaders, body);
 
@@ -123,6 +136,8 @@ class ServerApiClient {
       const errorText = await response.text().catch(() => 'Unknown error');
       throw new Error(`API Error ${response.status}: ${errorText}`);
     }
+
+    console.timeEnd(logTitle);
 
     const text = await response.text();
     return text ? JSON.parse(text) as T : undefined as T;

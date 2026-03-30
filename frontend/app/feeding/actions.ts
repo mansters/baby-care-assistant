@@ -18,8 +18,6 @@ export async function createFeedingLog(data: FeedingFormValues, babyId: string, 
         note: data.note || undefined
     };
 
-    console.log("Creating feeding log:", JSON.stringify(request));
-
     await feedingService.create(request);
     redirect(buildRedirectUrl(redirectTo, { type: 'success', message: 'Feeding log saved successfully' }));
 }
