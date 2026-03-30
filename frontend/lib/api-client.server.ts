@@ -119,11 +119,10 @@ class ServerApiClient {
   async fetch<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
     const { body, headers: customHeaders, method = 'GET', ...restOptions } = options;
 
-    const logTitle = this.getLogTitle(path, options);
-    console.time(logTitle);
-
     const url = this.buildUrl(path);
     const headers = await this.buildHeaders(path, method, customHeaders, body);
+
+    const logTitle = this.getLogTitle(url, options);
 
     const response = await fetch(url, {
       ...restOptions,
