@@ -134,7 +134,7 @@ class ServerApiClient {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(`API Error ${response.status}: ${errorText}`);
+      throw new Error(`API Error ${path} ${response.status}: ${errorText}`);
     }
 
     console.timeEnd(logTitle);
