@@ -124,6 +124,8 @@ class ServerApiClient {
 
     const logTitle = this.getLogTitle(url, options);
 
+    console.time(logTitle);
+
     const response = await fetch(url, {
       ...restOptions,
       method,
