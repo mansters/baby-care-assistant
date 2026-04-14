@@ -50,7 +50,9 @@ export function calculateAgeInMonths(dob: string, measureDate: string): number {
 export function formatAgeLabel(months: number): string {
   const wholeMonths = Math.floor(months);
   const days = Math.round((months - wholeMonths) * 30);
-  return `${wholeMonths}个月${days}天`;
+  const adjustedMonths = days >= 30 ? wholeMonths + 1 : wholeMonths;
+  const adjustedDays = days >= 30 ? days - 30 : days;
+  return `${adjustedMonths}个月${adjustedDays}天`;
 }
 
 /**
