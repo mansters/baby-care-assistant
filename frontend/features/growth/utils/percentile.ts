@@ -115,7 +115,7 @@ export function calculatePercentile(
     z = -2 + (weightKg - ref.sd_neg2) / safeInterval * 0.5;
   } else if (weightKg <= ref.sd_neg1) {
     // Zone: -2SD to -1SD (Z ranges from -2 to -1 over 1 SD interval)
-    const interval = ref.sd_neg1 - ref.median;
+    const interval = ref.sd_neg1 - ref.sd_neg2;
     const safeInterval = Math.abs(interval) < EPSILON ? EPSILON : interval;
     z = -1 + (weightKg - ref.sd_neg1) / safeInterval * 1;
   } else if (weightKg <= ref.median) {
