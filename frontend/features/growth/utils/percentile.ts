@@ -135,7 +135,7 @@ export function calculatePercentile(
     const safeInterval = Math.abs(interval) < EPSILON ? EPSILON : interval;
     z = 1 + (weightKg - ref.sd_pos1) / safeInterval;
   } else {
-    // Zone: > +2SD (Z ranges from +2 to +2.5 over 0.5 SD interval)
+    // Zone: > +2SD (extrapolation beyond reference data)
     const interval = ref.sd_pos2 - ref.sd_pos1;
     const safeInterval = Math.abs(interval) < EPSILON ? EPSILON : interval;
     z = 2 + (weightKg - ref.sd_pos2) / safeInterval * 0.5;
