@@ -16,6 +16,37 @@ interface InsightPageProps {
 export default function InsightPage({ baby, growthLogs }: InsightPageProps) {
   const router = useRouter();
 
+  // Validate gender
+  const babyGender = baby.gender === 'Male' || baby.gender === 'Female'
+    ? baby.gender as 'Male' | 'Female'
+    : null;
+
+  if (!babyGender) {
+    return (
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#fff' }}>
+        <Box
+          sx={{
+            background: 'linear-gradient(135deg, #66BB6A 0%, #81C784 100%)',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+          }}
+        >
+          <IconButton onClick={() => router.back()} sx={{ color: 'white' }}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
+            Insight
+          </Typography>
+        </Box>
+        <Box sx={{ p: 2 }}>
+          <Typography>Gender required for growth chart</Typography>
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#fff' }}>
       {/* Header */}
@@ -59,7 +90,7 @@ export default function InsightPage({ baby, growthLogs }: InsightPageProps) {
         <WeightChart
           growthLogs={growthLogs}
           babyDateOfBirth={baby.dateOfBirth}
-          babyGender={baby.gender as 'Male' | 'Female'}
+          babyGender={babyGender}
           babyTimeZone={baby.timeZone}
         />
       </Box>
