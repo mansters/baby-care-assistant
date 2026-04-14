@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -44,35 +44,41 @@ export default function WeightChart({
   const [minMonth, maxMonth] = getVisibleMonthRange(currentAgeMonths);
 
   // 处理生长记录数据
-  const processedData = growthLogs
-    .filter(log => log.weightKg)
-    .map(log => {
-      const measureDate = log.localDate || log.eventTimeUtc;
-      const ageMonths = calculateAgeInMonths(babyDateOfBirth, measureDate);
-      const percentile = calculatePercentile(log.weightKg, ageMonths, referenceData);
-      const today = new Date().toISOString().split('T')[0];
-      return {
-        ageMonths,
-        ageLabel: formatAgeLabel(ageMonths),
-        weightKg: log.weightKg,
-        percentile,
-        isToday: log.localDate === today,
-      };
-    })
-    .filter(d => d.ageMonths >= minMonth && d.ageMonths <= maxMonth)
-    .sort((a, b) => a.ageMonths - b.ageMonths);
+  const processedData = useMemo(() =>
+    growthLogs
+      .filter(log => log.weightKg)
+      .map(log => {
+        const measureDate = log.localDate || log.eventTimeUtc;
+        const ageMonths = calculateAgeInMonths(babyDateOfBirth, measureDate);
+        const percentile = calculatePercentile(log.weightKg, ageMonths, referenceData);
+        const today = new Date().toISOString().split('T')[0];
+        return {
+          ageMonths,
+          ageLabel: formatAgeLabel(ageMonths),
+          weightKg: log.weightKg,
+          percentile,
+          isToday: log.localDate === today,
+        };
+      })
+      .filter(d => d.ageMonths >= minMonth && d.ageMonths <= maxMonth)
+      .sort((a, b) => a.ageMonths - b.ageMonths),
+    [growthLogs, babyDateOfBirth, minMonth, maxMonth]
+  );
 
   // 处理参考百分位区间数据 - 使用差值计算band高度，避免从0开始的堆叠区域
-  const percentileBandData = referenceData
-    .filter(r => r.month >= minMonth && r.month <= maxMonth)
-    .map(r => ({
-      ageMonths: r.month,
-      // 计算每个百分位区间的band高度（用于堆叠）
-      band1: r.sd_neg1 - r.sd_neg2,   // P3-P15 区间高度
-      band2: r.median - r.sd_neg1,     // P15-P50 区间高度
-      band3: r.sd_pos1 - r.median,     // P50-P85 区间高度
-      band4: r.sd_pos2 - r.sd_pos1,    // P85-P97 区间高度
-    }));
+  const percentileBandData = useMemo(() =>
+    referenceData
+      .filter(r => r.month >= minMonth && r.month <= maxMonth)
+      .map(r => ({
+        ageMonths: r.month,
+        // 计算每个百分位区间的band高度（用于堆叠）
+        band1: r.sd_neg1 - r.sd_neg2,   // P3-P15 区间高度
+        band2: r.median - r.sd_neg1,     // P15-P50 区间高度
+        band3: r.sd_pos1 - r.median,     // P50-P85 区间高度
+        band4: r.sd_pos2 - r.sd_pos1,    // P85-P97 区间高度
+      })),
+    [referenceData, minMonth, maxMonth]
+  );
 
   // 交互状态
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -146,15 +152,30 @@ export default function WeightChart({
   const selectedData = selectedIndex !== null ? processedData[selectedIndex] : null;
 
   // X轴刻度
-  const xTicks = [];
-  for (let m = Math.ceil(minMonth); m <= Math.floor(maxMonth); m++) {
-    xTicks.push(m);
-  }
+  const xTicks = useMemo(() => {
+    const ticks = [];
+    for (let m = Math.ceil(minMonth); m <= Math.floor(maxMonth); m++) {
+      ticks.push(m);
+    }
+    return ticks;
+  }, [minMonth, maxMonth]);
 
   // 计算"今天"的X轴位置（百分比）
-  const todayXPercent = todayRecord
-    ? ((todayRecord.ageMonths - minMonth) / (maxMonth - minMonth)) * 100
-    : null;
+  const todayXPercent = useMemo(() =>
+    todayRecord
+      ? ((todayRecord.ageMonths - minMonth) / (maxMonth - minMonth)) * 100
+      : null,
+    [todayRecord, minMonth, maxMonth]
+  );
+
+  // 清理 holdTimer 防止组件卸载时 timer 未清除
+  useEffect(() => {
+    return () => {
+      if (holdTimer.current) {
+        clearTimeout(holdTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <Box sx={{ position: 'relative', width: '100%', height: 300 }}>
