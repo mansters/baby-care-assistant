@@ -264,6 +264,16 @@ export default function WeightChart({
             fill="#66BB6A"
             fillOpacity={0.05}
           />
+          {/* P85-P97 zone: 显示p85到p97区间 */}
+          <Area
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p97"
+            stackId="percentile"
+            stroke="none"
+            fill="#66BB6A"
+            fillOpacity={0.03}
+          />
 
           {/* 宝宝数据点 */}
           <Scatter
