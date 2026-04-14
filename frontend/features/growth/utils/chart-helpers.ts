@@ -8,13 +8,38 @@ export function calculateAgeInMonths(dob: string, measureDate: string): number {
   const birth = new Date(dob);
   const measured = new Date(measureDate);
 
-  const months = (measured.getFullYear() - birth.getFullYear()) * 12 +
-                 (measured.getMonth() - birth.getMonth());
+  // Validate dates
+  if (isNaN(birth.getTime()) || isNaN(measured.getTime())) {
+    throw new Error('Invalid date provided');
+  }
 
-  const daysInMonth = new Date(measured.getFullYear(), measured.getMonth() + 1, 0).getDate();
-  const days = (measured.getDate() - birth.getDate()) / daysInMonth;
+  // Handle negative age
+  if (measured < birth) {
+    return 0;
+  }
 
-  return months + days;
+  const yearDiff = measured.getFullYear() - birth.getFullYear();
+  const monthDiff = measured.getMonth() - birth.getMonth();
+  const birthDay = birth.getDate();
+  const measuredDay = measured.getDate();
+
+  // Calculate full months
+  let months: number;
+  let fractional: number;
+
+  if (measuredDay >= birthDay) {
+    // Measured day is on or after birth day - use simple calculation
+    months = yearDiff * 12 + monthDiff;
+    fractional = (measuredDay - birthDay) / 30;
+  } else {
+    // Measured day is before birth day - borrow from previous month
+    // e.g., Born Jan 31, measured Feb 28 = 0 full months + 28/30 of month
+    months = yearDiff * 12 + monthDiff - 1;
+    const daysInBirthMonth = new Date(birth.getFullYear(), birth.getMonth() + 1, 0).getDate();
+    fractional = (daysInBirthMonth - birthDay + measuredDay) / 30;
+  }
+
+  return months + fractional;
 }
 
 /**
@@ -51,6 +76,12 @@ export function monthToXPosition(
 ): number {
   const range = maxMonth - minMonth;
   const usableWidth = chartWidth - padding * 2;
+
+  // Division by zero protection
+  if (range === 0 || usableWidth === 0) {
+    return padding;
+  }
+
   return padding + ((month - minMonth) / range) * usableWidth;
 }
 
@@ -66,5 +97,11 @@ export function xPositionToMonth(
 ): number {
   const range = maxMonth - minMonth;
   const usableWidth = chartWidth - padding * 2;
+
+  // Division by zero protection
+  if (range === 0 || usableWidth === 0) {
+    return minMonth;
+  }
+
   return minMonth + ((x - padding) / usableWidth) * range;
 }
