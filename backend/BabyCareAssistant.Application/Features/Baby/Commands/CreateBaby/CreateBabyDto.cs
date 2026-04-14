@@ -14,4 +14,6 @@ public record CreateBabyDto
 
     [Required]
     public DateTime DateOfBirth { get; init; }
+
+    public string? Gender { get; init; }
 }

@@ -17,4 +17,6 @@ public record UpdateBabyDto
 
     [Required]
     public DateTime DateOfBirth { get; init; }
+
+    public string? Gender { get; init; }
 }

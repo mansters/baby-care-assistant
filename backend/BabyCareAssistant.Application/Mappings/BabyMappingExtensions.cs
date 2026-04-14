@@ -14,7 +14,8 @@ public static class BabyMappingExtensions
         LastName = entity.LastName,
         PreferredName = entity.PreferredName,
         DateOfBirth = entity.DateOfBirth,
-        TimeZone = entity.TimeZone
+        TimeZone = entity.TimeZone,
+        Gender = entity.Gender
     };
 
     public static Baby ToEntity(this CreateBabyDto dto) => new()
@@ -22,7 +23,8 @@ public static class BabyMappingExtensions
         FirstName = dto.FirstName,
         LastName = dto.LastName,
         PreferredName = dto.PreferredName,
-        DateOfBirth = dto.DateOfBirth
+        DateOfBirth = dto.DateOfBirth,
+        Gender = dto.Gender ?? string.Empty
     };
 
     public static void UpdateEntity(this UpdateBabyDto dto, Baby entity)
@@ -31,5 +33,6 @@ public static class BabyMappingExtensions
         entity.LastName = dto.LastName ?? entity.LastName;
         entity.PreferredName = dto.PreferredName ?? entity.PreferredName;
         entity.DateOfBirth = dto.DateOfBirth;
+        entity.Gender = dto.Gender ?? entity.Gender;
     }
 }

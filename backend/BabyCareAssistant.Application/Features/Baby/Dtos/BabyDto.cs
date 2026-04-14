@@ -8,4 +8,5 @@ public record BabyDto
     public string? PreferredName { get; init; }
     public DateTime DateOfBirth { get; init; }
     public string TimeZone { get; init; } = string.Empty;
+    public string Gender { get; init; } = string.Empty;
 }
