@@ -25,6 +25,9 @@ interface WeightChartProps {
   babyTimeZone: string;
 }
 
+const LONG_PRESS_DURATION = 300;
+const HOLD_SWIPE_THRESHOLD = 30;
+
 export default function WeightChart({
   growthLogs,
   babyDateOfBirth,
@@ -59,11 +62,29 @@ export default function WeightChart({
     .filter(d => d.ageMonths >= minMonth && d.ageMonths <= maxMonth)
     .sort((a, b) => a.ageMonths - b.ageMonths);
 
+  // 处理参考百分位区间数据
+  const percentileBandData = referenceData
+    .filter(r => r.month >= minMonth && r.month <= maxMonth)
+    .map(r => ({
+      ageMonths: r.month,
+      // P3-P15 band
+      p3: r.sd_neg2,
+      p15: r.sd_neg1,
+      // P15-P50 band
+      p50: r.median,
+      // P50-P85 band
+      p85: r.sd_pos1,
+      // P85-P97 band
+      p97: r.sd_pos2,
+    }));
+
   // 交互状态
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const lastSwipeTime = useRef<number>(0);
+  const holdTimer = useRef<NodeJS.Timeout | null>(null);
+  const isHolding = useRef<boolean>(false);
 
   // 查找今天是否有记录
   const todayRecord = processedData.find(d => d.isToday);
@@ -87,33 +108,43 @@ export default function WeightChart({
     setSelectedIndex(closest);
   }, [processedData, selectedIndex]);
 
-  // 触摸滑动处理
+  // 触摸滑动处理 - 带长按检测
   const handleTouchStart = useCallback((_state: any, e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
-    setIsDragging(true);
     lastSwipeTime.current = Date.now();
+    isHolding.current = false;
+
+    holdTimer.current = setTimeout(() => {
+      isHolding.current = true;
+      setIsDragging(true);
+    }, LONG_PRESS_DURATION);
   }, []);
 
   const handleTouchMove = useCallback((_state: any, e: React.TouchEvent) => {
-    if (!isDragging || selectedIndex === null || processedData.length === 0) return;
+    if (!isHolding.current || selectedIndex === null || processedData.length === 0) return;
 
     const now = Date.now();
     if (now - lastSwipeTime.current < 100) return; // debounce
     lastSwipeTime.current = now;
 
     const deltaX = e.touches[0].clientX - (touchStartX.current || 0);
-    if (Math.abs(deltaX) > 30) {
+    if (Math.abs(deltaX) > HOLD_SWIPE_THRESHOLD) {
       const newIndex = deltaX < 0
         ? Math.min(selectedIndex + 1, processedData.length - 1)
         : Math.max(selectedIndex - 1, 0);
       setSelectedIndex(newIndex);
       touchStartX.current = e.touches[0].clientX;
     }
-  }, [isDragging, selectedIndex, processedData]);
+  }, [selectedIndex, processedData]);
 
   const handleTouchEnd = useCallback(() => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
     setIsDragging(false);
     touchStartX.current = null;
+    isHolding.current = false;
   }, []);
 
   const selectedData = selectedIndex !== null ? processedData[selectedIndex] : null;
@@ -192,22 +223,65 @@ export default function WeightChart({
             tickLine={{ stroke: '#eee' }}
           />
 
-          {/* 百分位区间填充 */}
+          {/* 百分位区间填充 - 堆叠Area实现百分位区间带 */}
+          {/* P3-P15: 从p3堆叠到p15 */}
           <Area
             type="monotone"
-            dataKey="weightKg"
+            data={percentileBandData}
+            dataKey="p3"
+            stackId="percentile"
+            stroke="none"
+            fill="#66BB6A"
+            fillOpacity={0.15}
+          />
+          {/* P15-P50: 从p15堆叠到p50 */}
+          <Area
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p15"
+            stackId="percentile"
+            stroke="none"
+            fill="#66BB6A"
+            fillOpacity={0.12}
+          />
+          {/* P50-P85: 从p50堆叠到p85 */}
+          <Area
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p50"
+            stackId="percentile"
             stroke="none"
             fill="#66BB6A"
             fillOpacity={0.08}
           />
+          {/* P85-P97: 从p85堆叠到p97 */}
+          <Area
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p85"
+            stackId="percentile"
+            stroke="none"
+            fill="#66BB6A"
+            fillOpacity={0.05}
+          />
 
-          {/* 宝宝数据点和连接线 */}
+          {/* 宝宝数据点 */}
           <Scatter
             name="体重"
             dataKey="weightKg"
             fill="white"
             stroke="#66BB6A"
             strokeWidth={2}
+          />
+
+          {/* 宝宝数据点连接线 */}
+          <Line
+            type="monotone"
+            dataKey="weightKg"
+            stroke="#66BB6A"
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={false}
           />
 
           {/* 选中指示器 - 垂直线 */}
