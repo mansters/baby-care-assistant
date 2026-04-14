@@ -120,13 +120,14 @@ export function calculatePercentile(
     z = -1 + (weightKg - ref.sd_neg1) / safeInterval * 1;
   } else if (weightKg <= ref.median) {
     // Zone: -1SD to median (Z ranges from -1 to 0 over 1 SD interval)
-    const interval = ref.sd_neg1 - ref.median;
-    const safeInterval = Math.abs(interval) < EPSILON ? EPSILON : interval;
+    // weightKg is between sd_neg1 and median; we need positive interval
+    const interval = ref.median - ref.sd_neg1;
+    const safeInterval = interval < EPSILON ? EPSILON : interval;
     z = (weightKg - ref.median) / safeInterval;
   } else if (weightKg <= ref.sd_pos1) {
     // Zone: median to +1SD (Z ranges from 0 to +1 over 1 SD interval)
     const interval = ref.sd_pos1 - ref.median;
-    const safeInterval = Math.abs(interval) < EPSILON ? EPSILON : interval;
+    const safeInterval = interval < EPSILON ? EPSILON : interval;
     z = (weightKg - ref.median) / safeInterval;
   } else if (weightKg <= ref.sd_pos2) {
     // Zone: +1SD to +2SD (Z ranges from +1 to +2 over 1 SD interval)
