@@ -62,20 +62,16 @@ export default function WeightChart({
     .filter(d => d.ageMonths >= minMonth && d.ageMonths <= maxMonth)
     .sort((a, b) => a.ageMonths - b.ageMonths);
 
-  // 处理参考百分位区间数据
+  // 处理参考百分位区间数据 - 使用差值计算band高度，避免从0开始的堆叠区域
   const percentileBandData = referenceData
     .filter(r => r.month >= minMonth && r.month <= maxMonth)
     .map(r => ({
       ageMonths: r.month,
-      // P3-P15 band
-      p3: r.sd_neg2,
-      p15: r.sd_neg1,
-      // P15-P50 band
-      p50: r.median,
-      // P50-P85 band
-      p85: r.sd_pos1,
-      // P85-P97 band
-      p97: r.sd_pos2,
+      // 计算每个百分位区间的band高度（用于堆叠）
+      band1: r.sd_neg1 - r.sd_neg2,   // P3-P15 区间高度
+      band2: r.median - r.sd_neg1,     // P15-P50 区间高度
+      band3: r.sd_pos1 - r.median,     // P50-P85 区间高度
+      band4: r.sd_pos2 - r.sd_pos1,    // P85-P97 区间高度
     }));
 
   // 交互状态
@@ -223,56 +219,50 @@ export default function WeightChart({
             tickLine={{ stroke: '#eee' }}
           />
 
-          {/* 百分位区间填充 - 堆叠Area实现百分位区间带 */}
-          {/* P3-P15: 从p3堆叠到p15 */}
+          {/* 百分位区间填充 - 使用band差值堆叠，从0开始避免0-p3区域 */}
+          {/* P3-P15: band1高度 */}
           <Area
             type="monotone"
             data={percentileBandData}
-            dataKey="p3"
+            dataKey="band1"
             stackId="percentile"
+            baseLine={0}
             stroke="none"
             fill="#66BB6A"
             fillOpacity={0.15}
           />
-          {/* P15-P50: 从p15堆叠到p50 */}
+          {/* P15-P50: band2高度 */}
           <Area
             type="monotone"
             data={percentileBandData}
-            dataKey="p15"
+            dataKey="band2"
             stackId="percentile"
+            baseLine={0}
             stroke="none"
             fill="#66BB6A"
             fillOpacity={0.12}
           />
-          {/* P50-P85: 从p50堆叠到p85 */}
+          {/* P50-P85: band3高度 */}
           <Area
             type="monotone"
             data={percentileBandData}
-            dataKey="p50"
+            dataKey="band3"
             stackId="percentile"
+            baseLine={0}
             stroke="none"
             fill="#66BB6A"
             fillOpacity={0.08}
           />
-          {/* P85-P97: 从p85堆叠到p97 */}
+          {/* P85-P97: band4高度 */}
           <Area
             type="monotone"
             data={percentileBandData}
-            dataKey="p85"
+            dataKey="band4"
             stackId="percentile"
+            baseLine={0}
             stroke="none"
             fill="#66BB6A"
             fillOpacity={0.05}
-          />
-          {/* P85-P97 zone: 显示p85到p97区间 */}
-          <Area
-            type="monotone"
-            data={percentileBandData}
-            dataKey="p97"
-            stackId="percentile"
-            stroke="none"
-            fill="#66BB6A"
-            fillOpacity={0.03}
           />
 
           {/* 宝宝数据点 */}
