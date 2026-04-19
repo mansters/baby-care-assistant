@@ -12,6 +12,7 @@ import FormPageFrame from "@/shared/components/FormPageFrame";
 import LogFilterBar from "@/features/log/components/LogFilterBar";
 import { LogType } from "@/features/log/types";
 import type { LogFilter } from "@/features/log/hooks/useLogList";
+import FeedingChart from "@/features/feeding/components/FeedingChart";
 
 interface InsightPageProps {
   baby: BabyDto;
@@ -22,25 +23,11 @@ export default function InsightPage({ baby, growthLogs }: InsightPageProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<LogFilter>(LogType.Growth);
 
-  // Validate gender
+  // Gender validation for growth chart
   const babyGender =
     baby.gender === "Male" || baby.gender === "Female"
       ? (baby.gender as "Male" | "Female")
       : null;
-
-  if (!babyGender) {
-    return (
-      <FormPageFrame
-        title="Insight"
-        themeColor={FeatureTheme.insight.primary}
-        onBack={() => router.back()}
-      >
-        <Box sx={{ p: 2 }}>
-          <Typography>Gender required for growth chart</Typography>
-        </Box>
-      </FormPageFrame>
-    );
-  }
 
   return (
     <FormPageFrame
@@ -61,12 +48,20 @@ export default function InsightPage({ baby, growthLogs }: InsightPageProps) {
       {/* Content */}
       <Box sx={{ p: 2 }}>
         {activeTab === LogType.Growth ? (
-          <WeightChart
-            growthLogs={growthLogs}
-            babyDateOfBirth={baby.dateOfBirth}
-            babyGender={babyGender}
-            babyTimeZone={baby.timeZone}
-          />
+          babyGender ? (
+            <WeightChart
+              growthLogs={growthLogs}
+              babyDateOfBirth={baby.dateOfBirth}
+              babyGender={babyGender}
+              babyTimeZone={baby.timeZone}
+            />
+          ) : (
+            <Typography sx={{ textAlign: "center", color: "#999", mt: 4 }}>
+              Gender required for growth chart
+            </Typography>
+          )
+        ) : activeTab === LogType.Feeding ? (
+          <FeedingChart babyId={baby.id} />
         ) : (
           <Typography sx={{ textAlign: "center", color: "#999", mt: 4 }}>
             More charts coming soon...
