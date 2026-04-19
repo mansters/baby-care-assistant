@@ -127,18 +127,6 @@ export default function HomePage({
       iconColor: "#66BB6A",
       href: "/growth/new",
     },
-    ...(baby.gender
-      ? [
-          {
-            icon: <FiAward />,
-            title: "Insight",
-            subtitle: "体重曲线分析",
-            backgroundColor: "#E8F5E9",
-            iconColor: "#66BB6A",
-            href: "/insight",
-          },
-        ]
-      : []),
     {
       icon: <TbBabyBottle />,
       title: "Feeding",
