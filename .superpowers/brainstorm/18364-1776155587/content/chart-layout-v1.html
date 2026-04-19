@@ -1,0 +1,109 @@
+<h2>体重曲线图 — 布局确认</h2>
+<p class="subtitle">基于您的决策：X轴裁剪至实际月龄±2个月，"今天"标记仅当有记录时显示</p>
+
+<div class="mockup">
+  <div class="mockup-header">Insight 页面 — 体重曲线图</div>
+  <div class="mockup-body">
+    <div style="padding: 16px; background: #f8f9fa; border-radius: 12px;">
+      <!-- Header -->
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 24px; height: 24px; background: #66BB6A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">←</div>
+        <span style="font-weight: 600; font-size: 16px;">Insight</span>
+      </div>
+
+      <!-- Tab -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <div style="background: #66BB6A; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">Growth</div>
+      </div>
+
+      <!-- Reference dropdown -->
+      <div style="margin-bottom: 12px; font-size: 13px; color: #666;">卫健委 2025 喂养评估指南 ▼</div>
+
+      <!-- Chart area -->
+      <div style="background: white; border-radius: 12px; padding: 16px; position: relative;">
+        <!-- Y-axis labels -->
+        <div style="position: absolute; left: 8px; top: 40px; font-size: 11px; color: #666;">
+          <div style="margin-bottom: 50px;">15</div>
+          <div style="margin-bottom: 50px;">12</div>
+          <div style="margin-bottom: 50px;">9</div>
+          <div style="margin-bottom: 50px;">6</div>
+          <div>3</div>
+        </div>
+
+        <!-- Chart content (simplified) -->
+        <svg viewBox="0 0 320 200" style="width: 100%; height: 200px; margin-left: 20px;">
+          <!-- Percentile bands (3-15, 15-50, 50-85, 85-97) -->
+          <path d="M 20 160 L 60 145 L 100 125 L 140 105 L 180 90 L 220 80 L 260 75 L 300 70 L 300 160 L 20 160" fill="#66BB6A" opacity="0.08"/>
+          <path d="M 20 160 L 60 145 L 100 125 L 140 105 L 180 90 L 220 80 L 260 75 L 300 70" fill="none"/>
+          <path d="M 20 150 L 60 135 L 100 115 L 140 95 L 180 82 L 220 74 L 260 70 L 300 66" fill="#66BB6A" opacity="0.15"/>
+          <path d="M 20 140 L 60 125 L 100 108 L 140 88 L 180 76 L 220 70 L 260 66 L 300 62" fill="none" stroke="#66BB6A" stroke-width="0.5" stroke-dasharray="3,2"/>
+          <path d="M 20 130 L 60 115 L 100 100 L 140 82 L 180 70 L 220 65 L 260 62 L 300 58" fill="none" stroke="#66BB6A" stroke-width="1.5"/>
+          <path d="M 20 120 L 60 108 L 100 92 L 140 76 L 180 66 L 220 60 L 260 58 L 300 55" fill="none" stroke="#66BB6A" stroke-width="0.5" stroke-dasharray="3,2"/>
+          <path d="M 20 110 L 60 100 L 100 85 L 140 72 L 180 62 L 220 56 L 260 54 L 300 52" fill="#66BB6A" opacity="0.15"/>
+          <path d="M 20 100 L 60 92 L 100 78 L 140 68 L 180 58 L 220 52 L 260 50 L 300 48" fill="none"/>
+
+          <!-- Baby data points -->
+          <circle cx="60" cy="130" r="5" fill="white" stroke="#66BB6A" stroke-width="2"/>
+          <circle cx="100" cy="115" r="5" fill="white" stroke="#66BB6A" stroke-width="2"/>
+          <circle cx="140" cy="95" r="5" fill="white" stroke="#66BB6A" stroke-width="2"/>
+          <circle cx="180" cy="82" r="5" fill="#66BB6A" stroke="#66BB6A" stroke-width="2"/>
+
+          <!-- Connecting line -->
+          <polyline points="60,130 100,115 140,95 180,82" fill="none" stroke="#66BB6A" stroke-width="2"/>
+
+          <!-- "Today" marker -->
+          <line x1="180" y1="40" x2="180" y2="170" stroke="#66BB6A" stroke-width="1" stroke-dasharray="4,3"/>
+          <rect x="160" y="175" width="40" height="18" rx="9" fill="#66BB6A"/>
+          <text x="180" y="188" text-anchor="middle" fill="white" font-size="10">今天</text>
+
+          <!-- X-axis -->
+          <line x1="20" y1="170" x2="300" y2="170" stroke="#ddd"/>
+
+          <!-- X-axis labels -->
+          <text x="20" y="185" text-anchor="middle" font-size="9" fill="#666">出生</text>
+          <text x="60" y="185" text-anchor="middle" font-size="9" fill="#666">1个月</text>
+          <text x="100" y="185" text-anchor="middle" font-size="9" fill="#666">2个月</text>
+          <text x="140" y="185" text-anchor="middle" font-size="9" fill="#666">3个月</text>
+          <text x="180" y="185" text-anchor="middle" font-size="9" fill="#666">4个月</text>
+        </svg>
+
+        <!-- Percentile labels (right side) -->
+        <div style="position: absolute; right: 16px; top: 50px; font-size: 10px; color: #66BB6A; text-align: right;">
+          <div style="margin-bottom: 8px;">97%</div>
+          <div style="margin-bottom: 12px;">85%</div>
+          <div style="margin-bottom: 12px;">50%</div>
+          <div style="margin-bottom: 12px;">15%</div>
+          <div>3%</div>
+        </div>
+
+        <!-- Y-axis label -->
+        <div style="position: absolute; left: -30px; top: 100px; font-size: 11px; color: #666; transform: rotate(-90deg);">体重 (kg)</div>
+      </div>
+
+      <!-- Tooltip preview -->
+      <div style="margin-top: 16px; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block;">
+        <div style="font-size: 12px; color: #666;">3个月15天</div>
+        <div style="font-size: 18px; font-weight: 600;">6.1kg</div>
+        <div style="font-size: 12px; color: #66BB6A;">百分位 49.5%</div>
+      </div>
+
+      <!-- Footnote -->
+      <div style="margin-top: 16px; font-size: 11px; color: #999; line-height: 1.4;">
+        参考来源：依据国家卫健委 2025 年发布的 3 岁以下婴幼儿体重标准参考区间
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>图表特性确认</h3>
+  <ul style="font-size: 14px; line-height: 1.8;">
+    <li>✅ X轴：自动裁剪至 <b>实际月龄 ± 2个月</b>（图中显示 0-4个月 示例）</li>
+    <li>✅ "今天"标记：仅当今天有体重记录时显示</li>
+    <li>✅ 百分位区间：3% / 15% / 50% / 85% / 97%（绿色渐变填充）</li>
+    <li>✅ 数据点：空心圆 + 连接线 + 点击显示详情气泡</li>
+    <li>✅ 触摸友好：最小触摸区域 44×44px</li>
+  </ul>
+</div>
+
+<p class="subtitle" style="margin-top: 20px;">这个布局是否符合您的预期？</p>

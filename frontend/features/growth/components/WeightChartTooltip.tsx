@@ -8,6 +8,7 @@ interface WeightChartTooltipProps {
   weightKg: number;      // 6.5
   percentile: number;    // 65.5
   visible: boolean;
+  leftPosition?: string;
 }
 
 export default function WeightChartTooltip({
@@ -15,6 +16,7 @@ export default function WeightChartTooltip({
   weightKg,
   percentile,
   visible,
+  leftPosition,
 }: WeightChartTooltipProps) {
   if (!visible) return null;
 
@@ -24,36 +26,41 @@ export default function WeightChartTooltip({
       sx={{
         position: 'absolute',
         top: 35,
-        left: '50%',
+        left: leftPosition || '50%',
         transform: 'translateX(-50%)',
         backgroundColor: 'white',
         borderRadius: '12px',
         padding: '12px 16px',
-        minWidth: 120,
+        minWidth: 100,
         textAlign: 'center',
         zIndex: 10,
         pointerEvents: 'none',
       }}
     >
       <Typography
-        sx={{ fontSize: '12px', color: '#666666' }}
-      >
-        {ageLabel}
-      </Typography>
-      <Typography
         sx={{
-          fontSize: '20px',
-          fontWeight: 600,
-          color: '#333333',
-          my: 0.5,
+          fontSize: '28px',
+          fontWeight: 700,
+          color: '#66BB6A',
+          lineHeight: 1.1,
         }}
       >
         {weightKg.toFixed(1)}kg
       </Typography>
       <Typography
-        sx={{ fontSize: '12px', color: '#66BB6A', fontWeight: 500 }}
+        sx={{ fontSize: '11px', color: '#999999', mt: 0.5 }}
       >
-        百分位 {percentile.toFixed(1)}%
+        {ageLabel}
+      </Typography>
+      <Typography
+        sx={{
+          fontSize: '14px',
+          fontWeight: 500,
+          color: '#333333',
+          mt: 0.5,
+        }}
+      >
+        {percentile.toFixed(0)}%
       </Typography>
     </Paper>
   );

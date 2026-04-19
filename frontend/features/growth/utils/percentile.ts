@@ -54,19 +54,25 @@ export function interpolateReferenceAtAge(
  * 标准正态分布 CDF 近似（Abramowitz and Stegun）
  */
 export function zScoreToPercentile(z: number): number {
-  const a1 = 0.254829592;
-  const a2 = -0.284496736;
-  const a3 = 1.421413741;
-  const a4 = -1.453152027;
-  const a5 = 1.061405429;
-  const p = 0.3275911;
+  // A&S 7.1.26 - Standard Normal CDF approximations
+  const p  = 0.2316419;
+  const a1 = 0.319381530;
+  const a2 = -0.356563782;
+  const a3 = 1.781477937;
+  const a4 = -1.821255978;
+  const a5 = 1.330274429;
 
   const sign = z < 0 ? -1 : 1;
   const absZ = Math.abs(z);
   const t = 1.0 / (1.0 + p * absZ);
-  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absZ * absZ / 2);
+  
+  const poly = ((((a5 * t + a4) * t) + a3) * t + a2) * t + a1;
+  // phi(x) = (1/sqrt(2*pi)) * e^(-x^2/2), where 1/sqrt(2*pi) ~= 0.3989422804014327
+  const probGreater = poly * t * 0.3989422804014327 * Math.exp(-0.5 * absZ * absZ);
+  
+  const cdf = sign === 1 ? 1.0 - probGreater : probGreater;
 
-  return (0.5 + sign * (0.5 - y)) * 100;
+  return cdf * 100;
 }
 
 /**

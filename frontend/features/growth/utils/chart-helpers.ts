@@ -52,7 +52,7 @@ export function formatAgeLabel(months: number): string {
   const days = Math.round((months - wholeMonths) * 30);
   const adjustedMonths = days >= 30 ? wholeMonths + 1 : wholeMonths;
   const adjustedDays = days >= 30 ? days - 30 : days;
-  return `${adjustedMonths}个月${adjustedDays}天`;
+  return `${adjustedMonths}mo ${adjustedDays}d`;
 }
 
 /**
