@@ -65,17 +65,23 @@ export default function WeightChart({
     [growthLogs, babyDateOfBirth, minMonth, maxMonth]
   );
 
-  // 处理参考百分位区间数据 - 使用差值计算band高度，避免从0开始的堆叠区域
+  // 处理参考百分位区间数据 - 计算band高度用于堆叠填充
   const percentileBandData = useMemo(() =>
     referenceData
       .filter(r => r.month >= minMonth && r.month <= maxMonth)
       .map(r => ({
         ageMonths: r.month,
-        // 计算每个百分位区间的band高度（用于堆叠）
-        band1: r.sd_neg1 - r.sd_neg2,   // P3-P15 区间高度
-        band2: r.median - r.sd_neg1,     // P15-P50 区间高度
-        band3: r.sd_pos1 - r.median,     // P50-P85 区间高度
-        band4: r.sd_pos2 - r.sd_pos1,    // P85-P97 区间高度
+        // 使用差值计算band高度，这样堆叠时能正确填充区间
+        band3to15: r.sd_neg1 - r.sd_neg2,   // P3-P15区间
+        band15to50: r.median - r.sd_neg1,    // P15-P50区间
+        band50to85: r.sd_pos1 - r.median,    // P50-P85区间
+        band85to97: r.sd_pos2 - r.sd_pos1,   // P85-P97区间
+        // 保留原值用于绘制曲线
+        p3: r.sd_neg2,
+        p15: r.sd_neg1,
+        p50: r.median,
+        p85: r.sd_pos1,
+        p97: r.sd_pos2,
       })),
     [referenceData, minMonth, maxMonth]
   );
@@ -110,8 +116,9 @@ export default function WeightChart({
     setSelectedIndex(closest);
   }, [processedData, selectedIndex]);
 
-  // 触摸滑动处理 - 带长按检测
+  // 触摸滑动处理 - 带长按检测，防止默认选择行为
   const handleTouchStart = useCallback((_state: any, e: React.TouchEvent) => {
+    e.preventDefault(); // 阻止默认行为，防止蓝色选择框
     touchStartX.current = e.touches[0].clientX;
     lastSwipeTime.current = Date.now();
     isHolding.current = false;
@@ -123,6 +130,7 @@ export default function WeightChart({
   }, []);
 
   const handleTouchMove = useCallback((_state: any, e: React.TouchEvent) => {
+    e.preventDefault(); // 阻止默认行为
     if (!isHolding.current || selectedIndex === null || processedData.length === 0) return;
 
     const now = Date.now();
@@ -240,50 +248,70 @@ export default function WeightChart({
             tickLine={{ stroke: '#eee' }}
           />
 
-          {/* 百分位区间填充 - 使用band差值堆叠，从0开始避免0-p3区域 */}
-          {/* P3-P15: band1高度 */}
+          {/* 百分位区间填充 - 用Area填充整个参考范围作为背景 */}
           <Area
             type="monotone"
             data={percentileBandData}
-            dataKey="band1"
-            stackId="percentile"
+            dataKey="p97"
+            stackId="ref"
             baseLine={0}
             stroke="none"
             fill="#66BB6A"
-            fillOpacity={0.15}
+            fillOpacity={0.06}
           />
-          {/* P15-P50: band2高度 */}
-          <Area
+
+          {/* 百分位曲线 - 用Line绘制各百分位曲线 */}
+          {/* 97%曲线 */}
+          <Line
             type="monotone"
             data={percentileBandData}
-            dataKey="band2"
-            stackId="percentile"
-            baseLine={0}
-            stroke="none"
-            fill="#66BB6A"
-            fillOpacity={0.12}
+            dataKey="p97"
+            stroke="#66BB6A"
+            strokeWidth={0.5}
+            dot={false}
+            isAnimationActive={false}
           />
-          {/* P50-P85: band3高度 */}
-          <Area
+          {/* 85%曲线 */}
+          <Line
             type="monotone"
             data={percentileBandData}
-            dataKey="band3"
-            stackId="percentile"
-            baseLine={0}
-            stroke="none"
-            fill="#66BB6A"
-            fillOpacity={0.08}
+            dataKey="p85"
+            stroke="#66BB6A"
+            strokeWidth={0.5}
+            strokeDasharray="4 2"
+            dot={false}
+            isAnimationActive={false}
           />
-          {/* P85-P97: band4高度 */}
-          <Area
+          {/* 50%曲线 */}
+          <Line
             type="monotone"
             data={percentileBandData}
-            dataKey="band4"
-            stackId="percentile"
-            baseLine={0}
-            stroke="none"
-            fill="#66BB6A"
-            fillOpacity={0.05}
+            dataKey="p50"
+            stroke="#66BB6A"
+            strokeWidth={1.5}
+            dot={false}
+            isAnimationActive={false}
+          />
+          {/* 15%曲线 */}
+          <Line
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p15"
+            stroke="#66BB6A"
+            strokeWidth={0.5}
+            strokeDasharray="4 2"
+            dot={false}
+            isAnimationActive={false}
+          />
+          {/* 3%曲线 */}
+          <Line
+            type="monotone"
+            data={percentileBandData}
+            dataKey="p3"
+            stroke="#66BB6A"
+            strokeWidth={0.5}
+            dot={false}
+            isAnimationActive={false}
           />
 
           {/* 宝宝数据点 */}
