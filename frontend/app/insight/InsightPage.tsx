@@ -1,12 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { WeightChart } from "@/features/growth";
 import type { BabyDto } from "@/lib/services/user";
 import type { GrowthLog } from "@/lib/types";
+import { FeatureTheme } from "@/lib/theme";
+import FormPageFrame from "@/shared/components/FormPageFrame";
+import LogFilterBar from "@/features/log/components/LogFilterBar";
+import { LogType } from "@/features/log/types";
+import type { LogFilter } from "@/features/log/hooks/useLogList";
 
 interface InsightPageProps {
   baby: BabyDto;
@@ -15,86 +20,59 @@ interface InsightPageProps {
 
 export default function InsightPage({ baby, growthLogs }: InsightPageProps) {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<LogFilter>(LogType.Growth);
 
   // Validate gender
   const babyGender =
     baby.gender === "Male" || baby.gender === "Female"
       ? (baby.gender as "Male" | "Female")
-      : "Female";
+      : null;
 
   if (!babyGender) {
     return (
-      <Box sx={{ minHeight: "100vh", backgroundColor: "#fff" }}>
-        <Box
-          sx={{
-            background: "linear-gradient(135deg, #66BB6A 0%, #81C784 100%)",
-            padding: "16px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-          }}
-        >
-          <IconButton onClick={() => router.back()} sx={{ color: "white" }}>
-            <ArrowBack />
-          </IconButton>
-          <Typography variant="h6" sx={{ color: "white", fontWeight: 600 }}>
-            Insight
-          </Typography>
-        </Box>
+      <FormPageFrame
+        title="Insight"
+        themeColor={FeatureTheme.insight.primary}
+        onBack={() => router.back()}
+      >
         <Box sx={{ p: 2 }}>
           <Typography>Gender required for growth chart</Typography>
         </Box>
-      </Box>
+      </FormPageFrame>
     );
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#fff" }}>
-      {/* Header */}
-      <Box
-        sx={{
-          background: "linear-gradient(135deg, #66BB6A 0%, #81C784 100%)",
-          padding: "16px 20px",
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-        }}
-      >
-        <IconButton onClick={() => router.back()} sx={{ color: "white" }}>
-          <ArrowBack />
-        </IconButton>
-        <Typography variant="h6" sx={{ color: "white", fontWeight: 600 }}>
-          Insight
-        </Typography>
-      </Box>
-
+    <FormPageFrame
+      title="Insight"
+      themeColor={FeatureTheme.insight.primary}
+      onBack={() => router.back()}
+    >
       {/* Tab */}
-      <Box sx={{ px: 2, py: 1.5, borderBottom: "1px solid #eee" }}>
-        <Box
-          sx={{
-            backgroundColor: "#66BB6A",
-            color: "white",
-            px: 2,
-            py: 0.75,
-            borderRadius: "20px",
-            display: "inline-block",
-            fontSize: "14px",
-            fontWeight: 500,
-          }}
-        >
-          Growth
-        </Box>
+      <Box sx={{ borderBottom: "1px solid #eee" }}>
+        <LogFilterBar
+          activeFilter={activeTab}
+          onFilterChange={setActiveTab}
+          activeBgColor={FeatureTheme.insight.primary}
+          showAll={false}
+        />
       </Box>
 
       {/* Content */}
       <Box sx={{ p: 2 }}>
-        <WeightChart
-          growthLogs={growthLogs}
-          babyDateOfBirth={baby.dateOfBirth}
-          babyGender={babyGender}
-          babyTimeZone={baby.timeZone}
-        />
+        {activeTab === LogType.Growth ? (
+          <WeightChart
+            growthLogs={growthLogs}
+            babyDateOfBirth={baby.dateOfBirth}
+            babyGender={babyGender}
+            babyTimeZone={baby.timeZone}
+          />
+        ) : (
+          <Typography sx={{ textAlign: "center", color: "#999", mt: 4 }}>
+            More charts coming soon...
+          </Typography>
+        )}
       </Box>
-    </Box>
+    </FormPageFrame>
   );
 }

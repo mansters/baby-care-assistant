@@ -16,7 +16,7 @@ import { differenceInMonths, differenceInDays, format } from "date-fns";
 import { TZDate } from "@date-fns/tz";
 import { FiTrendingUp, FiAward } from "react-icons/fi";
 import { IoMdMoon } from "react-icons/io";
-import { MdBabyChangingStation } from "react-icons/md";
+import { MdImageSearch } from "react-icons/md";
 import { TbBabyBottle } from "react-icons/tb";
 import { FaSyringe, FaListUl } from "react-icons/fa";
 import { BabyDto } from "@/lib/services/user";
@@ -127,14 +127,18 @@ export default function HomePage({
       iconColor: "#66BB6A",
       href: "/growth/new",
     },
-    ...(baby.gender ? [{
-      icon: <FiAward />,
-      title: "Insight",
-      subtitle: "体重曲线分析",
-      backgroundColor: "#E8F5E9",
-      iconColor: "#66BB6A",
-      href: "/insight",
-    }] : []),
+    ...(baby.gender
+      ? [
+          {
+            icon: <FiAward />,
+            title: "Insight",
+            subtitle: "体重曲线分析",
+            backgroundColor: "#E8F5E9",
+            iconColor: "#66BB6A",
+            href: "/insight",
+          },
+        ]
+      : []),
     {
       icon: <TbBabyBottle />,
       title: "Feeding",
@@ -144,14 +148,13 @@ export default function HomePage({
       iconColor: FeatureTheme.feeding.primary,
       href: "/feeding/new",
     },
-    // {
-    //   icon: <IoMdMoon />,
-    //   title: "Sleep",
-    //   subtitle: "1h 20min",
-    //   backgroundColor: "#E5F4FF",
-    //   iconColor: "#4ECDC4",
-    //   href: "/sleep",
-    // },
+    {
+      icon: <MdImageSearch />,
+      title: "Insight",
+      backgroundColor: "#E5F4FF",
+      iconColor: "#4ECDC4",
+      href: "/insight",
+    },
     // {
     //   icon: <MdBabyChangingStation />,
     //   title: "Diaper",

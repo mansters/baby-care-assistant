@@ -59,6 +59,7 @@ public class BabyRepository(IDynamoDbBaseRepository<Baby> dynamoDbBaseRepository
             baby.PreferredName = item.PreferredName;
             baby.DateOfBirth = item.DateOfBirth;
             baby.TimeZone = item.TimeZone;
+            baby.Gender = item.Gender;
             baby.UpdatedAt = DateTime.UtcNow;
         };
         

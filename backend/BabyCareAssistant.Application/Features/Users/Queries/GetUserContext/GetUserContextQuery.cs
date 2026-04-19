@@ -50,7 +50,8 @@ public sealed class GetUserContextQueryHandler(ICurrentUserService currentUserSe
                         FirstName = b.FirstName,
                         LastName = b.LastName,
                         PreferredName = b.PreferredName,
-                        DateOfBirth = b.DateOfBirth
+                        DateOfBirth = b.DateOfBirth,
+                        Gender = b.Gender
                     }).ToList()
                 };
             }).Where(f => f != null).ToList()!
